@@ -1,0 +1,3 @@
+- extensionName: Sample
+  extensionPointClassName: io.github.anycollect.extensions.jackson.WrongSampleExtensionPoint
+  extensionClassName: io.github.anycollect.extensions.jackson.SampleExtension

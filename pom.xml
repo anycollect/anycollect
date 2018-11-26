@@ -19,5 +19,6 @@
         <module>anycollect-build-tools</module>
         <module>anycollect-metric</module>
         <module>anycollect-tests</module>
+        <module>anycollect-extension-system</module>
     </modules>
 </project>
