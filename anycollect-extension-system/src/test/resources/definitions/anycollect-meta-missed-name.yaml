@@ -1,2 +1,2 @@
-- extensionPointClassName: io.github.anycollect.extensions.jackson.SampleExtensionPoint
-  extensionClassName: io.github.anycollect.extensions.jackson.SampleExtension
+- extensionPointClassName: io.github.anycollect.extensions.samples.SampleExtensionPoint
+  extensionClassName: io.github.anycollect.extensions.samples.SampleExtension

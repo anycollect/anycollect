@@ -1,22 +1,16 @@
 package io.github.anycollect.extensions;
 
 import io.github.anycollect.extensions.definitions.ExtensionDefinition;
-import io.github.anycollect.extensions.exceptions.ExtensionNotFoundException;
-import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
-import io.github.anycollect.extensions.exceptions.WrongExtensionClassException;
+import io.github.anycollect.extensions.exceptions.ConfigurationException;
 
-import java.io.Reader;
-import java.util.List;
+import java.util.Collection;
 
 public interface ExtensionDefinitionLoader {
     /**
-     * Loads all extensions definitions from reader.
+     * Returns all extensions definitions.
      *
-     * @param    reader                            the source that is used to load definitions
-     * @throws   MissingRequiredPropertyException  if
-     * @throws   ExtensionNotFoundException        if class of extension or extension point is not found in classpath
-     * @throws   WrongExtensionClassException      if extension class doesn't implement or extend extension point class
-     * @return                                     list of {@link ExtensionDefinition}
+     * @throws   ConfigurationException   if configuration is wrong and cannot be loaded
+     * @return                            list of {@link ExtensionDefinition}
      */
-    List<ExtensionDefinition> load(Reader reader);
+    Collection<ExtensionDefinition> load();
 }

@@ -1,7 +1,12 @@
 package io.github.anycollect.extensions.exceptions;
 
+/**
+ * Signals that configuration that has been passed is wrong.
+ * There is no way to recover from this exception. Because of that this exception is unchecked.
+ * The user should fix his configuration.
+ */
 public class ConfigurationException extends RuntimeException {
-    ConfigurationException(final String message) {
+    public ConfigurationException(final String message) {
         super(message);
     }
 

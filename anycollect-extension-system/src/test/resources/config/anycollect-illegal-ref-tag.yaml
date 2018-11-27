@@ -1,0 +1,14 @@
+# Illegal use if !ref tag
+extensions:
+- !load
+  extension: Ext1
+  instance: ext1_1
+- !load
+  extension: Ext1
+  instance: ext1_2
+- !load
+  extension: Ext3
+  dependencies:
+    ext1: !ref
+    - ext1_1
+    - ext1_2

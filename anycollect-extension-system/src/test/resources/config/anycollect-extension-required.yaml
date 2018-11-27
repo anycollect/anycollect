@@ -1,0 +1,4 @@
+# extension is required
+extensions:
+- !load
+  instance: ext1

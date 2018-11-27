@@ -1,0 +1,19 @@
+extensions:
+- !load
+  extension: Ext1
+  instance: ext1
+- !load
+  extension: Ext2
+  instance: ext2_1
+- !load
+  extension: Ext2
+  instance: ext2_2
+- !load
+  extension: Ext3
+  dependencies:
+    ext1: !ref ext1
+    ext2: !refs
+    - ext2_1
+    - ext2_2
+  config:
+    key: value

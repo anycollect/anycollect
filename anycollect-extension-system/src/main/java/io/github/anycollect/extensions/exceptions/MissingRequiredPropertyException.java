@@ -1,5 +1,8 @@
 package io.github.anycollect.extensions.exceptions;
 
+/**
+ * Signals that configuration does not contain a required property.
+ */
 public final class MissingRequiredPropertyException extends ConfigurationException {
     private final String property;
 

@@ -5,25 +5,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.anycollect.extensions.ExtensionDefinitionLoader;
 import io.github.anycollect.extensions.definitions.ExtensionDefinition;
-import io.github.anycollect.extensions.exceptions.ExtensionNotFoundException;
-import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
-import io.github.anycollect.extensions.exceptions.WrongExtensionClassException;
 import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.extensions.exceptions.ExtensionClassNotFoundException;
+import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
+import io.github.anycollect.extensions.exceptions.WrongExtensionMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public final class JacksonExtensionDefinitionLoader implements ExtensionDefinitionLoader {
     private static final Logger LOG = LoggerFactory.getLogger(JacksonExtensionDefinitionLoader.class);
     private static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
+    private final Reader reader;
+
+    public JacksonExtensionDefinitionLoader(final Reader reader) {
+        this.reader = reader;
+    }
 
     @Override
-    public List<ExtensionDefinition> load(final Reader reader) {
+    public Collection<ExtensionDefinition> load() {
         LOG.debug("start to load extension definitions from {}", reader);
         List<Map<String, String>> rawDefinitions;
         try {
@@ -34,7 +40,6 @@ public final class JacksonExtensionDefinitionLoader implements ExtensionDefiniti
                     String.format("unexpected error during reading configuration from %s", reader), e);
         }
         List<ExtensionDefinition> definitions = new ArrayList<>();
-
         for (Map<String, String> rawDefinition : rawDefinitions) {
             ExtensionDefinition definition = parseMap(rawDefinition);
             definitions.add(definition);
@@ -56,7 +61,7 @@ public final class JacksonExtensionDefinitionLoader implements ExtensionDefiniti
         if (!extensionPointClass.isAssignableFrom(extensionClass)) {
             LOG.error("extension {} must implement extension point {}",
                     extensionClassName, extensionPointClassName);
-            throw new WrongExtensionClassException(extensionPointClass, extensionClass);
+            throw new WrongExtensionMappingException(extensionPointClass, extensionClass);
         }
 
         Class<?> configClass = configClassName != null ? loadClass(configClassName) : null;
@@ -82,12 +87,12 @@ public final class JacksonExtensionDefinitionLoader implements ExtensionDefiniti
         return value;
     }
 
-    private Class loadClass(final String name) throws ExtensionNotFoundException {
+    private Class loadClass(final String name) throws ExtensionClassNotFoundException {
         try {
             return Class.forName(name);
         } catch (ClassNotFoundException e) {
             LOG.error("class specified in extension meta info: \"{}\" is not found in classpath", name);
-            throw new ExtensionNotFoundException(name);
+            throw new ExtensionClassNotFoundException(name);
         }
     }
 }

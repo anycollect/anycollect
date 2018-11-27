@@ -1,0 +1,13 @@
+# Try to set config for not configurable extension
+extensions:
+- !load
+  extension: Ext1
+  instance: ext1
+  config:
+    key: value
+###
+# Wrong config
+- !load
+  extension: Ext3
+  config:
+    wrongkey: value

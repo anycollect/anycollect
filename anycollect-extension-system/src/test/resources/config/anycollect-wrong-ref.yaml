@@ -1,0 +1,44 @@
+# Self reference is forbidden
+extensions:
+- !load
+  extension: Ext1
+  instance: ext1
+  dependencies:
+    ext1: !ref ext1
+###
+# Self references is forbidden
+- !load
+  extension: Ext1
+  instance: ext1
+  dependencies:
+    ext1: !refs
+    - ext1
+    - ext1
+###
+# Unknown dependency in !ref is forbidden
+extensions:
+- !load
+  extension: Ext3
+  dependencies:
+    ext1: !ref ext1
+  config:
+    key: value
+- !load
+  extension: Ext1
+  instance: ext1
+###
+# Unknown dependency in !refs is forbidden
+extensions:
+- !load
+  extension: Ext1
+  instance: ext1
+- !load
+  extension: Ext3
+  dependencies:
+    ext2: !refs
+    - ext2
+  config:
+    key: value
+- !load
+  extension: Ext2
+  instance: ext2

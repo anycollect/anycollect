@@ -1,0 +1,10 @@
+# Scalar is forbidden
+extensions:
+- !load Ext1
+###
+# Sequence is forbidden
+extensions: !load
+- extension: Ext1
+  instance: ext1
+- extension: Ext2
+  instance: ext2_1
