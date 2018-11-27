@@ -41,7 +41,7 @@ class ExtensionDefinitionTest {
                             .withName("name")
                             .withExtension(ExtensionPoint.class, Extension.class)
                             .build();
-                    assertThat(definition.getConfigClass()).isEmpty();
+                    assertThat(definition.getConfig()).isEmpty();
                 });
     }
 

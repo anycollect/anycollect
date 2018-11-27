@@ -2,6 +2,7 @@ package io.github.anycollect.extensions.snakeyaml;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.github.anycollect.extensions.definitions.ConfigParameterDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionInstanceDependencyDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionInstanceDefinition;
@@ -76,7 +77,7 @@ final class CustomConstructor extends Constructor {
         private String getExtensionName() {
             final String extensionName = (String) values.get(EXTENSION);
             if (extensionName == null) {
-                LOG.error("there is no \"extension\" property in configuration in {}", currentNode);
+                LOG.error("there is no \"{}\" property in configuration in {}", EXTENSION, currentNode);
                 throw new MissingRequiredPropertyException(EXTENSION);
             }
             return extensionName;
@@ -94,15 +95,15 @@ final class CustomConstructor extends Constructor {
             if (rawConfig == null) {
                 return null;
             }
-            Class<?> configClass = extensionDefinition.getConfigClass().orElseThrow(() -> {
+            ConfigParameterDefinition config = extensionDefinition.getConfig().orElseThrow(() -> {
                 LOG.error("extension {} is not configurable, found config: {}", extensionDefinition, rawConfig);
                 return new ConfigurationException("custom config for " + extensionDefinition + " is not supported");
             });
             try {
-                return MAPPER.readValue(MAPPER.writeValueAsString(rawConfig), configClass);
+                return MAPPER.readValue(MAPPER.writeValueAsString(rawConfig), config.getParameterType());
             } catch (IOException e) {
                 LOG.error("unexpected error during parsing configuration of class {} for {}, config: {}",
-                        configClass.getName(), instanceName, rawConfig, e);
+                        config.getParameterType().getName(), instanceName, rawConfig, e);
                 throw new ConfigurationException("unexpected error during parsing configuration", e);
             }
         }

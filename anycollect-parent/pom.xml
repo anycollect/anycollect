@@ -39,6 +39,7 @@
         <surefire.plugin.version>2.22.1</surefire.plugin.version>
         <checkstyle.plugin.version>3.0.0</checkstyle.plugin.version>
         <pmd.plugin.version>3.11.0</pmd.plugin.version>
+        <pmd.version>6.9.0</pmd.version>
         <jacoco.plugin.version>0.8.2</jacoco.plugin.version>
     </properties>
 
@@ -123,6 +124,27 @@
     </dependencyManagement>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${pmd.plugin.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>net.sourceforge.pmd</groupId>
+                            <artifactId>pmd-core</artifactId>
+                            <version>${pmd.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>net.sourceforge.pmd</groupId>
+                            <artifactId>pmd-java</artifactId>
+                            <version>${pmd.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

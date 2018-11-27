@@ -1,12 +1,11 @@
 package io.github.anycollect.extensions;
 
 import io.github.anycollect.extensions.annotations.*;
+import io.github.anycollect.extensions.definitions.AbstractExtensionParameterDefinition;
+import io.github.anycollect.extensions.definitions.ConfigParameterDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionDependencyDefinition;
-import io.github.anycollect.extensions.exceptions.ConfigurationException;
-import io.github.anycollect.extensions.exceptions.ExtensionClassNotFoundException;
-import io.github.anycollect.extensions.exceptions.ExtensionDescriptorException;
-import io.github.anycollect.extensions.exceptions.WrongExtensionMappingException;
+import io.github.anycollect.extensions.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +13,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.*;
+
+import static java.util.stream.Collectors.joining;
 
 public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionLoader {
     private static final Logger LOG = LoggerFactory.getLogger(ExtensionDefinitionLoaderImpl.class);
@@ -48,26 +49,55 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
         }
         Constructor<?> constructor = resolveExtensionConstructor(extensionClass);
         List<AnnotatedParameter<ExtConfig>> configs = findParameterWithAnnotation(constructor, ExtConfig.class);
-        if (configs.size() != 1) {
+        if (configs.size() > 1) {
             errorConfig(extensionClass);
         }
-        AnnotatedParameter<ExtConfig> config = configs.get(0);
-        Class<?> configClass = config.type;
-        boolean nullableConfig = config.annotation.nullable();
+        ConfigParameterDefinition config = null;
+        if (!configs.isEmpty()) {
+            AnnotatedParameter<ExtConfig> configParameter = configs.get(0);
+            config = new ConfigParameterDefinition(configParameter.type,
+                    configParameter.annotation.optional(), configParameter.position);
+        }
         List<AnnotatedParameter<ExtDependency>> dependencyParams =
                 findParameterWithAnnotation(constructor, ExtDependency.class);
         List<ExtensionDependencyDefinition> dependencies = new ArrayList<>();
         for (AnnotatedParameter<ExtDependency> param : dependencyParams) {
             dependencies.add(new ExtensionDependencyDefinition(
-                    param.annotation.qualifier(), param.type, param.annotation.optional(), param.parameterNumber));
+                    param.annotation.qualifier(), param.type, param.annotation.optional(), param.position));
         }
-
+        List<AbstractExtensionParameterDefinition> parameters = new ArrayList<>();
+        if (config != null) {
+            parameters.add(config);
+        }
+        parameters.addAll(dependencies);
+        validateConstrictor(extensionClass, constructor, parameters);
         return ExtensionDefinition.builder()
                 .withName(extensionName)
                 .withExtension(extensionPointClass, extensionClass)
-                .withConfig(configClass, nullableConfig)
+                .withConfig(config)
                 .withDependencies(dependencies)
                 .build();
+    }
+
+    private void validateConstrictor(final Class extensionClass,
+                                     final Constructor<?> constructor,
+                                     final List<? extends AbstractExtensionParameterDefinition> parameters) {
+        Set<Integer> unresolvedParametersNumbers = new HashSet<>();
+        for (int number = 0; number < constructor.getParameterCount(); ++number) {
+            unresolvedParametersNumbers.add(number);
+        }
+        for (AbstractExtensionParameterDefinition parameter : parameters) {
+            unresolvedParametersNumbers.remove(parameter.getPosition());
+        }
+        if (unresolvedParametersNumbers.size() > 0) {
+            String params = unresolvedParametersNumbers.stream()
+                    .map(number -> constructor.getParameterTypes()[number])
+                    .map(Class::getSimpleName)
+                    .collect(joining(", "));
+            LOG.error("cannot resolve parameters {} in constructor {} of {} extension",
+                    params, constructor, extensionClass.getSimpleName());
+            throw new UnresolvableConstructorException(extensionClass, constructor);
+        }
     }
 
     private <T extends Annotation> List<AnnotatedParameter<T>> findParameterWithAnnotation(
@@ -161,12 +191,12 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
     private static class AnnotatedParameter<T extends Annotation> {
         private final Class<?> type;
         private final T annotation;
-        private final int parameterNumber;
+        private final int position;
 
         AnnotatedParameter(final Class<?> type, final T annotation, final int serialNumber) {
             this.type = type;
             this.annotation = annotation;
-            this.parameterNumber = serialNumber;
+            this.position = serialNumber;
         }
     }
 }

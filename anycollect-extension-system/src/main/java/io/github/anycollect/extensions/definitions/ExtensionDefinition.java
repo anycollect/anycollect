@@ -18,7 +18,7 @@ public final class ExtensionDefinition {
     private final Class<?> extensionPointClass;
     @Getter
     private final Class<?> extensionClass;
-    private final Class<?> configClass;
+    private final ConfigParameterDefinition config;
     @Getter
     private final boolean nullableConfig;
     private final List<ExtensionDependencyDefinition> dependencies;
@@ -31,20 +31,20 @@ public final class ExtensionDefinition {
         this.name = builder.name;
         this.extensionPointClass = builder.extensionPointClass;
         this.extensionClass = builder.extensionClass;
-        this.configClass = builder.configClass;
+        this.config = builder.config;
         this.nullableConfig = builder.nullableConfig;
         this.dependencies = builder.dependencies;
     }
 
-    public Optional<Class<?>> getConfigClass() {
-        return Optional.ofNullable(configClass);
+    public Optional<ConfigParameterDefinition> getConfig() {
+        return Optional.ofNullable(config);
     }
 
     public static final class Builder {
         private String name;
         private Class<?> extensionPointClass;
         private Class<?> extensionClass;
-        private Class<?> configClass;
+        private ConfigParameterDefinition config;
         private boolean nullableConfig = true;
         private List<ExtensionDependencyDefinition> dependencies = new ArrayList<>();
 
@@ -67,9 +67,8 @@ public final class ExtensionDefinition {
             return this;
         }
 
-        public Builder withConfig(final Class<?> config, final boolean nullable) {
-            this.configClass = config;
-            this.nullableConfig = nullable;
+        public Builder withConfig(final ConfigParameterDefinition configDefinition) {
+            this.config = configDefinition;
             return this;
         }
 

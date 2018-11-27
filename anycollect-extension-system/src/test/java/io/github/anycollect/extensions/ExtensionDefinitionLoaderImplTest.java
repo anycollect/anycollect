@@ -4,6 +4,7 @@ import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtPoint;
 import io.github.anycollect.extensions.annotations.Extension;
+import io.github.anycollect.extensions.definitions.ConfigParameterDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionDependencyDefinition;
 import io.github.anycollect.extensions.exceptions.ConfigurationException;
@@ -29,7 +30,7 @@ class ExtensionDefinitionLoaderImplTest {
         assertThat(definitions).containsExactly(ExtensionDefinition.builder()
                 .withName("Sample")
                 .withExtension(SampleExtensionPoint.class, SampleExtension.class)
-                .withConfig(SampleExtensionConfig.class, false)
+                .withConfig(new ConfigParameterDefinition(SampleExtensionConfig.class, false, 0))
                 .build());
     }
 
@@ -46,7 +47,7 @@ class ExtensionDefinitionLoaderImplTest {
         assertThat(definitions).containsExactly(ExtensionDefinition.builder()
                 .withName("SampleWithDependency")
                 .withExtension(SampleExtensionPoint.class, SampleExtensionWithDependency.class)
-                .withConfig(SampleExtensionConfig.class, false)
+                .withConfig(new ConfigParameterDefinition(SampleExtensionConfig.class, false, 1))
                 .withDependencies(Collections.singletonList(dependency))
                 .build());
     }
@@ -98,6 +99,26 @@ class ExtensionDefinitionLoaderImplTest {
         ExtensionDefinitionLoaderImpl loader = create(ExtensionPointWithTwoConstructors.class);
         ExtensionDescriptorException ex = Assertions.assertThrows(ExtensionDescriptorException.class, loader::load);
         assertThat(ex).hasMessageContaining(ExtCreator.class.getName());
+    }
+
+    @Test
+    @DisplayName("extension is able to not have a config")
+    void extensionIsAbleToNotHaveConfig() {
+        ExtensionDefinitionLoaderImpl loader = create(SampleExtensionWithoutConfig.class);
+        assertThat(loader.load()).containsExactly(
+                ExtensionDefinition.builder()
+                .withName("WithoutConfig")
+                .withExtension(SampleExtensionPoint.class, SampleExtensionWithoutConfig.class)
+                .build()
+        );
+    }
+
+    @Test
+    @DisplayName("fail if any constructor's parameters cannot be resolved")
+    void failIfAnyConstructorParametersCannotBeResolved() {
+        ExtensionDefinitionLoaderImpl loader = create(ExtensionWithUnresolvableParameter.class);
+        ExtensionDescriptorException ex = Assertions.assertThrows(ExtensionDescriptorException.class, loader::load);
+        assertThat(ex).hasMessageContaining(SampleExtensionConfig.class.getName());
     }
 
     private static ExtensionDefinitionLoaderImpl create(Class<?> extensionClass) {

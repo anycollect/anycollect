@@ -3,6 +3,7 @@ package io.github.anycollect.extensions.snakeyaml;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import io.github.anycollect.extensions.definitions.ConfigParameterDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionInstanceDefinition;
 import io.github.anycollect.extensions.exceptions.ConfigurationException;
@@ -67,7 +68,7 @@ class YamlExtensionInstanceDefinitionLoaderTest {
         ExtensionDefinition ext3 = ExtensionDefinition.builder()
                 .withName("Ext3")
                 .withExtension(ExtPoint3.class, Ext3.class)
-                .withConfig(Ext3Config.class, true)
+                .withConfig(new ConfigParameterDefinition(Ext3Config.class, true, 0))
                 .build();
         definitions.add(ext1);
         definitions.add(ext2);

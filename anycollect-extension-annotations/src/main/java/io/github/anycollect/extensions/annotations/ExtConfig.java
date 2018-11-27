@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface ExtConfig {
-    boolean nullable() default false;
+    boolean optional() default false;
 }

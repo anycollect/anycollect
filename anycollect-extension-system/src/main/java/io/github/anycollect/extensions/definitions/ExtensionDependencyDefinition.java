@@ -5,21 +5,16 @@ import lombok.Getter;
 import lombok.ToString;
 
 @Getter
-@ToString
-@EqualsAndHashCode
-public class ExtensionDependencyDefinition {
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public final class ExtensionDependencyDefinition extends AbstractExtensionParameterDefinition {
     private final String name;
-    private final Class<?> dependencyType;
-    private final boolean optional;
-    private final int constructorParameterNumber;
 
     public ExtensionDependencyDefinition(final String name,
                                          final Class<?> dependencyType,
                                          final boolean optional,
-                                         final int constructorParameterNumber) {
+                                         final int position) {
+        super(dependencyType, optional, position);
         this.name = name;
-        this.dependencyType = dependencyType;
-        this.optional = optional;
-        this.constructorParameterNumber = constructorParameterNumber;
     }
 }
