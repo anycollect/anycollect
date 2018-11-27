@@ -1,4 +1,0 @@
-- extensionName: Sample
-  extensionPointClassName: io.github.anycollect.extensions.samples.SampleExtensionPoint
-  extensionClassName: io.github.anycollect.extensions.samples.SampleExtension
-  configClassName: io.github.anycollect.extensions.samples.SampleExtensionConfig

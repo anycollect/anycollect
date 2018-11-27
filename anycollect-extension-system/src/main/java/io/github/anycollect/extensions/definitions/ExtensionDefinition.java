@@ -4,6 +4,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -17,6 +19,9 @@ public final class ExtensionDefinition {
     @Getter
     private final Class<?> extensionClass;
     private final Class<?> configClass;
+    @Getter
+    private final boolean nullableConfig;
+    private final List<ExtensionDependencyDefinition> dependencies;
 
     public static Builder builder() {
         return new Builder();
@@ -27,6 +32,8 @@ public final class ExtensionDefinition {
         this.extensionPointClass = builder.extensionPointClass;
         this.extensionClass = builder.extensionClass;
         this.configClass = builder.configClass;
+        this.nullableConfig = builder.nullableConfig;
+        this.dependencies = builder.dependencies;
     }
 
     public Optional<Class<?>> getConfigClass() {
@@ -38,6 +45,8 @@ public final class ExtensionDefinition {
         private Class<?> extensionPointClass;
         private Class<?> extensionClass;
         private Class<?> configClass;
+        private boolean nullableConfig = true;
+        private List<ExtensionDependencyDefinition> dependencies = new ArrayList<>();
 
         public Builder withName(final String extensionName) {
             Objects.requireNonNull(extensionName, "name of extension must not be null");
@@ -58,8 +67,15 @@ public final class ExtensionDefinition {
             return this;
         }
 
-        public Builder withConfig(final Class<?> config) {
+        public Builder withConfig(final Class<?> config, final boolean nullable) {
             this.configClass = config;
+            this.nullableConfig = nullable;
+            return this;
+        }
+
+        public Builder withDependencies(final List<ExtensionDependencyDefinition> definitions) {
+            Objects.requireNonNull(definitions, "dependencies must not be null");
+            this.dependencies = new ArrayList<>(definitions);
             return this;
         }
 

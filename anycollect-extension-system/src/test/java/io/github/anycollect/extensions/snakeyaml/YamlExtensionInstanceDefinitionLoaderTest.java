@@ -67,7 +67,7 @@ class YamlExtensionInstanceDefinitionLoaderTest {
         ExtensionDefinition ext3 = ExtensionDefinition.builder()
                 .withName("Ext3")
                 .withExtension(ExtPoint3.class, Ext3.class)
-                .withConfig(Ext3Config.class)
+                .withConfig(Ext3Config.class, true)
                 .build();
         definitions.add(ext1);
         definitions.add(ext2);

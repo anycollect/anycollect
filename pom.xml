@@ -20,5 +20,6 @@
         <module>anycollect-metric</module>
         <module>anycollect-tests</module>
         <module>anycollect-extension-system</module>
+        <module>anycollect-extension-annotations</module>
     </modules>
 </project>
