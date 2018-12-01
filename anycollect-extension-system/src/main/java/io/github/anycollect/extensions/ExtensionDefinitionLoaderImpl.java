@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 import static java.util.stream.Collectors.joining;
@@ -62,8 +63,22 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
                 findParameterWithAnnotation(constructor, ExtDependency.class);
         List<ExtensionDependencyDefinition> dependencies = new ArrayList<>();
         for (AnnotatedParameter<ExtDependency> param : dependencyParams) {
-            dependencies.add(new ExtensionDependencyDefinition(
-                    param.annotation.qualifier(), param.type, param.annotation.optional(), param.position));
+            if (Collection.class.isAssignableFrom(param.type)) {
+                if (!param.type.equals(List.class)) {
+                    LOG.error("for multiple dependency {} must be used, found: {} in {}",
+                            List.class, param.type, extensionClassName);
+                    throw new UnresolvableConstructorException(extensionClass, constructor, param.type);
+                }
+                dependencies.add(ExtensionDependencyDefinition.multiple(
+                        param.annotation.qualifier(),
+                        resolveCollectionGeneric(constructor, param),
+                        param.annotation.optional(),
+                        param.position)
+                );
+            } else {
+                dependencies.add(ExtensionDependencyDefinition.single(
+                        param.annotation.qualifier(), param.type, param.annotation.optional(), param.position));
+            }
         }
         List<AbstractExtensionParameterDefinition> parameters = new ArrayList<>();
         if (config != null) {
@@ -77,6 +92,12 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
                 .withConfig(config)
                 .withDependencies(dependencies)
                 .build();
+    }
+
+    private Class<?> resolveCollectionGeneric(final Constructor<?> constructor,
+                                              final AnnotatedParameter<ExtDependency> param) {
+        ParameterizedType type = (ParameterizedType) constructor.getGenericParameterTypes()[param.position];
+        return (Class<?>) type.getActualTypeArguments()[0];
     }
 
     private void validateConstrictor(final Class extensionClass,
@@ -96,7 +117,7 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
                     .collect(joining(", "));
             LOG.error("cannot resolve parameters {} in constructor {} of {} extension",
                     params, constructor, extensionClass.getSimpleName());
-            throw new UnresolvableConstructorException(extensionClass, constructor);
+            throw new UnresolvableConstructorException(extensionClass, constructor, unresolvedParametersNumbers);
         }
     }
 

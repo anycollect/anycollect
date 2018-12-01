@@ -7,15 +7,13 @@ import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.definitions.ConfigParameterDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionDefinition;
 import io.github.anycollect.extensions.definitions.ExtensionDependencyDefinition;
-import io.github.anycollect.extensions.exceptions.ConfigurationException;
-import io.github.anycollect.extensions.exceptions.ExtensionClassNotFoundException;
-import io.github.anycollect.extensions.exceptions.ExtensionDescriptorException;
-import io.github.anycollect.extensions.exceptions.WrongExtensionMappingException;
+import io.github.anycollect.extensions.exceptions.*;
 import io.github.anycollect.extensions.samples.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -39,7 +37,7 @@ class ExtensionDefinitionLoaderImplTest {
     void extensionWithDependencyMustBeLoadedCorrectly() {
         ExtensionDefinitionLoaderImpl loader = create(SampleExtensionWithDependency.class);
         Collection<ExtensionDefinition> definitions = loader.load();
-        ExtensionDependencyDefinition dependency = new ExtensionDependencyDefinition(
+        ExtensionDependencyDefinition dependency = ExtensionDependencyDefinition.single(
                 "delegate",
                 SampleExtensionPoint.class,
                 false,
@@ -50,6 +48,23 @@ class ExtensionDefinitionLoaderImplTest {
                 .withConfig(new ConfigParameterDefinition(SampleExtensionConfig.class, false, 1))
                 .withDependencies(Collections.singletonList(dependency))
                 .build());
+    }
+
+    @Test
+    @DisplayName("multiple dependency must be supported")
+    void multipleDependencyMustBeSupported() {
+        ExtensionDefinition definition = loadSingle(MultipleDependency.OneMultipleDependency.class);
+        assertThat(definition).isEqualTo(ExtensionDefinition.builder()
+                .withName("OneMultipleDependency")
+                .withExtension(SampleExtensionPoint.class, MultipleDependency.OneMultipleDependency.class)
+                .withDependencies(Collections.singletonList(ExtensionDependencyDefinition.multiple(
+                        "delegates",
+                        SampleExtensionPoint.class,
+                        false,
+                        0
+                )))
+                .build()
+        );
     }
 
     @Test
@@ -107,9 +122,9 @@ class ExtensionDefinitionLoaderImplTest {
         ExtensionDefinitionLoaderImpl loader = create(SampleExtensionWithoutConfig.class);
         assertThat(loader.load()).containsExactly(
                 ExtensionDefinition.builder()
-                .withName("WithoutConfig")
-                .withExtension(SampleExtensionPoint.class, SampleExtensionWithoutConfig.class)
-                .build()
+                        .withName("WithoutConfig")
+                        .withExtension(SampleExtensionPoint.class, SampleExtensionWithoutConfig.class)
+                        .build()
         );
     }
 
@@ -119,6 +134,19 @@ class ExtensionDefinitionLoaderImplTest {
         ExtensionDefinitionLoaderImpl loader = create(ExtensionWithUnresolvableParameter.class);
         ExtensionDescriptorException ex = Assertions.assertThrows(ExtensionDescriptorException.class, loader::load);
         assertThat(ex).hasMessageContaining(SampleExtensionConfig.class.getName());
+    }
+
+    @Test
+    void concreteImplementationsOfCollectionForMultipleDependencyIsForbidden() {
+        UnresolvableConstructorException ex = Assertions.assertThrows(UnresolvableConstructorException.class,
+                () -> loadSingle(MultipleDependency.ArrayListDependency.class));
+        assertThat(ex).hasMessageContaining(ArrayList.class.getName());
+    }
+
+    private static ExtensionDefinition loadSingle(Class<?> extensionClass) {
+        Collection<ExtensionDefinition> load = create(extensionClass).load();
+        assertThat(load).hasSize(1);
+        return load.iterator().next();
     }
 
     private static ExtensionDefinitionLoaderImpl create(Class<?> extensionClass) {

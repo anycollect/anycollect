@@ -9,6 +9,6 @@ public final class ConfigParameterDefinition extends AbstractExtensionParameterD
     public ConfigParameterDefinition(final Class<?> configType,
                                      final boolean optional,
                                      final int position) {
-        super(configType, optional, position);
+        super(configType, optional, position, true);
     }
 }

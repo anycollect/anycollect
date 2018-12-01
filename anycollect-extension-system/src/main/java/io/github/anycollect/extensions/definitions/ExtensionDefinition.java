@@ -4,10 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @ToString
 @EqualsAndHashCode
@@ -38,6 +35,10 @@ public final class ExtensionDefinition {
 
     public Optional<ConfigParameterDefinition> getConfig() {
         return Optional.ofNullable(config);
+    }
+
+    public List<ExtensionDependencyDefinition> getDependencies() {
+        return Collections.unmodifiableList(dependencies);
     }
 
     public static final class Builder {
