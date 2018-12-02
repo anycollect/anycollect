@@ -3,17 +3,17 @@ package io.github.anycollect.extensions.snakeyaml;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import io.github.anycollect.extensions.definitions.ConfigParameterDefinition;
-import io.github.anycollect.extensions.definitions.ExtensionDefinition;
-import io.github.anycollect.extensions.definitions.ExtensionInstanceDefinition;
+import io.github.anycollect.extensions.definitions.*;
 import io.github.anycollect.extensions.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
+import io.github.anycollect.extensions.utils.ConstrictorUtils;
 import io.github.anycollect.extensions.utils.TestConfigUtils;
 import lombok.EqualsAndHashCode;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -52,23 +52,25 @@ class YamlExtensionInstanceDefinitionLoaderTest {
         wrongConfigYaml = illegalConfigs.get(1);
     }
 
-    private List<ExtensionDefinition> definitions;
+    private List<Definition> definitions;
 
     @BeforeEach
     void setUp() {
         definitions = new ArrayList<>();
-        ExtensionDefinition ext1 = ExtensionDefinition.builder()
+        Definition ext1 = Definition.builder()
                 .withName("Ext1")
-                .withExtension(ExtPoint1.class, Ext1.class)
+                .withExtension(ExtPoint1.class, ConstrictorUtils.createFor(Ext1.class))
                 .build();
-        ExtensionDefinition ext2 = ExtensionDefinition.builder()
+        Definition ext2 = Definition.builder()
                 .withName("Ext2")
-                .withExtension(ExtPoint2.class, Ext2.class)
+                .withExtension(ExtPoint2.class, ConstrictorUtils.createFor(Ext2.class))
                 .build();
-        ExtensionDefinition ext3 = ExtensionDefinition.builder()
+        Definition ext3 = Definition.builder()
                 .withName("Ext3")
-                .withExtension(ExtPoint3.class, Ext3.class)
-                .withConfig(new ConfigParameterDefinition(Ext3Config.class, true, 0))
+                .withExtension(ExtPoint3.class, ConstrictorUtils.createFor(Ext3.class, ExtPoint1.class, List.class, Ext3Config.class))
+                .withSingleDependency(new SingleDependencyDefinition("ext1", ExtPoint1.class, false, 0))
+                .withMultiDependency(new MultiDependencyDefinition("ext2", ExtPoint2.class, false, 1))
+                .withConfig(new ConfigDefinition(Ext3Config.class, true, 2))
                 .build();
         definitions.add(ext1);
         definitions.add(ext2);
@@ -78,36 +80,33 @@ class YamlExtensionInstanceDefinitionLoaderTest {
     @Test
     @DisplayName("complex configuration test")
     void complexTest() throws IOException {
-        List<ExtensionInstanceDefinition> instances = loadFile("anycollect.yaml");
+        List<Instance> instances = loadFile("anycollect.yaml");
 
-        ExtensionDefinition ext1def = definitions.get(0);
-        ExtensionInstanceDefinition ext1 = instances.get(0);
+        Definition ext1def = definitions.get(0);
+        Instance ext1 = instances.get(0);
         assertThat(ext1.getInstanceName()).isEqualTo("ext1");
         assertThat(ext1.getDependencies()).isEmpty();
-        assertThat(ext1.getExtensionDefinition()).isSameAs(ext1def);
-        assertThat(ext1.getConfig()).isEmpty();
+        assertThat(ext1.getDefinition()).isSameAs(ext1def);
 
-        ExtensionDefinition ext2def = definitions.get(1);
-        ExtensionInstanceDefinition ext2_1 = instances.get(1);
+        Definition ext2def = definitions.get(1);
+        Instance ext2_1 = instances.get(1);
         assertThat(ext2_1.getInstanceName()).isEqualTo("ext2_1");
         assertThat(ext2_1.getDependencies()).isEmpty();
-        assertThat(ext2_1.getExtensionDefinition()).isSameAs(ext2def);
-        assertThat(ext2_1.getConfig()).isEmpty();
+        assertThat(ext2_1.getDefinition()).isSameAs(ext2def);
 
-        ExtensionInstanceDefinition ext2_2 = instances.get(2);
+        Instance ext2_2 = instances.get(2);
         assertThat(ext2_2.getInstanceName()).isEqualTo("ext2_2");
         assertThat(ext2_2.getDependencies()).isEmpty();
-        assertThat(ext2_2.getExtensionDefinition()).isSameAs(ext2def);
-        assertThat(ext2_2.getConfig()).isEmpty();
+        assertThat(ext2_2.getDefinition()).isSameAs(ext2def);
 
-        ExtensionDefinition ext3def = definitions.get(2);
-        ExtensionInstanceDefinition ext3 = instances.get(3);
+        Definition ext3def = definitions.get(2);
+        Instance ext3 = instances.get(3);
         assertThat(ext3.getInstanceName()).isEqualTo("Ext3");
-        assertThat(ext3.getDependencies()).hasSize(2);
-        assertThat(ext3.getDependencies().get("ext1").getInstance()).isEqualTo(ext1);
-        assertThat(ext3.getDependencies().get("ext2").getInstances()).containsExactly(ext2_1, ext2_2);
-        assertThat(ext3.getExtensionDefinition()).isSameAs(ext3def);
-        assertThat(ext3.getConfig()).contains(new Ext3Config("value"));
+        assertThat(ext3.getDependencies()).hasSize(3);
+        Ext3 ext3Resolved = (Ext3) ext3.resolve();
+        assertThat(ext3Resolved.getExt1()).isSameAs(ext1.resolve());
+        assertThat(ext3Resolved.getExt2s()).hasSameElementsAs(Arrays.asList((Ext2) ext2_1.resolve(), (Ext2) ext2_2.resolve()));
+        assertThat(ext3.getDefinition()).isSameAs(ext3def);
     }
 
     @Test
@@ -186,18 +185,18 @@ class YamlExtensionInstanceDefinitionLoaderTest {
         assertThat(ex.getProperty()).isEqualTo("extension");
     }
 
-    private List<ExtensionInstanceDefinition> loadString(String content) {
+    private List<Instance> loadString(String content) {
         return loadReader(new StringReader(content));
     }
 
-    private List<ExtensionInstanceDefinition> loadFile(String name) throws IOException {
+    private List<Instance> loadFile(String name) throws IOException {
         try (FileReader reader = new FileReader(new File("src/test/resources/config/" + name))) {
             return loadReader(reader);
         }
     }
 
-    private List<ExtensionInstanceDefinition> loadReader(Reader reader) {
-        Collection<ExtensionInstanceDefinition> definitions =
+    private List<Instance> loadReader(Reader reader) {
+        Collection<Instance> definitions =
                 new YamlExtensionInstanceDefinitionLoader(reader, this.definitions).load();
         return new ArrayList<>(definitions);
     }
@@ -214,21 +213,29 @@ class YamlExtensionInstanceDefinitionLoaderTest {
 
     }
 
-    static class Ext1 implements ExtPoint1 {
+    static public class Ext1 implements ExtPoint1 {
 
     }
 
-    static class Ext2 implements ExtPoint2 {
+    static public class Ext2 implements ExtPoint2 {
 
     }
 
-    static class Ext3 implements ExtPoint3 {
-        private final Ext1 ext1;
-        private final List<Ext2> ext2s;
+    static public class Ext3 implements ExtPoint3 {
+        private final ExtPoint1 ext1;
+        private final List<ExtPoint2> ext2s;
 
-        public Ext3(Ext1 ext1, List<Ext2> ext2s, Ext3Config config) {
+        public Ext3(ExtPoint1 ext1, List<ExtPoint2> ext2s, Ext3Config config) {
             this.ext1 = ext1;
             this.ext2s = ext2s;
+        }
+
+        public ExtPoint1 getExt1() {
+            return ext1;
+        }
+
+        public List<ExtPoint2> getExt2s() {
+            return ext2s;
         }
     }
 

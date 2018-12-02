@@ -1,10 +1,7 @@
 package io.github.anycollect.extensions;
 
 import io.github.anycollect.extensions.annotations.*;
-import io.github.anycollect.extensions.definitions.AbstractExtensionParameterDefinition;
-import io.github.anycollect.extensions.definitions.ConfigParameterDefinition;
-import io.github.anycollect.extensions.definitions.ExtensionDefinition;
-import io.github.anycollect.extensions.definitions.ExtensionDependencyDefinition;
+import io.github.anycollect.extensions.definitions.*;
 import io.github.anycollect.extensions.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +23,11 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
     }
 
     @Override
-    public Collection<ExtensionDefinition> load() {
+    public Collection<Definition> load() {
         LOG.debug("start to load extension definitions from {}", extensionClassNames);
-        List<ExtensionDefinition> definitions = new ArrayList<>();
+        List<Definition> definitions = new ArrayList<>();
         for (String extensionClassName : extensionClassNames) {
-            ExtensionDefinition definition = parse(extensionClassName);
+            Definition definition = parse(extensionClassName);
             definitions.add(definition);
         }
         LOG.debug("extension definitions has been successfully loaded, {}", definitions);
@@ -38,7 +35,7 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
     }
 
     @SuppressWarnings("unchecked")
-    private ExtensionDefinition parse(final String extensionClassName) {
+    private Definition parse(final String extensionClassName) {
         Class extensionClass = loadExtensionClass(extensionClassName);
         Class extensionPointClass = loadExtensionPointClass(extensionClass);
         String extensionName = loadExtensionName(extensionClass);
@@ -53,15 +50,16 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
         if (configs.size() > 1) {
             errorConfig(extensionClass);
         }
-        ConfigParameterDefinition config = null;
+        ConfigDefinition config = null;
         if (!configs.isEmpty()) {
             AnnotatedParameter<ExtConfig> configParameter = configs.get(0);
-            config = new ConfigParameterDefinition(configParameter.type,
+            config = new ConfigDefinition(configParameter.type,
                     configParameter.annotation.optional(), configParameter.position);
         }
         List<AnnotatedParameter<ExtDependency>> dependencyParams =
                 findParameterWithAnnotation(constructor, ExtDependency.class);
-        List<ExtensionDependencyDefinition> dependencies = new ArrayList<>();
+        List<SingleDependencyDefinition> singleDependencyDefinitions = new ArrayList<>();
+        List<MultiDependencyDefinition> multiDependencyDefinitions = new ArrayList<>();
         for (AnnotatedParameter<ExtDependency> param : dependencyParams) {
             if (Collection.class.isAssignableFrom(param.type)) {
                 if (!param.type.equals(List.class)) {
@@ -69,28 +67,30 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
                             List.class, param.type, extensionClassName);
                     throw new UnresolvableConstructorException(extensionClass, constructor, param.type);
                 }
-                dependencies.add(ExtensionDependencyDefinition.multiple(
+                multiDependencyDefinitions.add(new MultiDependencyDefinition(
                         param.annotation.qualifier(),
                         resolveCollectionGeneric(constructor, param),
                         param.annotation.optional(),
                         param.position)
                 );
             } else {
-                dependencies.add(ExtensionDependencyDefinition.single(
+                singleDependencyDefinitions.add(new SingleDependencyDefinition(
                         param.annotation.qualifier(), param.type, param.annotation.optional(), param.position));
             }
         }
-        List<AbstractExtensionParameterDefinition> parameters = new ArrayList<>();
+        List<AbstractDependencyDefinition> dependencies = new ArrayList<>();
         if (config != null) {
-            parameters.add(config);
+            dependencies.add(config);
         }
-        parameters.addAll(dependencies);
-        validateConstrictor(extensionClass, constructor, parameters);
-        return ExtensionDefinition.builder()
+        dependencies.addAll(singleDependencyDefinitions);
+        dependencies.addAll(multiDependencyDefinitions);
+        validateConstrictor(extensionClass, constructor, dependencies);
+        return Definition.builder()
                 .withName(extensionName)
-                .withExtension(extensionPointClass, extensionClass)
+                .withExtension(extensionPointClass, constructor)
+                .withSingleDependencies(singleDependencyDefinitions)
+                .withMultiDependencies(multiDependencyDefinitions)
                 .withConfig(config)
-                .withDependencies(dependencies)
                 .build();
     }
 
@@ -102,12 +102,12 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
 
     private void validateConstrictor(final Class extensionClass,
                                      final Constructor<?> constructor,
-                                     final List<? extends AbstractExtensionParameterDefinition> parameters) {
+                                     final List<AbstractDependencyDefinition> parameters) {
         Set<Integer> unresolvedParametersNumbers = new HashSet<>();
         for (int number = 0; number < constructor.getParameterCount(); ++number) {
             unresolvedParametersNumbers.add(number);
         }
-        for (AbstractExtensionParameterDefinition parameter : parameters) {
+        for (AbstractDependencyDefinition parameter : parameters) {
             unresolvedParametersNumbers.remove(parameter.getPosition());
         }
         if (unresolvedParametersNumbers.size() > 0) {
