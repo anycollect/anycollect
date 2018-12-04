@@ -71,7 +71,11 @@ public final class Definition {
                                    final Map<String, List<Instance>> multiDependencies) {
         List<Dependency> dependencies = new ArrayList<>();
         if (configDefinition != null) {
-            dependencies.add(new ConfigDependency(configDefinition, config));
+            if (configDefinition.isSingle()) {
+                dependencies.add(new ConfigDependency(configDefinition, config));
+            } else {
+                dependencies.add(new ListConfigDependency(configDefinition, (List<?>) config));
+            }
         } else if (config != null) {
             throw new ConfigurationException("configuration is not supported by " + name + " config: " + config);
         }

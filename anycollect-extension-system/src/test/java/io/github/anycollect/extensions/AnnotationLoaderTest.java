@@ -22,11 +22,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ExtensionDefinitionLoaderImplTest {
+class AnnotationLoaderTest {
     @Test
     @DisplayName("simple extension with config must be loaded correctly")
     void simpleExtensionMustBeLoadedCorrectly() {
-        ExtensionDefinitionLoaderImpl loader = create(SampleExtension.class);
+        AnnotationDefinitionLoader loader = create(SampleExtension.class);
         Collection<Definition> definitions = loader.load();
         assertThat(definitions).containsExactly(Definition.builder()
                 .withName("Sample")
@@ -38,7 +38,7 @@ class ExtensionDefinitionLoaderImplTest {
     @Test
     @DisplayName("extensions with dependencies must be loaded correctly")
     void extensionWithDependencyMustBeLoadedCorrectly() {
-        ExtensionDefinitionLoaderImpl loader = create(SampleExtensionWithDependency.class);
+        AnnotationDefinitionLoader loader = create(SampleExtensionWithDependency.class);
         Collection<Definition> definitions = loader.load();
         assertThat(definitions).containsExactly(Definition.builder()
                 .withName("SampleWithDependency")
@@ -69,9 +69,21 @@ class ExtensionDefinitionLoaderImplTest {
     }
 
     @Test
+    @DisplayName("list of configs must be supported")
+    void listConfigsMustBeSupported() {
+        Definition definition = loadSingle(Configs.ListOfStrings.class);
+        assertThat(definition).isEqualTo(Definition.builder()
+                .withName("ListOfStrings")
+                .withExtension(SampleExtensionPoint.class, ConstrictorUtils.createFor(Configs.ListOfStrings.class, List.class))
+                .withConfig(new ConfigDefinition("", String.class, false, 0, false))
+                .build()
+        );
+    }
+
+    @Test
     @DisplayName("extension class must implement or extend extension point class")
     void extensionMustImplementOrExtendExtensionPointClass() {
-        ExtensionDefinitionLoaderImpl loader = create(FakeImplementationSampleExtension.class);
+        AnnotationDefinitionLoader loader = create(FakeImplementationSampleExtension.class);
         WrongExtensionMappingException ex = Assertions.assertThrows(WrongExtensionMappingException.class, loader::load);
         assertThat(ex.getExtensionClass()).isEqualTo(FakeImplementationSampleExtension.class);
         assertThat(ex.getExtensionPointClass()).isEqualTo(SampleExtensionPoint.class);
@@ -80,23 +92,15 @@ class ExtensionDefinitionLoaderImplTest {
     @Test
     @DisplayName("extension class must have correct annotation")
     void extensionMustHaveAnnotation() {
-        ExtensionDefinitionLoaderImpl loader = create(FakeAnnotationSampleExtension.class);
+        AnnotationDefinitionLoader loader = create(FakeAnnotationSampleExtension.class);
         ConfigurationException ex = Assertions.assertThrows(ConfigurationException.class, loader::load);
         assertThat(ex).hasMessageContaining("annotation").hasMessageContaining(Extension.class.getName());
     }
 
     @Test
-    @DisplayName("extension class must be present in classpath")
-    void extensionClassMustBePresentInClassPath() {
-        ExtensionDefinitionLoaderImpl loader = create("Fake");
-        ExtensionClassNotFoundException ex = Assertions.assertThrows(ExtensionClassNotFoundException.class, loader::load);
-        assertThat(ex.getClassName()).isEqualTo("Fake");
-    }
-
-    @Test
     @DisplayName("extension must have at most one config")
     void extensionMustHaveAtMostOneConfig() {
-        ExtensionDefinitionLoaderImpl loader = create(ExtensionWithTwoConfigs.class);
+        AnnotationDefinitionLoader loader = create(ExtensionWithTwoConfigs.class);
         ExtensionDescriptorException ex = Assertions.assertThrows(ExtensionDescriptorException.class, loader::load);
         assertThat(ex).hasMessageContaining(ExtConfig.class.getName());
     }
@@ -104,7 +108,7 @@ class ExtensionDefinitionLoaderImplTest {
     @Test
     @DisplayName("extension point must have annotation")
     void extensionPointMustHaveAnnotation() {
-        ExtensionDefinitionLoaderImpl loader = create(ExtensionPointWithoutAnnotaionImpl.class);
+        AnnotationDefinitionLoader loader = create(ExtensionPointWithoutAnnotaionImpl.class);
         ExtensionDescriptorException ex = Assertions.assertThrows(ExtensionDescriptorException.class, loader::load);
         assertThat(ex).hasMessageContaining(ExtPoint.class.getName());
     }
@@ -112,7 +116,7 @@ class ExtensionDefinitionLoaderImplTest {
     @Test
     @DisplayName("extension must have exactly one constructor")
     void extensionMustHaveExactlyOneConstructor() {
-        ExtensionDefinitionLoaderImpl loader = create(ExtensionPointWithTwoConstructors.class);
+        AnnotationDefinitionLoader loader = create(ExtensionPointWithTwoConstructors.class);
         ExtensionDescriptorException ex = Assertions.assertThrows(ExtensionDescriptorException.class, loader::load);
         assertThat(ex).hasMessageContaining(ExtCreator.class.getName());
     }
@@ -120,7 +124,7 @@ class ExtensionDefinitionLoaderImplTest {
     @Test
     @DisplayName("extension is able to not have a config")
     void extensionIsAbleToNotHaveConfig() {
-        ExtensionDefinitionLoaderImpl loader = create(SampleExtensionWithoutConfig.class);
+        AnnotationDefinitionLoader loader = create(SampleExtensionWithoutConfig.class);
         assertThat(loader.load()).containsExactly(
                 Definition.builder()
                         .withName("WithoutConfig")
@@ -132,7 +136,7 @@ class ExtensionDefinitionLoaderImplTest {
     @Test
     @DisplayName("fail if any constructor's parameters cannot be resolved")
     void failIfAnyConstructorParametersCannotBeResolved() {
-        ExtensionDefinitionLoaderImpl loader = create(ExtensionWithUnresolvableParameter.class);
+        AnnotationDefinitionLoader loader = create(ExtensionWithUnresolvableParameter.class);
         ExtensionDescriptorException ex = Assertions.assertThrows(ExtensionDescriptorException.class, loader::load);
         assertThat(ex).hasMessageContaining(SampleExtensionConfig.class.getName());
     }
@@ -150,11 +154,7 @@ class ExtensionDefinitionLoaderImplTest {
         return load.iterator().next();
     }
 
-    private static ExtensionDefinitionLoaderImpl create(Class<?> extensionClass) {
-        return create(extensionClass.getName());
-    }
-
-    private static ExtensionDefinitionLoaderImpl create(String extensionClassName) {
-        return new ExtensionDefinitionLoaderImpl(Collections.singletonList(extensionClassName));
+    private static AnnotationDefinitionLoader create(Class<?> extensionClass) {
+        return new AnnotationDefinitionLoader(Collections.singletonList(extensionClass));
     }
 }

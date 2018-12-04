@@ -141,7 +141,7 @@ class DefinitionTest {
     void requiredConfigMustBePassed() {
         Definition definition = create(
                 new ConfigDefinition(Config.class, false, 1));
-        ConfigurationException ex = Assertions.assertThrows(ConfigurationException.class,
+        IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> definition.createInstance("test", null, Collections.emptyMap(), Collections.emptyMap()));
         assertThat(ex).hasMessageContaining("config");
     }
@@ -150,9 +150,20 @@ class DefinitionTest {
     @DisplayName("config must be an instance of correct class")
     void configClassMustBeCorrect() {
         Definition definition = create(new ConfigDefinition(Config.class, false, 1));
-        ConfigurationException ex = Assertions.assertThrows(ConfigurationException.class,
+        IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> definition.createInstance("test", new Object(), Collections.emptyMap(), Collections.emptyMap()));
         assertThat(ex).hasMessageContaining("config").hasMessageContaining(Config.class.getName());
+    }
+
+    @Test
+    @DisplayName("element config must be an instance of correct class")
+    void elementConfigClassMustBeCorrect() {
+        Definition definition = create(new ConfigDefinition("aliases", String.class, false, 1, false));
+        IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> definition.createInstance("test", Collections.singletonList(1), Collections.emptyMap(), Collections.emptyMap()));
+        assertThat(ex).hasMessageContaining("config")
+                .hasMessageContaining(Integer.class.getName())
+                .hasMessageContaining(String.class.getName());
     }
 
     @Test
@@ -242,6 +253,7 @@ class DefinitionTest {
     @EqualsAndHashCode
     public static class Extension implements ExtensionPoint {
         private final List<ExtensionPoint> delegates = new ArrayList<>();
+
         public Extension() {
 
         }

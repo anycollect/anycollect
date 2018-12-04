@@ -1,0 +1,7 @@
+extensions:
+- !load
+  extension: ListOfStringsWithKey
+  config:
+    aliases:
+    - alias1
+    - alias2

@@ -5,7 +5,7 @@ import io.github.anycollect.extensions.exceptions.ConfigurationException;
 
 import java.util.Collection;
 
-public interface ExtensionInstanceDefinitionLoader {
+public interface InstanceLoader {
     /**
      * Returns all extensions instances definitions.
      *

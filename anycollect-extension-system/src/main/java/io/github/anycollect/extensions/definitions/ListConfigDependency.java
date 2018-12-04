@@ -1,33 +1,29 @@
 package io.github.anycollect.extensions.definitions;
 
 import io.github.anycollect.extensions.di.InjectionPoint;
-import lombok.EqualsAndHashCode;
 
+import java.util.List;
 import java.util.Objects;
 
-@EqualsAndHashCode
-public final class ConfigDependency implements Dependency {
+public final class ListConfigDependency implements Dependency {
     private final ConfigDefinition definition;
-    private final Object object;
+    private final List<?> objects;
 
-    public ConfigDependency(final ConfigDefinition definition, final Object object) {
+    ListConfigDependency(final ConfigDefinition definition, final List<?> objects) {
+        this.definition = definition;
+        this.objects = objects;
         Objects.requireNonNull(definition, "definition must not be null");
-        if (object == null) {
-            if (!definition.isOptional()) {
-                throw new IllegalArgumentException("config must be passed");
-            }
-        } else {
+        Objects.requireNonNull(objects, "objects must not be null");
+        for (Object object : objects) {
             if (!definition.getParameterType().equals(object.getClass())) {
                 throw new IllegalArgumentException("config must be of type "
                         + definition.getParameterType() + " instead of " + object.getClass());
             }
         }
-        this.definition = definition;
-        this.object = object;
     }
 
     @Override
     public InjectionPoint inject() {
-        return new InjectionPoint(object, definition.getPosition());
+        return new InjectionPoint(objects, definition.getPosition());
     }
 }

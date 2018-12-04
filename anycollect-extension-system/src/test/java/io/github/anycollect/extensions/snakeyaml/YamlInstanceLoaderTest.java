@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class YamlExtensionInstanceDefinitionLoaderTest {
+class YamlInstanceLoaderTest {
     private static String selfRefYaml;
     private static String selfRefsYaml;
     private static String refToUnknownDependencyYaml;
@@ -177,7 +177,7 @@ class YamlExtensionInstanceDefinitionLoaderTest {
         assertThat(ex).hasCauseInstanceOf(UnrecognizedPropertyException.class);
     }
 
-    @Test()
+    @Test
     @DisplayName("extension is required property")
     void extensionIsRequiredProperty() {
         MissingRequiredPropertyException ex = Assertions.assertThrows(MissingRequiredPropertyException.class,
@@ -197,7 +197,7 @@ class YamlExtensionInstanceDefinitionLoaderTest {
 
     private List<Instance> loadReader(Reader reader) {
         Collection<Instance> definitions =
-                new YamlExtensionInstanceDefinitionLoader(reader, this.definitions).load();
+                new YamlInstanceLoader(reader, this.definitions).load();
         return new ArrayList<>(definitions);
     }
 

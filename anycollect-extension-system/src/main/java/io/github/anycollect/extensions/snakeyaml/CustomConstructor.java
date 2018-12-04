@@ -116,10 +116,29 @@ final class CustomConstructor extends Constructor {
                 return null;
             }
             ConfigDefinition config = definition.getConfigDefinition().orElseThrow(() -> {
-                LOG.error("extension {} is not configurable, found config: {}", definition, rawConfig);
+                LOG.error("extension {} is not configurable", definition);
                 return new ConfigurationException("custom config for " + definition + " is not supported");
             });
+            if (!config.getConfigKey().isEmpty()) {
+                rawConfig = ((Map<?, ?>) rawConfig).get(config.getConfigKey());
+            }
+            if (rawConfig == null) {
+                return null;
+            }
             try {
+                if (!(config.isSingle())) {
+                    if (!(rawConfig instanceof List)) {
+                        throw new IllegalArgumentException("TODO");
+                    }
+                    List<Object> listConfig = new ArrayList<>();
+                    List<?> listRawConfig = (List<?>) rawConfig;
+                    for (Object elementRawConfig : listRawConfig) {
+                        Object elementConfig = MAPPER.readValue(MAPPER.writeValueAsString(elementRawConfig),
+                                config.getParameterType());
+                        listConfig.add(elementConfig);
+                    }
+                    return listConfig;
+                }
                 return MAPPER.readValue(MAPPER.writeValueAsString(rawConfig), config.getParameterType());
             } catch (IOException e) {
                 LOG.error("unexpected error during parsing configuration of class {} for {}, config: {}",

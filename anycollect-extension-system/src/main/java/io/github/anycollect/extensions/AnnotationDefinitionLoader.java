@@ -14,20 +14,20 @@ import java.util.*;
 
 import static java.util.stream.Collectors.joining;
 
-public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionLoader {
-    private static final Logger LOG = LoggerFactory.getLogger(ExtensionDefinitionLoaderImpl.class);
-    private final List<String> extensionClassNames;
+public final class AnnotationDefinitionLoader implements DefinitionLoader {
+    private static final Logger LOG = LoggerFactory.getLogger(AnnotationDefinitionLoader.class);
+    private final List<Class<?>> extensionClasses;
 
-    public ExtensionDefinitionLoaderImpl(final List<String> extensionClassNames) {
-        this.extensionClassNames = new ArrayList<>(extensionClassNames);
+    public AnnotationDefinitionLoader(final List<Class<?>> extensionClassNames) {
+        this.extensionClasses = new ArrayList<>(extensionClassNames);
     }
 
     @Override
     public Collection<Definition> load() {
-        LOG.debug("start to load extension definitions from {}", extensionClassNames);
+        LOG.debug("start to load extension definitions from {}", extensionClasses);
         List<Definition> definitions = new ArrayList<>();
-        for (String extensionClassName : extensionClassNames) {
-            Definition definition = parse(extensionClassName);
+        for (Class<?> extensionClass : extensionClasses) {
+            Definition definition = parse(extensionClass);
             definitions.add(definition);
         }
         LOG.debug("extension definitions has been successfully loaded, {}", definitions);
@@ -35,8 +35,8 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
     }
 
     @SuppressWarnings("unchecked")
-    private Definition parse(final String extensionClassName) {
-        Class extensionClass = loadExtensionClass(extensionClassName);
+    private Definition parse(final Class<?> extensionClass) {
+        validateExtensionClass(extensionClass);
         Class extensionPointClass = loadExtensionPointClass(extensionClass);
         String extensionName = loadExtensionName(extensionClass);
 
@@ -53,8 +53,21 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
         ConfigDefinition config = null;
         if (!configs.isEmpty()) {
             AnnotatedParameter<ExtConfig> configParameter = configs.get(0);
-            config = new ConfigDefinition(configParameter.type,
-                    configParameter.annotation.optional(), configParameter.position);
+            if (List.class.isAssignableFrom(configParameter.type)) {
+                config = new ConfigDefinition(
+                        configParameter.annotation.key(),
+                        resolveCollectionGeneric(constructor, configParameter),
+                        configParameter.annotation.optional(),
+                        configParameter.position,
+                        false);
+            } else {
+                config = new ConfigDefinition(
+                        configParameter.annotation.key(),
+                        configParameter.type,
+                        configParameter.annotation.optional(),
+                        configParameter.position,
+                        true);
+            }
         }
         List<AnnotatedParameter<ExtDependency>> dependencyParams =
                 findParameterWithAnnotation(constructor, ExtDependency.class);
@@ -64,7 +77,7 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
             if (Collection.class.isAssignableFrom(param.type)) {
                 if (!param.type.equals(List.class)) {
                     LOG.error("for multiple dependency {} must be used, found: {} in {}",
-                            List.class, param.type, extensionClassName);
+                            List.class, param.type, extensionClass.getName());
                     throw new UnresolvableConstructorException(extensionClass, constructor, param.type);
                 }
                 multiDependencyDefinitions.add(new MultiDependencyDefinition(
@@ -95,7 +108,7 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
     }
 
     private Class<?> resolveCollectionGeneric(final Constructor<?> constructor,
-                                              final AnnotatedParameter<ExtDependency> param) {
+                                              final AnnotatedParameter<?> param) {
         ParameterizedType type = (ParameterizedType) constructor.getGenericParameterTypes()[param.position];
         return (Class<?>) type.getActualTypeArguments()[0];
     }
@@ -174,14 +187,12 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
                         extensionClass.getName(), ExtConfig.class.getName()));
     }
 
-    private Class loadExtensionClass(final String name) {
-        Class extClass = loadClass(name);
-        Extension extension = (Extension) extClass.getAnnotation(Extension.class);
+    private void validateExtensionClass(final Class<?> extClass) {
+        Extension extension = extClass.getAnnotation(Extension.class);
         if (extension == null) {
             LOG.error("extension class must have {} annotation on the class declaration", Extension.class.getName());
             throw new ConfigurationException("extension class must have " + Extension.class.getName() + " annotation");
         }
-        return extClass;
     }
 
     private String loadExtensionName(final Class extClass) {
@@ -198,15 +209,6 @@ public final class ExtensionDefinitionLoaderImpl implements ExtensionDefinitionL
             throw new ExtensionDescriptorException("extension point class must have " + ExtPoint.class + " annotation");
         }
         return extPointClass;
-    }
-
-    private Class loadClass(final String name) {
-        try {
-            return Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            LOG.error("class specified in extension meta info: \"{}\" is not found in classpath", name);
-            throw new ExtensionClassNotFoundException(name);
-        }
     }
 
     private static class AnnotatedParameter<T extends Annotation> {
