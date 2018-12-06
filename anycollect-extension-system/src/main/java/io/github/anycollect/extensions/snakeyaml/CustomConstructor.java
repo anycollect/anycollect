@@ -113,6 +113,9 @@ final class CustomConstructor extends Constructor {
         private Object getNullableConfig(final Definition definition, final String instanceName) {
             Object rawConfig = values.get(CONFIG);
             if (rawConfig == null) {
+                if (!definition.getConfigDefinition().map(ConfigDefinition::isSingle).orElse(true)) {
+                    return Collections.emptyList();
+                }
                 return null;
             }
             ConfigDefinition config = definition.getConfigDefinition().orElseThrow(() -> {

@@ -21,5 +21,6 @@
         <module>anycollect-tests</module>
         <module>anycollect-extension-system</module>
         <module>anycollect-extension-annotations</module>
+        <module>extensions/common/anycollect-common-expression</module>
     </modules>
 </project>

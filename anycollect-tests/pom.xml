@@ -23,6 +23,11 @@
             <artifactId>anycollect-extension-system</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-common-expression</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

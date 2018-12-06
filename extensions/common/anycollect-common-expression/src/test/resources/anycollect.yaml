@@ -1,0 +1,21 @@
+extensions:
+- !load
+  extension: JoinFilter
+  instance: join
+  config:
+    aliases:
+      - append
+- !load
+  extension: MatchReplaceFilter
+  instance: replace
+- !load
+  extension: TrimFilter
+  instance: trim
+- !load
+  extension: StdExpressions
+  instance: expressions
+  dependencies:
+    filters: !refs
+    - join
+    - replace
+    - trim

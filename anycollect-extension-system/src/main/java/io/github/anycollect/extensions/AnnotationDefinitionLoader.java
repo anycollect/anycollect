@@ -190,8 +190,10 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
     private void validateExtensionClass(final Class<?> extClass) {
         Extension extension = extClass.getAnnotation(Extension.class);
         if (extension == null) {
-            LOG.error("extension class must have {} annotation on the class declaration", Extension.class.getName());
-            throw new ConfigurationException("extension class must have " + Extension.class.getName() + " annotation");
+            LOG.error("extension class {} must have {} annotation on the class declaration",
+                    extClass.getName(), Extension.class.getName());
+            throw new ConfigurationException("extension class " + extClass.getName() + " must have "
+                    + Extension.class.getName() + " annotation");
         }
     }
 
