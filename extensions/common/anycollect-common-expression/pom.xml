@@ -19,6 +19,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-metric</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- CODE GENERATION -->
         <dependency>
             <groupId>org.projectlombok</groupId>

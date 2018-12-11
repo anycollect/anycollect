@@ -1,9 +1,12 @@
 package io.github.anycollect.extensions.common.expression;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@EqualsAndHashCode
 public final class Args {
     private final Map<String, String> args;
 

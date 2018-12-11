@@ -4,7 +4,7 @@ extensions:
   instance: join
   config:
     aliases:
-      - append
+    - append
 - !load
   extension: MatchReplaceFilter
   instance: replace

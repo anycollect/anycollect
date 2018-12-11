@@ -27,6 +27,9 @@
         <slf4j.version>1.7.25</slf4j.version>
         <logback.version>1.2.3</logback.version>
 
+        <!-- UTILS -->
+        <commons-pool2.version>2.6.0</commons-pool2.version>
+
         <!-- TESTING -->
         <junit.version>5.3.1</junit.version>
         <assertj.version>3.11.1</assertj.version>
@@ -68,6 +71,13 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <!-- UTILS -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${commons-pool2.version}</version>
             </dependency>
 
             <!-- LOGGING -->
