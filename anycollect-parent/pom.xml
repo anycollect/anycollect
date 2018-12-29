@@ -30,6 +30,9 @@
         <!-- UTILS -->
         <commons-pool2.version>2.6.0</commons-pool2.version>
 
+        <!-- CODE ANALYSIS-->
+        <findbugs-annotations.version>3.0.1</findbugs-annotations.version>
+
         <!-- TESTING -->
         <junit.version>5.3.1</junit.version>
         <assertj.version>3.11.1</assertj.version>
@@ -44,6 +47,7 @@
         <pmd.plugin.version>3.11.0</pmd.plugin.version>
         <pmd.version>6.9.0</pmd.version>
         <jacoco.plugin.version>0.8.2</jacoco.plugin.version>
+        <findbugs.plugin.version>3.0.4</findbugs.plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -91,6 +95,13 @@
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- CODE ANALYSIS -->
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${findbugs-annotations.version}</version>
             </dependency>
 
             <!-- TESTING -->
@@ -225,6 +236,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>${findbugs.plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
