@@ -85,4 +85,39 @@ class MetricIdTest {
         Assertions.assertThrows(NullPointerException.class, () -> MetricId.builder().meta(null, "value"));
         Assertions.assertThrows(NullPointerException.class, () -> MetricId.builder().meta("key", null));
     }
+
+    @Test
+    void specialTagsTest() {
+        MetricId id = MetricId.builder()
+                .key("http_requests")
+                .stat(Stat.max())
+                .type(Type.GAUGE)
+                .build();
+        assertThat(id.getKey()).isEqualTo("http_requests");
+        assertThat(id.getStat()).isSameAs(Stat.max());
+        assertThat(id.getType()).isSameAs(Type.GAUGE);
+        assertThat(id.getTagValue(MetricId.METRIC_KEY_TAG)).isEqualTo("http_requests");
+        assertThat(id.getTagValue(MetricId.STAT_TAG)).isEqualTo("max");
+        assertThat(id.getTagValue(MetricId.METRIC_TYPE_TAG)).isEqualTo("gauge");
+    }
+
+    @Test
+    void specialTagsMustBeSetUsingSpecialMethods() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> MetricId.builder().tag(MetricId.METRIC_KEY_TAG, "http_requests"));
+    }
+
+    @Test
+    void mustValidateGivenStat() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> MetricId.builder().stat(new Stat() {
+            @Override
+            public StatType getType() {
+                return StatType.MIN;
+            }
+
+            @Override
+            public String getTagValue() {
+                return "min";
+            }
+        }));
+    }
 }
