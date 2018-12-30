@@ -10,10 +10,12 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.atomic.LongAdder;
 
 public final class CommonsJmxConnectionPool implements JmxConnectionPool {
     private static final Logger LOG = LoggerFactory.getLogger(CommonsJmxConnectionPool.class);
     private final GenericObjectPool<JmxConnection> pool;
+    private final LongAdder totalInvalidated = new LongAdder();
 
     public CommonsJmxConnectionPool(@Nonnull final GenericObjectPool<JmxConnection> pool) {
         Objects.requireNonNull(pool, "commons pool must not be null");
@@ -38,6 +40,7 @@ public final class CommonsJmxConnectionPool implements JmxConnectionPool {
     @Override
     public void invalidateConnection(@Nonnull final JmxConnection connection) {
         try {
+            totalInvalidated.increment();
             pool.invalidateObject(connection);
         } catch (Exception e) {
             LOG.warn("unable to invalidate connection {}, this should never happen", connection, e);
@@ -51,5 +54,20 @@ public final class CommonsJmxConnectionPool implements JmxConnectionPool {
         } catch (Exception e) {
             LOG.warn("unable to return connection {}, this should never happen", connection, e);
         }
+    }
+
+    @Override
+    public int getNumActive() {
+        return pool.getNumActive();
+    }
+
+    @Override
+    public int getNumIdle() {
+        return pool.getNumIdle();
+    }
+
+    @Override
+    public long getTotalInvalidated() {
+        return totalInvalidated.longValue();
     }
 }

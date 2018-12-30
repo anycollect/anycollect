@@ -4,4 +4,8 @@ public class QueryException extends Exception {
     public QueryException(final String message) {
         super(message);
     }
+
+    public QueryException(final Throwable cause) {
+        super(cause);
+    }
 }

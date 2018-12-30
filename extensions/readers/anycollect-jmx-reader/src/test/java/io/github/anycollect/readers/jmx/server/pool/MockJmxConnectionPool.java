@@ -40,4 +40,19 @@ public class MockJmxConnectionPool implements JmxConnectionPool {
     public void returnConnection(@Nonnull JmxConnection connection) {
         jmxConnection = connection;
     }
+
+    @Override
+    public int getNumActive() {
+        return 0;
+    }
+
+    @Override
+    public int getNumIdle() {
+        return 0;
+    }
+
+    @Override
+    public long getTotalInvalidated() {
+        return 0;
+    }
 }

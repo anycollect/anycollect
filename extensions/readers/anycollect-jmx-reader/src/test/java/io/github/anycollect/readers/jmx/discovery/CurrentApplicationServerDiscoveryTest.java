@@ -1,11 +1,11 @@
 package io.github.anycollect.readers.jmx.discovery;
 
-import com.sun.jmx.mbeanserver.JmxMBeanServer;
 import io.github.anycollect.readers.jmx.ConnectionException;
 import io.github.anycollect.readers.jmx.QueryException;
 import io.github.anycollect.readers.jmx.application.Application;
 import io.github.anycollect.readers.jmx.application.ApplicationRegistry;
 import io.github.anycollect.readers.jmx.application.SimpleQueryMatcher;
+import io.github.anycollect.readers.jmx.monitoring.MetricRegistry;
 import io.github.anycollect.readers.jmx.query.NoopQuery;
 import io.github.anycollect.readers.jmx.query.Query;
 import io.github.anycollect.readers.jmx.server.Server;
@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +28,7 @@ class CurrentApplicationServerDiscoveryTest {
     @Test
     void registryMustContainCurrentApplication() {
         JmxConnectionPoolFactory poolFactory = mock(JmxConnectionPoolFactory.class);
-        CurrentApplicationServerDiscovery discovery = new CurrentApplicationServerDiscovery("dummy", poolFactory);
+        CurrentApplicationServerDiscovery discovery = new CurrentApplicationServerDiscovery("dummy", poolFactory, MetricRegistry.noop());
         DiscoverException ex = Assertions.assertThrows(DiscoverException.class, () -> discovery.getServers(ApplicationRegistry.empty()));
         assertThat(ex).hasMessageContaining("dummy");
     }
@@ -49,6 +50,6 @@ class CurrentApplicationServerDiscoveryTest {
         ArgumentCaptor<MBeanServerConnection> mbeanServer = ArgumentCaptor.forClass(MBeanServerConnection.class);
         verify(query, times(1)).executeOn(mbeanServer.capture());
         MBeanServerConnection connection = mbeanServer.getValue();
-        assertThat(connection).isInstanceOf(JmxMBeanServer.class);
+        assertThat(connection).isInstanceOf(MBeanServer.class);
     }
 }

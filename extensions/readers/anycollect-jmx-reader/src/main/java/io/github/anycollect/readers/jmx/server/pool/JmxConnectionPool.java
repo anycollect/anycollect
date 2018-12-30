@@ -12,4 +12,10 @@ public interface JmxConnectionPool {
     void invalidateConnection(@Nonnull JmxConnection connection);
 
     void returnConnection(@Nonnull JmxConnection connection);
+
+    int getNumActive();
+
+    int getNumIdle();
+
+    long getTotalInvalidated();
 }

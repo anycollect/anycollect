@@ -1,9 +1,11 @@
 package io.github.anycollect.metric;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.*;
 
+@ToString(of = "tags", includeFieldNames = false)
 @EqualsAndHashCode(of = "tags")
 public final class Tags implements Iterable<Tag> {
     private final Map<String, String> tags;

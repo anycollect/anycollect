@@ -2,9 +2,11 @@ package io.github.anycollect.metric;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.*;
 
+@ToString(of = "tags", includeFieldNames = false)
 @EqualsAndHashCode(of = "tags")
 public final class MetricId {
     public static final String METRIC_KEY_TAG = "what";
@@ -147,6 +149,7 @@ public final class MetricId {
         }
 
         public MetricId build() {
+            //
             return new MetricId(this);
         }
     }

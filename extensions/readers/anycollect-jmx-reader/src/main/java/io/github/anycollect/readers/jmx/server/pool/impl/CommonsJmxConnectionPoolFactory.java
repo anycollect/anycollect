@@ -10,6 +10,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
+import java.util.concurrent.Executors;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -22,6 +23,10 @@ public final class CommonsJmxConnectionPoolFactory implements JmxConnectionPoolF
     private final AsyncConnectionCloser closer;
     @Nonnull
     private final GenericObjectPoolConfig<JmxConnection> config;
+
+    public CommonsJmxConnectionPoolFactory() {
+        this(new AsyncConnectionCloser(Executors.newSingleThreadExecutor()));
+    }
 
     public CommonsJmxConnectionPoolFactory(@Nonnull final AsyncConnectionCloser closer) {
         Objects.requireNonNull(closer, "async connection closer must not be null");
@@ -44,7 +49,7 @@ public final class CommonsJmxConnectionPoolFactory implements JmxConnectionPoolF
     public JmxConnectionPool create(@Nonnull final JmxConnectionFactory jmxConnectionFactory) {
         CommonsJmxConnectionFactoryAdapter factory
                 = new CommonsJmxConnectionFactoryAdapter(jmxConnectionFactory, closer);
-        GenericObjectPool<JmxConnection> pool = new GenericObjectPool<>(factory, config);
-        return new CommonsJmxConnectionPool(pool);
+        GenericObjectPool<JmxConnection> commonsPool = new GenericObjectPool<>(factory, config);
+        return new CommonsJmxConnectionPool(commonsPool);
     }
 }
