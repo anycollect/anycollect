@@ -1,6 +1,8 @@
 package io.github.anycollect.readers.jmx.query;
 
 import io.github.anycollect.metric.Metric;
+import io.github.anycollect.readers.jmx.QueryException;
+import io.github.anycollect.readers.jmx.ConnectionException;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -29,7 +31,8 @@ public abstract class Query {
     }
 
     @Nonnull
-    public abstract List<Metric> executeOn(@Nonnull MBeanServerConnection connection);
+    public abstract List<Metric> executeOn(@Nonnull MBeanServerConnection connection)
+            throws QueryException, ConnectionException;
 
     @Nonnull
     public final QueryId getId() {
