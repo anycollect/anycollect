@@ -1,6 +1,8 @@
 package io.github.anycollect.readers.jmx.query;
 
 import io.github.anycollect.metric.Metric;
+import io.github.anycollect.readers.jmx.ConnectionException;
+import io.github.anycollect.readers.jmx.QueryException;
 
 import javax.annotation.Nonnull;
 import javax.management.MBeanServerConnection;
@@ -14,7 +16,7 @@ public class NoopQuery extends Query {
 
     @Nonnull
     @Override
-    public List<Metric> executeOn(@Nonnull MBeanServerConnection connection) {
+    public List<Metric> executeOn(@Nonnull MBeanServerConnection connection) throws QueryException, ConnectionException {
         return Collections.emptyList();
     }
 }

@@ -62,7 +62,7 @@ class ServerTest {
     }
 
     @Test
-    void mustForwardBusinessExceptionFromQuery() throws ConnectionException {
+    void mustForwardBusinessExceptionFromQuery() throws ConnectionException, QueryException {
         Server server = new Server("dummy-server", dummy, pool);
         NoopQuery query = spy(new NoopQuery("group", "label"));
         when(pool.borrowConnection()).thenReturn(new JmxConnection(null, mock(MBeanServerConnection.class)));

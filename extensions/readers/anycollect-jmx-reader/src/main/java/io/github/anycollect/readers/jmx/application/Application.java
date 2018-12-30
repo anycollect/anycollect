@@ -23,6 +23,12 @@ public final class Application {
 
     public Application(@Nonnull final String name,
                        @Nonnull final QueryMatcher queryMatcher,
+                       final boolean sslEnabled) {
+        this(name, queryMatcher, null, null, sslEnabled);
+    }
+
+    public Application(@Nonnull final String name,
+                       @Nonnull final QueryMatcher queryMatcher,
                        @Nullable final ConcurrencyLevel concurrencyLevel,
                        @Nullable final Credentials credentials,
                        final boolean sslEnabled) {
@@ -35,18 +41,22 @@ public final class Application {
         this.sslEnabled = sslEnabled;
     }
 
+    @Nonnull
     public String getName() {
         return name;
     }
 
+    @Nonnull
     public QueryMatcher getQueryMatcher() {
         return queryMatcher;
     }
 
+    @Nonnull
     public Optional<ConcurrencyLevel> getConcurrencyLevel() {
         return Optional.ofNullable(concurrencyLevel);
     }
 
+    @Nonnull
     public Optional<Credentials> getCredentials() {
         return Optional.ofNullable(credentials);
     }
