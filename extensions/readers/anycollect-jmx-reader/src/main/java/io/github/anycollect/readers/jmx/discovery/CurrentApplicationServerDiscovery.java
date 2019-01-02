@@ -55,6 +55,6 @@ public final class CurrentApplicationServerDiscovery implements ServerDiscovery 
         }
         Application application = registry.getApplication(currentApplicationName);
         JmxConnectionPool pool = poolFactory.create(JMX_CONNECTION_FACTORY);
-        return new Server(currentApplicationName, application, pool, metricRegistry);
+        return Server.create(currentApplicationName, application, pool, metricRegistry);
     }
 }

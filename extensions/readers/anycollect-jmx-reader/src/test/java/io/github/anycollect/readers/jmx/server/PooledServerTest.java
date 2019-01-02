@@ -4,6 +4,7 @@ import io.github.anycollect.readers.jmx.ConnectionException;
 import io.github.anycollect.readers.jmx.QueryException;
 import io.github.anycollect.readers.jmx.application.Application;
 import io.github.anycollect.readers.jmx.application.SimpleQueryMatcher;
+import io.github.anycollect.readers.jmx.monitoring.MetricRegistry;
 import io.github.anycollect.readers.jmx.query.NoopQuery;
 import io.github.anycollect.readers.jmx.query.Query;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
@@ -15,7 +16,7 @@ import javax.management.MBeanServerConnection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-class ServerTest {
+class PooledServerTest {
     private Application dummy = new Application("dummy",
             new SimpleQueryMatcher("group", "label"),
             null,
@@ -25,7 +26,7 @@ class ServerTest {
 
     @Test
     void mustCheckQueryBeforeExecute() {
-        Server server = new Server("dummy-server", dummy, pool);
+        Server server = new PooledServer("dummy-server", dummy, pool, MetricRegistry.noop());
         IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> server.execute(new NoopQuery("group", "wrong")));
         assertThat(ex).hasMessageContaining("query");
@@ -33,7 +34,7 @@ class ServerTest {
 
     @Test
     void mustBorrowAndThenReturnConnectionToPool() throws ConnectionException, QueryException {
-        Server server = new Server("dummy-server", dummy, pool);
+        Server server = new PooledServer("dummy-server", dummy, pool, MetricRegistry.noop());
         JmxConnection jmxConnection = mock(JmxConnection.class);
         when(pool.borrowConnection()).thenReturn(jmxConnection);
         server.execute(new NoopQuery("group", "label"));
@@ -42,7 +43,7 @@ class ServerTest {
 
     @Test
     void mustInvalidateConnectionIfExceptionDuringExecution() throws ConnectionException, QueryException {
-        Server server = new Server("dummy-server", dummy, pool);
+        Server server = new PooledServer("dummy-server", dummy, pool, MetricRegistry.noop());
         MBeanServerConnection serverConnection = mock(MBeanServerConnection.class);
         JmxConnection jmxConnection = new JmxConnection(null, serverConnection);
         when(pool.borrowConnection()).thenReturn(jmxConnection);
@@ -55,7 +56,7 @@ class ServerTest {
 
     @Test
     void mustForwardBusinessExceptionFromPool() throws ConnectionException {
-        Server server = new Server("dummy-server", dummy, pool);
+        Server server = new PooledServer("dummy-server", dummy, pool, MetricRegistry.noop());
         when(pool.borrowConnection()).thenThrow(new ConnectionException("dummy"));
         ConnectionException ex = Assertions.assertThrows(ConnectionException.class, () -> server.execute(new NoopQuery("group", "label")));
         assertThat(ex).hasMessage("dummy");
@@ -63,7 +64,7 @@ class ServerTest {
 
     @Test
     void mustForwardBusinessExceptionFromQuery() throws ConnectionException, QueryException {
-        Server server = new Server("dummy-server", dummy, pool);
+        Server server = new PooledServer("dummy-server", dummy, pool, MetricRegistry.noop());
         NoopQuery query = spy(new NoopQuery("group", "label"));
         when(pool.borrowConnection()).thenReturn(new JmxConnection(null, mock(MBeanServerConnection.class)));
         when(query.executeOn(any())).thenThrow(new QueryException("dummy"));
@@ -73,7 +74,7 @@ class ServerTest {
 
     @Test
     void propertiesTest() {
-        Server server = new Server("dummy-server", dummy, pool);
+        Server server = new PooledServer("dummy-server", dummy, pool, MetricRegistry.noop());
         assertThat(server.getId()).isEqualTo("dummy-server");
         assertThat(server.getApplication()).isSameAs(dummy);
     }

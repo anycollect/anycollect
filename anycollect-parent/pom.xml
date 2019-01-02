@@ -29,6 +29,7 @@
 
         <!-- UTILS -->
         <commons-pool2.version>2.6.0</commons-pool2.version>
+        <guava.version>27.0-jre</guava.version>
 
         <!-- CODE ANALYSIS-->
         <findbugs-annotations.version>3.0.1</findbugs-annotations.version>
@@ -38,7 +39,6 @@
         <assertj.version>3.11.1</assertj.version>
         <mockito.version>2.23.4</mockito.version>
         <awaitility.version>3.1.5</awaitility.version>
-        <guava.version>27.0-jre</guava.version>
         <commons-io.version>2.6</commons-io.version>
 
         <!-- PLUGINS -->
@@ -140,7 +140,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
