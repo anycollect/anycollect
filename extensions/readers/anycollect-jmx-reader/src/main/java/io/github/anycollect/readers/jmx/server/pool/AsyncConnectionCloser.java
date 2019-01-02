@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
@@ -34,8 +33,8 @@ public class AsyncConnectionCloser {
         public void run() {
             try {
                 connectionToClose.close();
-            } catch (IOException e) {
-                LOG.debug("unable to close connection {}", connectionToClose);
+            } catch (Exception e) {
+                LOG.debug("unable to close connection {}", connectionToClose, e);
             }
         }
     }
