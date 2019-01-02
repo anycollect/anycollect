@@ -12,8 +12,8 @@ import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPoolFactory;
 import javax.annotation.Nonnull;
 import java.lang.management.ManagementFactory;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public final class CurrentApplicationServerDiscovery implements ServerDiscovery {
     private static final JmxConnectionFactory JMX_CONNECTION_FACTORY = new JmxConnectionFactory() {
@@ -45,8 +45,8 @@ public final class CurrentApplicationServerDiscovery implements ServerDiscovery 
 
     @Nonnull
     @Override
-    public List<Server> getServers(@Nonnull final ApplicationRegistry registry) throws DiscoverException {
-        return Collections.singletonList(getServer(registry));
+    public Set<Server> getServers(@Nonnull final ApplicationRegistry registry) throws DiscoverException {
+        return Collections.singleton(getServer(registry));
     }
 
     public Server getServer(@Nonnull final ApplicationRegistry registry) throws DiscoverException {

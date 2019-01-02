@@ -5,20 +5,21 @@ import io.github.anycollect.readers.jmx.server.Server;
 import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
+import javax.annotation.concurrent.ThreadSafe;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 
-@NotThreadSafe
+@ThreadSafe
 public final class QuerySchedulerImpl implements QueryScheduler {
     private final ConcurrentMap<JobId, ScheduledFuture<?>> jobs = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduledService;
     private final QueryExecutor queryExecutor;
     private final Duration defaultInterval;
     private final Duration initialDelay;
+    private final Object lock = new Object();
 
     public QuerySchedulerImpl(@Nonnull final ScheduledExecutorService scheduledService,
                               @Nonnull final QueryExecutor queryExecutor,
@@ -32,31 +33,33 @@ public final class QuerySchedulerImpl implements QueryScheduler {
 
     @Override
     public void schedule(@Nonnull final Set<Server> servers, @Nonnull final Set<Query> queries) {
-        Map<JobId, ScheduledFuture<?>> newJobs = new HashMap<>();
-        for (Server server : servers) {
-            for (Query query : queries) {
-                if (server.getApplication().getQueryMatcher().matches(query)) {
-                    JobId id = new JobId(server, query);
-                    if (jobs.containsKey(id)) {
-                        newJobs.put(id, jobs.get(id));
-                    } else {
-                        QuerySubmitJob job = new QuerySubmitJob(query, server, queryExecutor);
-                        ScheduledFuture<?> future = scheduledService.scheduleAtFixedRate(job,
-                                initialDelay.toMillis(),
-                                query.getInterval().orElse(defaultInterval).toMillis(),
-                                TimeUnit.MILLISECONDS);
-                        newJobs.put(id, future);
+        synchronized (lock) {
+            Map<JobId, ScheduledFuture<?>> newJobs = new HashMap<>();
+            for (Server server : servers) {
+                for (Query query : queries) {
+                    if (server.getApplication().getQueryMatcher().matches(query)) {
+                        JobId id = new JobId(server, query);
+                        if (jobs.containsKey(id)) {
+                            newJobs.put(id, jobs.get(id));
+                        } else {
+                            QuerySubmitJob job = new QuerySubmitJob(query, server, queryExecutor);
+                            ScheduledFuture<?> future = scheduledService.scheduleAtFixedRate(job,
+                                    initialDelay.toMillis(),
+                                    query.getInterval().orElse(defaultInterval).toMillis(),
+                                    TimeUnit.MILLISECONDS);
+                            newJobs.put(id, future);
+                        }
                     }
                 }
             }
-        }
-        for (Map.Entry<JobId, ScheduledFuture<?>> entry : jobs.entrySet()) {
-            if (!newJobs.containsKey(entry.getKey())) {
-                entry.getValue().cancel(false);
+            for (Map.Entry<JobId, ScheduledFuture<?>> entry : jobs.entrySet()) {
+                if (!newJobs.containsKey(entry.getKey())) {
+                    entry.getValue().cancel(false);
+                }
             }
+            this.jobs.clear();
+            this.jobs.putAll(newJobs);
         }
-        this.jobs.clear();
-        this.jobs.putAll(newJobs);
     }
 
     @EqualsAndHashCode

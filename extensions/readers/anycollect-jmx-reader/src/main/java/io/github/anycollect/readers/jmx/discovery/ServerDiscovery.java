@@ -4,9 +4,11 @@ import io.github.anycollect.readers.jmx.application.ApplicationRegistry;
 import io.github.anycollect.readers.jmx.server.Server;
 
 import javax.annotation.Nonnull;
-import java.util.List;
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.Set;
 
+@ThreadSafe
 public interface ServerDiscovery {
     @Nonnull
-    List<Server> getServers(@Nonnull ApplicationRegistry registry) throws DiscoverException;
+    Set<Server> getServers(@Nonnull ApplicationRegistry registry) throws DiscoverException;
 }

@@ -8,7 +8,7 @@ import io.github.anycollect.readers.jmx.application.Application;
 import io.github.anycollect.readers.jmx.application.ApplicationRegistry;
 import io.github.anycollect.readers.jmx.discovery.CurrentApplicationServerDiscovery;
 import io.github.anycollect.readers.jmx.monitoring.JmxMetricRegistry;
-import io.github.anycollect.readers.jmx.query.AnyCollectQuery;
+import io.github.anycollect.readers.jmx.query.Query;
 import io.github.anycollect.readers.jmx.server.Server;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPoolFactory;
 import io.github.anycollect.readers.jmx.server.pool.impl.CommonsJmxConnectionPoolFactory;
@@ -40,7 +40,7 @@ class JmxReaderQueryModuleTest {
         // execute module queries
         Future<List<Metric>> future = Executors.newSingleThreadExecutor().submit(() -> {
             List<Metric> metrics = new ArrayList<>();
-            for (AnyCollectQuery query : module.getQueries()) {
+            for (Query query : module.getQueries()) {
                 metrics.addAll(current.execute(query));
             }
             return metrics;

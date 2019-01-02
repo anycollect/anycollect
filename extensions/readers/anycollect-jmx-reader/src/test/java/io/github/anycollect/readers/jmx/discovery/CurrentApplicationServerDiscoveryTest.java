@@ -18,7 +18,6 @@ import org.mockito.ArgumentCaptor;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,7 +33,7 @@ class CurrentApplicationServerDiscoveryTest {
     }
 
     @Test
-    void connectionMustBeOfTypeJmxMBeanServer() throws DiscoverException, QueryException, ConnectionException {
+    void connectionMustBeOfTypeMBeanServer() throws DiscoverException, QueryException, ConnectionException {
         Application dummy = new Application("dummy", new SimpleQueryMatcher("group", "label"), false);
         ApplicationRegistry registry = ApplicationRegistry.singleton(dummy);
         JmxConnectionPoolFactory poolFactory = new MockJmxConnectionPoolFactory();
@@ -42,9 +41,7 @@ class CurrentApplicationServerDiscoveryTest {
         when(query.executeOn(any())).thenReturn(Collections.emptyList());
         CurrentApplicationServerDiscovery discovery = new CurrentApplicationServerDiscovery("dummy", poolFactory);
 
-        List<Server> servers = discovery.getServers(registry);
-        assertThat(servers).hasSize(1);
-        Server server = servers.get(0);
+        Server server = discovery.getServer(registry);
         server.execute(query);
 
         ArgumentCaptor<MBeanServerConnection> mbeanServer = ArgumentCaptor.forClass(MBeanServerConnection.class);

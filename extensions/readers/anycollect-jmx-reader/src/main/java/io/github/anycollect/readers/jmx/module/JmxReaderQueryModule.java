@@ -3,21 +3,19 @@ package io.github.anycollect.readers.jmx.module;
 import io.github.anycollect.metric.MetricId;
 import io.github.anycollect.metric.Type;
 import io.github.anycollect.readers.jmx.query.AnyCollectQuery;
+import io.github.anycollect.readers.jmx.query.Query;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 import static io.github.anycollect.readers.jmx.monitoring.MonitoringConstants.*;
 
 public final class JmxReaderQueryModule implements QueryModule {
-    private final List<AnyCollectQuery> queries;
+    private final Set<Query> queries;
 
     public JmxReaderQueryModule() {
-        List<AnyCollectQuery> tmp = new ArrayList<>();
+        Set<Query> tmp = new HashSet<>();
         tmp.add(connectionPoolMetric(CONNECTION_POOL_IDLE, Type.GAUGE));
         tmp.add(connectionPoolMetric(CONNECTION_POOL_ACTIVE, Type.GAUGE));
         tmp.add(connectionPoolMetric(CONNECTION_POOL_INVALIDATED, Type.COUNTER));
@@ -39,7 +37,7 @@ public final class JmxReaderQueryModule implements QueryModule {
     }
 
     @Override
-    public List<AnyCollectQuery> getQueries() {
-        return Collections.unmodifiableList(queries);
+    public Set<Query> getQueries() {
+        return Collections.unmodifiableSet(queries);
     }
 }
