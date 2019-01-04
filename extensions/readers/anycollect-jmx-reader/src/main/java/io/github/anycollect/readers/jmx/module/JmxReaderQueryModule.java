@@ -26,6 +26,7 @@ public final class JmxReaderQueryModule implements QueryModule {
         Hashtable<String, String> tags = new Hashtable<>();
         tags.put(MetricId.METRIC_KEY_TAG, what);
         tags.put(MetricId.METRIC_TYPE_TAG, type.getTagValue());
+        tags.put(MetricId.UNIT_TAG, CONNECTIONS_UNIT);
         tags.put(APPLICATION_TAG, "*");
         tags.put(SERVER_TAG, "*");
         try {

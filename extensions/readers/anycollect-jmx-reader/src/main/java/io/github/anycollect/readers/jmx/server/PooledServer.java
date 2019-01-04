@@ -31,6 +31,7 @@ public final class PooledServer extends Server {
         Objects.requireNonNull(metricRegistry, "metric registry must not be null");
         this.pool = pool;
         MetricId.Builder builder = MetricId.builder()
+                .unit(CONNECTIONS_UNIT)
                 .tag(APPLICATION_TAG, application.getName())
                 .tag(SERVER_TAG, id);
         MetricId idle = builder.key(CONNECTION_POOL_IDLE).type(Type.GAUGE).build();

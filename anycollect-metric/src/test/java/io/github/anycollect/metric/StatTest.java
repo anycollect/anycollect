@@ -12,7 +12,7 @@ class StatTest {
         assertThat(Stat.parse("max")).isSameAs(Stat.max());
         assertThat(Stat.parse("mean")).isSameAs(Stat.mean());
         assertThat(Stat.parse("std")).isSameAs(Stat.std());
-        assertThat(Stat.parse("99_NUM")).isEqualTo(new Percentile(99));
+        assertThat(Stat.parse("max_99")).isEqualTo(new Percentile(Stat.max(), 99));
         IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class, () -> Stat.parse("undefined"));
         assertThat(ex).hasMessageContaining("undefined");
     }
@@ -32,8 +32,8 @@ class StatTest {
         assertThat(Stat.max().getTagValue()).isEqualTo("max");
         assertThat(Stat.mean().getTagValue()).isEqualTo("mean");
         assertThat(Stat.std().getTagValue()).isEqualTo("std");
-        assertThat(Stat.percentile(99).getTagValue()).isEqualTo("99_NUM");
-        assertThat(Stat.percentile(999).getTagValue()).isEqualTo("999_NUM");
+        assertThat(Stat.percentile(99).getTagValue()).isEqualTo("max_99");
+        assertThat(Stat.percentile(999).getTagValue()).isEqualTo("max_999");
     }
 
     @Test
@@ -42,7 +42,7 @@ class StatTest {
         assertThat(Stat.isValid(Stat.max())).isTrue();
         assertThat(Stat.isValid(Stat.mean())).isTrue();
         assertThat(Stat.isValid(Stat.std())).isTrue();
-        assertThat(Stat.isValid(new Percentile(75))).isTrue();
+        assertThat(Stat.isValid(new Percentile(Stat.max(), 75))).isTrue();
         assertThat(Stat.isValid(new Stat() {
             @Override
             public StatType getType() {

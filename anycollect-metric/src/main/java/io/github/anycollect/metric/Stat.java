@@ -1,7 +1,5 @@
 package io.github.anycollect.metric;
 
-import java.util.Objects;
-
 public interface Stat {
     static Stat min() {
         return MIN;
@@ -20,7 +18,11 @@ public interface Stat {
     }
 
     static Stat percentile(int num) {
-        return new Percentile(num);
+        return new Percentile(max(), num);
+    }
+
+    static Stat percentile(Stat stat, int num) {
+        return new Percentile(stat, num);
     }
 
     static boolean isValid(final Stat stat) {
@@ -84,23 +86,6 @@ public interface Stat {
     String getTagValue();
 
     static Stat parse(final String stat) {
-        Objects.requireNonNull(stat, "tag value must not be null");
-        if (stat.equals(min().getTagValue())) {
-            return min();
-        }
-        if (stat.equals(max().getTagValue())) {
-            return max();
-        }
-        if (stat.equals(mean().getTagValue())) {
-            return mean();
-        }
-        if (stat.equals(std().getTagValue())) {
-            return std();
-        }
-        if (stat.endsWith("_NUM")) {
-            int num = Integer.parseInt(stat.substring(0, stat.length() - 4));
-            return percentile(num);
-        }
-        throw new IllegalArgumentException("unrecognized stat: " + stat);
+        return StatHelper.parse(stat);
     }
 }

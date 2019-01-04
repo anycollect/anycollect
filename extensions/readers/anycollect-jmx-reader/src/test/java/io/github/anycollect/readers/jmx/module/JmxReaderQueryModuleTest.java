@@ -54,6 +54,7 @@ class JmxReaderQueryModuleTest {
         // assert metrics
         List<MetricId> ids = metrics.stream().map(Metric::getId).collect(toList());
         MetricId.Builder builder = MetricId.builder()
+                .unit("connections")
                 .tag(APPLICATION_TAG, "anycollect")
                 .tag(SERVER_TAG, "anycollect");
 

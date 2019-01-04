@@ -15,7 +15,7 @@ class MetricTest {
 
     @Test
     void baseTest() {
-        Metric metric = new Metric(MetricId.builder().tag("key", "metric").build(), 1, 2);
+        Metric metric = new Metric(MetricId.builder().key("metric").unit("metrics").type(Type.GAUGE).build(), 1, 2);
         assertThat(metric.getTimestamp()).isEqualTo(2);
         assertThat(metric.getValue()).isEqualTo(1);
     }

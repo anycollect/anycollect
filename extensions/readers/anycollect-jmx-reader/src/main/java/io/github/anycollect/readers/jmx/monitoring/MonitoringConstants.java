@@ -7,6 +7,7 @@ public final class MonitoringConstants {
     public static final String CONNECTION_POOL_INVALIDATED = "connections_pool_invalidated";
     public static final String APPLICATION_TAG = "application";
     public static final String SERVER_TAG = "server";
+    public static final String CONNECTIONS_UNIT = "connections";
 
     private MonitoringConstants() {
         throw new UnsupportedOperationException("this is a utility class, do not instantiate it");

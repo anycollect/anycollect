@@ -6,6 +6,6 @@ import org.junit.jupiter.api.Test;
 class PercentileTest {
     @Test
     void percentileValueMustBePositive() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Percentile(0));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Percentile(Stat.max(), 0));
     }
 }

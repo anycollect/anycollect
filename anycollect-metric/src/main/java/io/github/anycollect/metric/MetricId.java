@@ -13,16 +13,6 @@ public final class MetricId {
     public static final String METRIC_TYPE_TAG = "mtype";
     public static final String UNIT_TAG = "unit";
     public static final String STAT_TAG = "stat";
-    private static final Set<String> SPECIAL_TAGS;
-
-    static {
-        Set<String> tmp = new HashSet<>();
-        tmp.add(METRIC_KEY_TAG);
-        tmp.add(METRIC_TYPE_TAG);
-        tmp.add(UNIT_TAG);
-        tmp.add(STAT_TAG);
-        SPECIAL_TAGS = tmp;
-    }
 
     @Getter
     private final Tags tags;
@@ -36,10 +26,15 @@ public final class MetricId {
     private MetricId(final Builder builder) {
         this.tags = new Tags(builder.tags);
         this.metaTags = new Tags(builder.metaTags);
+        assertRequiredTag(tags, METRIC_KEY_TAG);
+        assertRequiredTag(tags, UNIT_TAG);
+        assertRequiredTag(tags, METRIC_TYPE_TAG);
     }
 
-    public boolean hasKey() {
-        return hasTagKey(METRIC_KEY_TAG);
+    private static void assertRequiredTag(final Tags tags, final String key) {
+        if (!tags.hasTagKey(key)) {
+            throw new IllegalArgumentException("tag \"" + key + "\" is required");
+        }
     }
 
     public String getKey() {
@@ -54,16 +49,8 @@ public final class MetricId {
         return Stat.parse(getTagValue(STAT_TAG));
     }
 
-    public boolean hasType() {
-        return hasTagKey(METRIC_TYPE_TAG);
-    }
-
     public Type getType() {
         return Type.parse(getTagValue(METRIC_TYPE_TAG));
-    }
-
-    public boolean hasUnit() {
-        return hasTagKey(UNIT_TAG);
     }
 
     public String getUnit() {
@@ -94,10 +81,6 @@ public final class MetricId {
         return metaTags.getTagKeys();
     }
 
-    public static boolean isSpecialTag(final String tagKey) {
-        return SPECIAL_TAGS.contains(tagKey);
-    }
-
     public static final class Builder {
         private final List<Tag> tags = new ArrayList<>();
         private final List<Tag> metaTags = new ArrayList<>();
@@ -122,7 +105,18 @@ public final class MetricId {
         }
 
         public Builder tag(final String key, final String value) {
-            assertIsNotSpecialTag(key);
+            if (METRIC_KEY_TAG.equals(key)) {
+                return key(value);
+            }
+            if (METRIC_TYPE_TAG.equals(key)) {
+                return type(Type.parse(value));
+            }
+            if (UNIT_TAG.equals(key)) {
+                return unit(value);
+            }
+            if (STAT_TAG.equals(key)) {
+                return stat(Stat.parse(value));
+            }
             return putTag(key, value);
         }
 
@@ -141,15 +135,7 @@ public final class MetricId {
             return this;
         }
 
-        private void assertIsNotSpecialTag(final String tagKey) {
-            if (isSpecialTag(tagKey)) {
-                throw new IllegalArgumentException("tag " + tagKey
-                        + " has special meaning and must be set using special method");
-            }
-        }
-
         public MetricId build() {
-            //
             return new MetricId(this);
         }
     }
