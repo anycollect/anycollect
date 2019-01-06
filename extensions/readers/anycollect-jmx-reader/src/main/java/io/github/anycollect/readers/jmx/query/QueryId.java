@@ -4,9 +4,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
 @Getter
+@Immutable
 @EqualsAndHashCode
 public final class QueryId {
     @Nonnull

@@ -8,12 +8,14 @@ import lombok.ToString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import javax.management.MBeanServerConnection;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
 @ToString
+@ThreadSafe
 @EqualsAndHashCode
 public abstract class Query {
     @Nonnull
@@ -25,7 +27,7 @@ public abstract class Query {
         this(new QueryId(group, label), interval);
     }
 
-    public Query(@Nonnull final QueryId id, final Duration interval) {
+    public Query(@Nonnull final QueryId id, @Nullable final Duration interval) {
         this.id = id;
         this.interval = interval;
     }

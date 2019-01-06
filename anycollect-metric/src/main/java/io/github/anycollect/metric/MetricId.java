@@ -24,8 +24,8 @@ public final class MetricId {
     }
 
     private MetricId(final Builder builder) {
-        this.tags = new Tags(builder.tags);
-        this.metaTags = new Tags(builder.metaTags);
+        this.tags = builder.tagsBuilder.build();
+        this.metaTags = builder.metaTagsBuilder.build();
         assertRequiredTag(tags, METRIC_KEY_TAG);
         assertRequiredTag(tags, UNIT_TAG);
         assertRequiredTag(tags, METRIC_TYPE_TAG);
@@ -82,26 +82,30 @@ public final class MetricId {
     }
 
     public static final class Builder {
-        private final List<Tag> tags = new ArrayList<>();
-        private final List<Tag> metaTags = new ArrayList<>();
+        private final Tags.Builder tagsBuilder = Tags.builder();
+        private final Tags.Builder metaTagsBuilder = Tags.builder();
 
         public Builder key(final String value) {
-            return putTag(METRIC_KEY_TAG, value);
+            tagsBuilder.tag(METRIC_KEY_TAG, value);
+            return this;
         }
 
         public Builder type(final Type value) {
-            return putTag(METRIC_TYPE_TAG, value.getTagValue());
+            tagsBuilder.tag(METRIC_TYPE_TAG, value.getTagValue());
+            return this;
         }
 
         public Builder unit(final String value) {
-            return putTag(UNIT_TAG, value);
+            tagsBuilder.tag(UNIT_TAG, value);
+            return this;
         }
 
         public Builder stat(final Stat stat) {
             if (!Stat.isValid(stat)) {
                 throw new IllegalArgumentException("stat " + stat + "is not valid");
             }
-            return putTag(STAT_TAG, stat.getTagValue());
+            tagsBuilder.tag(STAT_TAG, stat.getTagValue());
+            return this;
         }
 
         public Builder tag(final String key, final String value) {
@@ -117,21 +121,28 @@ public final class MetricId {
             if (STAT_TAG.equals(key)) {
                 return stat(Stat.parse(value));
             }
-            return putTag(key, value);
-        }
-
-        private Builder putTag(final String key, final String value) {
-            return putKeyValueToTagList(key, value, tags);
+            tagsBuilder.tag(key, value);
+            return this;
         }
 
         public Builder meta(final String key, final String value) {
-            return putKeyValueToTagList(key, value, metaTags);
+            metaTagsBuilder.tag(key, value);
+            return this;
         }
 
-        private Builder putKeyValueToTagList(final String key, final String value, final List<Tag> list) {
-            Objects.requireNonNull(key, "tag key must not be null");
-            Objects.requireNonNull(value, "tag value must not be null");
-            list.add(Tag.of(key, value));
+        public Builder concatTags(final Tags addition) {
+            Objects.requireNonNull(addition, "addition must not be null");
+            for (Tag tag : addition) {
+                tag(tag.getKey(), tag.getValue());
+            }
+            return this;
+        }
+
+        public Builder concatMeta(final Tags addition) {
+            Objects.requireNonNull(addition, "addition must not be null");
+            for (Tag tag : addition) {
+                meta(tag.getKey(), tag.getValue());
+            }
             return this;
         }
 

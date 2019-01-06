@@ -143,4 +143,21 @@ class MetricIdTest {
             }
         }));
     }
+
+    @Test
+    void tagsConcatenationOrderTest() {
+        Tags commonTags = Tags.builder()
+                .tag("host", "localhost")
+                .tag("service", "service")
+                .build();
+        Tags meta = Tags.builder()
+                .tag("agent", "anycollect")
+                .build();
+        MetricId id = base
+                .concatTags(commonTags)
+                .concatMeta(meta)
+                .build();
+        assertThat(id.getTagKeys()).containsExactly("what", "unit", "mtype", "host", "service");
+        assertThat(id.getMetaTagKeys()).containsExactly("agent");
+    }
 }
