@@ -25,6 +25,7 @@
         <module>extensions/common/anycollect-common-expression</module>
         <module>extensions/readers/anycollect-jmx-reader</module>
         <module>anycollect-core-api</module>
+        <module>anycollect-core</module>
     </modules>
 
     <build>

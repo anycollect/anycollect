@@ -1,8 +1,6 @@
 package io.github.anycollect.core.api.query;
 
 import javax.annotation.Nonnull;
-import java.time.Duration;
-import java.util.Optional;
 
 public interface Query {
     @Nonnull
@@ -10,10 +8,4 @@ public interface Query {
 
     @Nonnull
     String getLabel();
-
-    @Nonnull
-    Optional<Duration> getInterval();
-
-    @Nonnull
-    String describe();
 }

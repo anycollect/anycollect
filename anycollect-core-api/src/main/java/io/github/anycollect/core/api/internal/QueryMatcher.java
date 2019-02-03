@@ -6,7 +6,8 @@ import io.github.anycollect.core.api.target.Target;
 import javax.annotation.Nonnull;
 
 public interface QueryMatcher<T extends Target<Q>, Q extends Query> {
-    QueryMatcher<?, ?> ALL = (target, query) -> true;
+    @SuppressWarnings("rawtypes")
+    QueryMatcher ALL = (target, query) -> true;
 
     @SuppressWarnings("unchecked")
     static <T extends Target<Q>, Q extends Query> QueryMatcher<T, Q> all() {
