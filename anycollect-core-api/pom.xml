@@ -18,12 +18,6 @@
             <artifactId>anycollect-metric</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- CODE ANALYSIS -->
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>annotations</artifactId>
-        </dependency>
     </dependencies>
 
 </project>
