@@ -4,9 +4,10 @@ import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
 
 import javax.annotation.Nonnull;
-import java.util.Optional;
+import java.util.Set;
 
-public interface PullJobFactory<T extends Target, Q extends Query> {
-    @Nonnull
-    Optional<PullJob<T, Q>> create(@Nonnull T target, @Nonnull Q query);
+public interface State<T extends Target<Q>, Q extends Query> {
+    Set<T> getTargets();
+
+    Set<Q> getQueries(@Nonnull T target);
 }

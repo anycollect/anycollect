@@ -1,7 +1,12 @@
 package io.github.anycollect.core.api.query;
 
-import javax.annotation.Nonnull;
+import io.github.anycollect.core.api.common.Lifecycle;
+import io.github.anycollect.core.api.common.Plugin;
 
-public interface QueryProvider<Q extends Query> {
-    void start(@Nonnull Queries<Q> queries);
+import javax.annotation.Nonnull;
+import java.util.Set;
+
+public interface QueryProvider<Q extends Query> extends Plugin, Lifecycle {
+    @Nonnull
+    Set<Q> provide();
 }
