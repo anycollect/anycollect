@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 
 public final class ImmutableState<T extends Target<Q>, Q extends Query> implements State<T, Q> {
-    private final Map<T, Set<Q>> state;
+    private final Map<T, Set<PeriodicQuery<Q>>> state;
 
     public static <T extends Target<Q>, Q extends Query> ImmutableState.Builder<T, Q> builder() {
         return new Builder<>();
@@ -24,16 +24,16 @@ public final class ImmutableState<T extends Target<Q>, Q extends Query> implemen
     }
 
     @Override
-    public Set<Q> getQueries(@Nonnull final T target) {
+    public Set<PeriodicQuery<Q>> getQueries(@Nonnull final T target) {
         return Collections.unmodifiableSet(state.getOrDefault(target, Collections.emptySet()));
     }
 
     public static final class Builder<T extends Target<Q>, Q extends Query> {
-        private final Map<T, Set<Q>> state = new HashMap<>();
+        private final Map<T, Set<PeriodicQuery<Q>>> state = new HashMap<>();
 
-        public Builder<T, Q> put(@Nonnull final T target, @Nonnull final Q query) {
-            Set<Q> queries = state.computeIfAbsent(target, t -> new HashSet<>());
-            queries.add(query);
+        public Builder<T, Q> put(@Nonnull final T target, @Nonnull final Q query, @Nonnull final int period) {
+            Set<PeriodicQuery<Q>> queries = state.computeIfAbsent(target, t -> new HashSet<>());
+            queries.add(new ImmutablePeriodicQuery<>(query, period));
             return this;
         }
 

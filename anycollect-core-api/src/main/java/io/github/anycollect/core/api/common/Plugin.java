@@ -1,8 +1,7 @@
 package io.github.anycollect.core.api.common;
 
-import javax.annotation.Nonnull;
-
+/**
+ * Tag interface for all plugins.
+ */
 public interface Plugin {
-    @Nonnull
-    String getInstanceName();
 }

@@ -13,13 +13,16 @@ public final class StdDesiredStateProvider<T extends Target<Q>, Q extends Query>
     private final ServiceDiscovery<? extends T> discovery;
     private final QueryProvider<? extends Q> provider;
     private final QueryMatcherResolver<? super T, ? super Q> resolver;
+    private final int defaultPeriodInSeconds;
 
     public StdDesiredStateProvider(@Nonnull final ServiceDiscovery<? extends T> discovery,
                                    @Nonnull final QueryProvider<? extends Q> provider,
-                                   @Nonnull final QueryMatcherResolver<? super T, ? super Q> resolver) {
+                                   @Nonnull final QueryMatcherResolver<? super T, ? super Q> resolver,
+                                   final int defaultPeriodInSeconds) {
         this.discovery = discovery;
         this.provider = provider;
         this.resolver = resolver;
+        this.defaultPeriodInSeconds = defaultPeriodInSeconds;
     }
 
     @Nonnull
@@ -31,8 +34,9 @@ public final class StdDesiredStateProvider<T extends Target<Q>, Q extends Query>
         ImmutableState.Builder<T, Q> builder = ImmutableState.builder();
         for (T target : targets) {
             for (Q query : queries) {
-                if (matcher.matches(target, query)) {
-                    builder.put(target, query);
+                int periodInSeconds = matcher.getPeriodInSeconds(target, query, defaultPeriodInSeconds);
+                if (periodInSeconds > 0) {
+                    builder.put(target, query, periodInSeconds);
                 }
             }
         }
@@ -51,15 +55,5 @@ public final class StdDesiredStateProvider<T extends Target<Q>, Q extends Query>
         discovery.destroy();
         provider.destroy();
         resolver.destroy();
-    }
-
-    @Nonnull
-    @Override
-    public String getInstanceName() {
-        return "StdDesiredStateProvider{"
-                + "discovery:" + discovery.getInstanceName()
-                + "provider:" + provider.getInstanceName()
-                + "resolver:" + resolver.getInstanceName()
-                + "}";
     }
 }

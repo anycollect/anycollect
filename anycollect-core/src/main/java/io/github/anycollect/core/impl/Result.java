@@ -19,20 +19,17 @@ public final class Result<T extends Target<Q>, Q extends Query> {
     private final List<Metric> metrics;
     private final Type type;
     private final Exception exception;
-    private final long waitingTime;
     private final long processingTime;
 
     public static <T extends Target<Q>, Q extends Query> Result<T, Q> success(
             @Nonnull final T target,
             @Nonnull final Q query,
             @Nonnull final List<Metric> metrics,
-            final long waitingTime,
             final long processingTime) {
         return new Result<>(target, query,
                 new ArrayList<>(metrics),
                 Type.SUCCESS,
                 null,
-                waitingTime,
                 processingTime);
     }
 
@@ -40,7 +37,6 @@ public final class Result<T extends Target<Q>, Q extends Query> {
             @Nonnull final T target,
             @Nonnull final Q query,
             @Nonnull final Exception exception,
-            final long waitingTime,
             final long processingTime) {
         return new Result<>(
                 target,
@@ -48,7 +44,6 @@ public final class Result<T extends Target<Q>, Q extends Query> {
                 Collections.emptyList(),
                 Type.FAILED,
                 exception,
-                waitingTime,
                 processingTime
         );
     }
@@ -58,14 +53,12 @@ public final class Result<T extends Target<Q>, Q extends Query> {
                    @Nonnull final List<Metric> metrics,
                    @Nonnull final Type type,
                    @Nullable final Exception exception,
-                   final long waitingTime,
                    final long processingTime) {
         this.target = target;
         this.query = query;
         this.metrics = metrics;
         this.type = type;
         this.exception = exception;
-        this.waitingTime = waitingTime;
         this.processingTime = processingTime;
     }
 
@@ -98,10 +91,6 @@ public final class Result<T extends Target<Q>, Q extends Query> {
     @Nonnull
     public Optional<Exception> getException() {
         return Optional.ofNullable(exception);
-    }
-
-    public long getWaitingTime() {
-        return waitingTime;
     }
 
     public long getProcessingTime() {

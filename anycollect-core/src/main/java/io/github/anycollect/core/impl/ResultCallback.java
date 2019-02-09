@@ -14,5 +14,5 @@ public interface ResultCallback<T extends Target<Q>, Q extends Query> {
         return (ResultCallback<T, Q>) NOOP;
     }
 
-    void call(@Nonnull Result<? extends T, ? extends Q> result);
+    void call(@Nonnull Result<T, Q> result);
 }
