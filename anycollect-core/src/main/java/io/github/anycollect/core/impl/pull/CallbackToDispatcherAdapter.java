@@ -1,4 +1,4 @@
-package io.github.anycollect.core.impl;
+package io.github.anycollect.core.impl.pull;
 
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.query.Query;
@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Objects;
 
 // TODO report metrics from result: waiting time, processing time, success count and so on
-final class CallbackToDispatcherAdapter<T extends Target<Q>, Q extends Query> implements ResultCallback<T, Q> {
+public final class CallbackToDispatcherAdapter<T extends Target<Q>, Q extends Query> implements ResultCallback<T, Q> {
     private final Dispatcher dispatcher;
 
-    CallbackToDispatcherAdapter(final Dispatcher dispatcher) {
+    public CallbackToDispatcherAdapter(final Dispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
 

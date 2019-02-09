@@ -1,8 +1,10 @@
-package io.github.anycollect.core.impl;
+package io.github.anycollect.core.impl.pull;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.core.impl.TestQuery;
+import io.github.anycollect.core.impl.TestTarget;
 import io.github.anycollect.metric.Metric;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

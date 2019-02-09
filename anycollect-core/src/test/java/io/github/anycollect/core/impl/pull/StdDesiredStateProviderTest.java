@@ -1,8 +1,11 @@
-package io.github.anycollect.core.impl;
+package io.github.anycollect.core.impl.pull;
 
 import io.github.anycollect.core.api.internal.*;
 import io.github.anycollect.core.api.query.QueryProvider;
 import io.github.anycollect.core.api.target.ServiceDiscovery;
+import io.github.anycollect.core.impl.TestQuery;
+import io.github.anycollect.core.impl.TestTarget;
+import io.github.anycollect.core.impl.pull.StdDesiredStateProvider;
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.Test;
 

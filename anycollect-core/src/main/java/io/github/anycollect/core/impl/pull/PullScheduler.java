@@ -1,4 +1,4 @@
-package io.github.anycollect.core.impl;
+package io.github.anycollect.core.impl.pull;
 
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;

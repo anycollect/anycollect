@@ -1,4 +1,4 @@
-package io.github.anycollect.core.impl;
+package io.github.anycollect.core.impl.pull;
 
 import io.github.anycollect.core.api.internal.PeriodicQuery;
 import io.github.anycollect.core.api.internal.State;

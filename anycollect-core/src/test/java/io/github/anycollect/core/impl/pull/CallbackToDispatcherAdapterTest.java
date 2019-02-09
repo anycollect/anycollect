@@ -1,7 +1,9 @@
-package io.github.anycollect.core.impl;
+package io.github.anycollect.core.impl.pull;
 
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.core.impl.TestQuery;
+import io.github.anycollect.core.impl.TestTarget;
 import io.github.anycollect.metric.Metric;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,9 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class CallbackToDispatcherAdapterTest {
     private Dispatcher dispatcher;
