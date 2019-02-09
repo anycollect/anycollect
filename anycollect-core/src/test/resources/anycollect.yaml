@@ -1,0 +1,13 @@
+extenstions:
+- !load
+  extension: PullEngine
+  instance: puller
+  config:
+    updatePeriod: 30
+    pullPeriod: 15
+    defaultPoolSize: 1
+    rules:
+    - label: app1
+      poolSize: 3
+    - label: app2
+      poolSize: 2

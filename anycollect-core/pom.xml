@@ -26,6 +26,19 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-extension-annotations</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- YAML, CONFIGURATION -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
         <!-- CODE GENERATION -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -36,6 +49,14 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- TESTING -->
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-extension-system</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

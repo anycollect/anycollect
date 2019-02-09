@@ -1,11 +1,13 @@
-package io.github.anycollect.core.impl.pull;
+package io.github.anycollect.core.impl.pull.separate;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
+import io.github.anycollect.core.impl.pull.PullJob;
+import io.github.anycollect.core.impl.pull.PullScheduler;
+import io.github.anycollect.core.impl.pull.ResultCallback;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
-import io.github.anycollect.core.impl.scheduler.SchedulerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +30,7 @@ public final class SeparatePullScheduler implements PullScheduler {
             @Nonnull final ResultCallback<T, Q> callback,
             final int periodInSeconds) {
         PullJob<T, Q> job = new PullJob<>(target, query, callback, clock);
-        Scheduler scheduler = activeSchedulers.computeIfAbsent(target, t -> factory.create());
+        Scheduler scheduler = activeSchedulers.computeIfAbsent(target, factory::create);
         return scheduler.scheduleAtFixedRate(job, periodInSeconds, TimeUnit.SECONDS);
     }
 

@@ -4,8 +4,9 @@ import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
+import io.github.anycollect.core.impl.pull.separate.SeparatePullScheduler;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
-import io.github.anycollect.core.impl.scheduler.SchedulerFactory;
+import io.github.anycollect.core.impl.pull.separate.SchedulerFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,7 +23,7 @@ class SeparatePullSchedulerTest {
     void createPullScheduler() {
         factory = mock(SchedulerFactory.class);
         scheduler = mock(Scheduler.class);
-        when(factory.create()).thenReturn(scheduler);
+        when(factory.create(any())).thenReturn(scheduler);
         Clock clock = mock(Clock.class);
         puller = new SeparatePullScheduler(factory, clock);
     }
@@ -41,7 +42,7 @@ class SeparatePullSchedulerTest {
         @Test
         @DisplayName("scheduler for this target must be created lazily and once")
         void schedulerForEachTargetMustBeCreatedLazilyAndOnce() {
-            verify(factory, times(1)).create();
+            verify(factory, times(1)).create(target);
         }
 
         @Nested

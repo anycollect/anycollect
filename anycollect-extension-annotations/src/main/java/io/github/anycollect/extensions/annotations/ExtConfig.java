@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface ExtConfig {
-    String key() default "config";
+    String key() default "";
 
     boolean optional() default false;
 }

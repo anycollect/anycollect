@@ -65,7 +65,7 @@ final class CustomConstructor extends Constructor {
             Map<String, Instance> singleDependencies = getSingleDependencies();
             Map<String, List<Instance>> multiDependencies = getMultiDependencies();
             Instance instance = definition.createInstance(instanceName, config, singleDependencies, multiDependencies);
-            LOG.debug("instance instance has been successfully loaded: {}", instance);
+            LOG.debug("instance has been successfully loaded: {}", instance);
             instanceRegistry.put(instance.getInstanceName(), instance);
             return instance;
         }

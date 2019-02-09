@@ -18,6 +18,12 @@
             <artifactId>anycollect-metric</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-extension-annotations</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
