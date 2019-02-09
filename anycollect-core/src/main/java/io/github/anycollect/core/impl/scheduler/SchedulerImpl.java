@@ -2,14 +2,14 @@ package io.github.anycollect.core.impl.scheduler;
 
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public final class SchedulerImpl implements Scheduler {
-    private final ScheduledExecutorService service;
+    private final ScheduledThreadPoolExecutor service;
 
-    public SchedulerImpl(@Nonnull final ScheduledExecutorService service) {
+    public SchedulerImpl(@Nonnull final ScheduledThreadPoolExecutor service) {
         this.service = service;
     }
 
@@ -32,6 +32,10 @@ public final class SchedulerImpl implements Scheduler {
     @Override
     public boolean isShutdown() {
         return service.isShutdown();
+    }
+
+    public int getPoolSize() {
+        return service.getCorePoolSize();
     }
 
     final class ScheduledFeatureAdapter implements Cancellation {

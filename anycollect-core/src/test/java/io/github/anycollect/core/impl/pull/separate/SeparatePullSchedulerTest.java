@@ -1,12 +1,11 @@
-package io.github.anycollect.core.impl.pull;
+package io.github.anycollect.core.impl.pull.separate;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
-import io.github.anycollect.core.impl.pull.separate.SeparatePullScheduler;
+import io.github.anycollect.core.impl.pull.ResultCallback;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
-import io.github.anycollect.core.impl.pull.separate.SchedulerFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

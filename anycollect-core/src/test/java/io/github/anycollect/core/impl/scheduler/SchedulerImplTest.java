@@ -3,17 +3,14 @@ package io.github.anycollect.core.impl.scheduler;
 import org.junit.jupiter.api.*;
 import org.mockito.stubbing.Answer;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @DisplayName("scheduler")
 class SchedulerImplTest {
-    private ScheduledExecutorService executorService = spy(Executors.newSingleThreadScheduledExecutor());
+    private ScheduledThreadPoolExecutor executorService = mock(ScheduledThreadPoolExecutor.class);
     private SchedulerImpl scheduler;
 
     @BeforeEach
@@ -41,9 +38,8 @@ class SchedulerImplTest {
             @SuppressWarnings("unchecked")
             void schedule() {
                 when(executorService.scheduleAtFixedRate(job, 0L, 10L, TimeUnit.MILLISECONDS)).thenAnswer((Answer<ScheduledFuture<?>>) invocation -> {
-                    ScheduledFuture<?> future = (ScheduledFuture<?>) invocation.callRealMethod();
-                    WhenScheduleJob.this.future = spy(future);
-                    return WhenScheduleJob.this.future;
+                    future = mock(ScheduledFuture.class);
+                    return future;
                 });
                 cancellation = scheduler.scheduleAtFixedRate(job, 10, TimeUnit.MILLISECONDS);
             }
@@ -75,7 +71,14 @@ class SchedulerImplTest {
         class WhenShutdown {
             @BeforeEach
             void shutdown() {
+                when(executorService.isShutdown()).thenReturn(true);
                 scheduler.shutdown();
+            }
+
+            @Test
+            @DisplayName("executor is shutdown")
+            void executorIsShutdown() {
+                verify(executorService, times(1)).shutdown();
             }
 
             @Test

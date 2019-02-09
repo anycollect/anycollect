@@ -14,9 +14,9 @@ public final class RegExpConcurrencyRule implements ConcurrencyRule {
     private final int poolSize;
 
     @JsonCreator
-    public RegExpConcurrencyRule(@Nonnull @JsonProperty("label") final String label,
+    public RegExpConcurrencyRule(@Nonnull @JsonProperty("label") final String labelRegexp,
                                  @JsonProperty("poolSize") final int poolSize) {
-        this.labelPattern = Pattern.compile(label);
+        this.labelPattern = Pattern.compile(labelRegexp);
         this.poolSize = poolSize;
     }
 
