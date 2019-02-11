@@ -32,6 +32,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- INTERNAL MONITORING -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
+
         <!-- YAML, CONFIGURATION -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

@@ -17,6 +17,8 @@ import io.github.anycollect.core.impl.scheduler.SchedulerImpl;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +40,10 @@ public final class PullManagerImpl implements PullManager {
         this.updatePeriodInSeconds = config.getUpdatePeriodInSeconds();
         this.defaultPullPeriodInSeconds = config.getDefaultPullPeriodInSeconds();
         this.updater = new SchedulerImpl(new ScheduledThreadPoolExecutor(1));
+        // TODO inject
+        MeterRegistry registry = new SimpleMeterRegistry();
         SchedulerFactory schedulerFactory = new SchedulerFactoryImpl(
-                config.getConcurrencyRule(), config.getDefaultPoolSize());
+                config.getConcurrencyRule(), config.getDefaultPoolSize(), registry);
         this.puller = new SeparatePullScheduler(schedulerFactory, Clock.getDefault());
     }
 

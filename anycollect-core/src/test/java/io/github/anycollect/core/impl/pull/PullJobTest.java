@@ -36,7 +36,7 @@ class PullJobTest {
 
     @Test
     void successTest() throws ConnectionException, QueryException {
-        when(clock.time()).thenReturn( 10L, 25L);
+        when(clock.monotonicTime()).thenReturn( 10L, 25L);
         Metric metric = mock(Metric.class);
         List<Metric> metrics = Collections.singletonList(metric);
         when(target.execute(query)).thenReturn(metrics);
@@ -56,7 +56,7 @@ class PullJobTest {
 
     @Test
     void failTest() throws ConnectionException, QueryException {
-        when(clock.time()).thenReturn( 5L, 15L);
+        when(clock.monotonicTime()).thenReturn( 5L, 15L);
         QueryException ex = new QueryException();
         when(target.execute(query)).thenThrow(ex);
         @SuppressWarnings("unchecked")

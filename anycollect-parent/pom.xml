@@ -16,6 +16,9 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
 
+        <!-- INTERNAL MONITORING -->
+        <micrometer.version>1.1.2</micrometer.version>
+
         <!-- YAML, CONFIGURATION -->
         <jackson.version>2.9.8</jackson.version>
         <snakeyaml.version>1.23</snakeyaml.version>
@@ -53,6 +56,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- INTERNAL MONITORING -->
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-core</artifactId>
+                <version>${micrometer.version}</version>
+            </dependency>
+
             <!-- YAML, CONFIGURATION -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -334,7 +344,7 @@
                                         <limit >
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>80%</minimum>
+                                            <minimum>70%</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

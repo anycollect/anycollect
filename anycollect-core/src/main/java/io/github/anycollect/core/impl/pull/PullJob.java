@@ -35,12 +35,12 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
 
     @Override
     public void run() {
-        long start = clock.time();
+        long start = clock.monotonicTime();
         try {
             List<Metric> metrics = target.execute(query);
-            callback.call(Result.success(target, query, metrics, clock.time() - start));
+            callback.call(Result.success(target, query, metrics, clock.monotonicTime() - start));
         } catch (QueryException | ConnectionException | RuntimeException e) {
-            callback.call(Result.fail(target, query, e, clock.time() - start));
+            callback.call(Result.fail(target, query, e, clock.monotonicTime() - start));
         }
     }
 
