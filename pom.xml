@@ -26,6 +26,7 @@
         <module>extensions/readers/anycollect-jmx-reader</module>
         <module>anycollect-core-api</module>
         <module>anycollect-core</module>
+        <module>anycollect-jackson</module>
     </modules>
 
     <build>
