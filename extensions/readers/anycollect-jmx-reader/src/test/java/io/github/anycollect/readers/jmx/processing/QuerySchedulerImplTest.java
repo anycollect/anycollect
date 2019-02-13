@@ -1,6 +1,7 @@
 package io.github.anycollect.readers.jmx.processing;
 
 import com.google.common.collect.Sets;
+import io.github.anycollect.metric.ImmutableMetric;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.readers.jmx.application.Application;
 import io.github.anycollect.readers.jmx.application.QueryMatcher;
@@ -34,7 +35,7 @@ class QuerySchedulerImplTest {
             initialDelay,
             defaultInterval
     );
-    private Metric metric = mock(Metric.class);
+    private Metric metric = mock(ImmutableMetric.class);
     private List<Metric> metrics = Collections.singletonList(metric);
     private Map<QuerySubmitJob, List<ScheduledFuture<?>>> jobs = new HashMap<>();
 

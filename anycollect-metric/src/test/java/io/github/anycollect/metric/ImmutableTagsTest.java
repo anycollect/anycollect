@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Tags tests")
-class TagsTest {
+class ImmutableTagsTest {
     @Test
     @DisplayName("tags must be iterable in creation order")
     void mustBeIterableInCreationOrder() {

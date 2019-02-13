@@ -1,5 +1,6 @@
 package io.github.anycollect.readers.jmx.processing;
 
+import io.github.anycollect.metric.ImmutableMetric;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.readers.jmx.application.AllQueryMatcher;
 import io.github.anycollect.readers.jmx.application.Application;
@@ -28,7 +29,7 @@ class SeparateQueryExecutorTest {
     void successTest() throws Exception {
         Query query = mock(Query.class);
         Server server = new SimpleServer("1", new Application("app", new AllQueryMatcher(), false), JmxConnection.local());
-        List<Metric> metrics = Collections.singletonList(mock(Metric.class));
+        List<Metric> metrics = Collections.singletonList(mock(ImmutableMetric.class));
         when(server.execute(query)).thenReturn(metrics);
         executor.submit(query, server);
         await().atMost(100, TimeUnit.MILLISECONDS)

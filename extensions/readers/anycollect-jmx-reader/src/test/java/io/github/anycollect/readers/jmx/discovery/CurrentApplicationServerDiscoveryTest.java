@@ -5,7 +5,6 @@ import io.github.anycollect.readers.jmx.QueryException;
 import io.github.anycollect.readers.jmx.application.Application;
 import io.github.anycollect.readers.jmx.application.ApplicationRegistry;
 import io.github.anycollect.readers.jmx.application.SimpleQueryMatcher;
-import io.github.anycollect.readers.jmx.monitoring.MetricRegistry;
 import io.github.anycollect.readers.jmx.query.NoopQuery;
 import io.github.anycollect.readers.jmx.query.Query;
 import io.github.anycollect.readers.jmx.server.Server;
@@ -27,7 +26,7 @@ class CurrentApplicationServerDiscoveryTest {
     @Test
     void registryMustContainCurrentApplication() {
         JmxConnectionPoolFactory poolFactory = mock(JmxConnectionPoolFactory.class);
-        CurrentApplicationServerDiscovery discovery = new CurrentApplicationServerDiscovery("dummy", poolFactory, MetricRegistry.noop());
+        CurrentApplicationServerDiscovery discovery = new CurrentApplicationServerDiscovery("dummy", poolFactory);
         DiscoverException ex = Assertions.assertThrows(DiscoverException.class, () -> discovery.getServers(ApplicationRegistry.empty()));
         assertThat(ex).hasMessageContaining("dummy");
     }

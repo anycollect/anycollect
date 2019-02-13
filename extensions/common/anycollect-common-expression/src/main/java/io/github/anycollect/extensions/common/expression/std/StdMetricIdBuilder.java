@@ -4,6 +4,7 @@ import io.github.anycollect.extensions.common.expression.Args;
 import io.github.anycollect.extensions.common.expression.EvaluationException;
 import io.github.anycollect.extensions.common.expression.Expression;
 import io.github.anycollect.extensions.common.expression.MetricIdBuilder;
+import io.github.anycollect.metric.ImmutableMetricId;
 import io.github.anycollect.metric.MetricId;
 
 import java.util.Map;
@@ -20,7 +21,7 @@ public final class StdMetricIdBuilder implements MetricIdBuilder {
 
     @Override
     public MetricId create(final Args context) throws EvaluationException {
-        MetricId.Builder builder = MetricId.builder();
+        ImmutableMetricId.Builder builder = MetricId.builder();
         process(tags, context, builder::tag);
         process(metaTags, context, builder::meta);
         return builder.build();

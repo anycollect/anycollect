@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.anycollect.extensions.common.expression.Args;
 import io.github.anycollect.extensions.common.expression.EvaluationException;
 import io.github.anycollect.extensions.common.expression.Expression;
+import io.github.anycollect.metric.CommonTags;
 import io.github.anycollect.metric.MetricId;
 import io.github.anycollect.metric.Type;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +36,9 @@ class StdMetricIdBuilderTest {
         when(metaTagValueExp.process(any())).thenReturn("meta");
         builder = new StdMetricIdBuilder(
                 ImmutableMap.of(
-                        MetricId.METRIC_KEY_TAG, keyValueExp,
-                        MetricId.UNIT_TAG, unitValueExp,
-                        MetricId.METRIC_TYPE_TAG, typeValueExp
+                        CommonTags.METRIC_KEY.getKey(), keyValueExp,
+                        CommonTags.UNIT.getKey(), unitValueExp,
+                        CommonTags.METRIC_TYPE.getKey(), typeValueExp
                 ),
                 Collections.singletonMap("metaTag", metaTagValueExp)
         );

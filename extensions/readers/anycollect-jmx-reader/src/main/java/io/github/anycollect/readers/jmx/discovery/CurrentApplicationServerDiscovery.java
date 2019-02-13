@@ -2,7 +2,6 @@ package io.github.anycollect.readers.jmx.discovery;
 
 import io.github.anycollect.readers.jmx.application.Application;
 import io.github.anycollect.readers.jmx.application.ApplicationRegistry;
-import io.github.anycollect.readers.jmx.monitoring.MetricRegistry;
 import io.github.anycollect.readers.jmx.server.JmxConnection;
 import io.github.anycollect.readers.jmx.server.JmxConnectionFactory;
 import io.github.anycollect.readers.jmx.server.Server;
@@ -25,22 +24,13 @@ public final class CurrentApplicationServerDiscovery implements ServerDiscovery 
     };
     private final String currentApplicationName;
     private final JmxConnectionPoolFactory poolFactory;
-    private final MetricRegistry metricRegistry;
 
     public CurrentApplicationServerDiscovery(@Nonnull final String currentApplicationName,
                                              @Nonnull final JmxConnectionPoolFactory poolFactory) {
-        this(currentApplicationName, poolFactory, MetricRegistry.noop());
-    }
-
-    public CurrentApplicationServerDiscovery(@Nonnull final String currentApplicationName,
-                                             @Nonnull final JmxConnectionPoolFactory poolFactory,
-                                             @Nonnull final MetricRegistry metricRegistry) {
         Objects.requireNonNull(currentApplicationName, "current application name must not be null");
         Objects.requireNonNull(poolFactory, "pool factory must not be null");
-        Objects.requireNonNull(metricRegistry, "metric registry must not be null");
         this.currentApplicationName = currentApplicationName;
         this.poolFactory = poolFactory;
-        this.metricRegistry = metricRegistry;
     }
 
     @Nonnull
@@ -55,6 +45,6 @@ public final class CurrentApplicationServerDiscovery implements ServerDiscovery 
         }
         Application application = registry.getApplication(currentApplicationName);
         JmxConnectionPool pool = poolFactory.create(JMX_CONNECTION_FACTORY);
-        return Server.create(currentApplicationName, application, pool, metricRegistry);
+        return Server.create(currentApplicationName, application, pool);
     }
 }

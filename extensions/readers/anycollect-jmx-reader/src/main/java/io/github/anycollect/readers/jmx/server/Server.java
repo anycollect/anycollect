@@ -4,7 +4,6 @@ import io.github.anycollect.metric.Metric;
 import io.github.anycollect.readers.jmx.ConnectionException;
 import io.github.anycollect.readers.jmx.QueryException;
 import io.github.anycollect.readers.jmx.application.Application;
-import io.github.anycollect.readers.jmx.monitoring.MetricRegistry;
 import io.github.anycollect.readers.jmx.query.Query;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
 import lombok.EqualsAndHashCode;
@@ -31,14 +30,7 @@ public abstract class Server {
     public static Server create(@Nonnull final String id,
                                 @Nonnull final Application application,
                                 @Nonnull final JmxConnectionPool pool) {
-        return new PooledServer(id, application, pool, MetricRegistry.noop());
-    }
-
-    public static Server create(@Nonnull final String id,
-                                @Nonnull final Application application,
-                                @Nonnull final JmxConnectionPool pool,
-                                @Nonnull final MetricRegistry metricRegistry) {
-        return new PooledServer(id, application, pool, metricRegistry);
+        return new PooledServer(id, application, pool);
     }
 
     @Nonnull

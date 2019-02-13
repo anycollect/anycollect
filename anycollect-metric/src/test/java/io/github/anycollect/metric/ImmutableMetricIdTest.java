@@ -8,8 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @DisplayName("Metric ID tests")
-class MetricIdTest {
-    private MetricId.Builder base = MetricId.builder()
+class ImmutableMetricIdTest {
+    private ImmutableMetricId.Builder base = MetricId.builder()
             .key("test")
             .unit("tests")
             .type(Type.GAUGE);
@@ -17,7 +17,7 @@ class MetricIdTest {
     @Test
     @DisplayName("test getting required tags")
     void baseTest() {
-        MetricId id = base.build();
+        ImmutableMetricId id = base.build();
         assertThat(id.getKey()).isEqualTo("test");
         assertThat(id.getUnit()).isEqualTo("tests");
         assertThat(id.getType()).isSameAs(Type.GAUGE);
@@ -26,14 +26,14 @@ class MetricIdTest {
     @Test
     void metricKeyIsRequired() {
         IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class, () -> MetricId.builder().unit("tests").type(Type.GAUGE).build());
-        assertThat(ex).hasMessageContaining(MetricId.METRIC_KEY_TAG);
+        assertThat(ex).hasMessageContaining(CommonTags.METRIC_KEY.getKey());
     }
 
     @Test
     @DisplayName("IDs with the same tags must be equal")
     void idsWithTheSameTagsMustBeEqual() {
-        MetricId id1 = base.tag("key1", "value1").build();
-        MetricId id2 = base.tag("key1", "value1").build();
+        ImmutableMetricId id1 = base.tag("key1", "value1").build();
+        ImmutableMetricId id2 = base.tag("key1", "value1").build();
         assertThat(id1).isEqualTo(id2);
         assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
     }
@@ -41,24 +41,24 @@ class MetricIdTest {
     @Test
     @DisplayName("IDs with different tag values must be not equal")
     void idsWithDifferentTagValueMustBeNotEqual() {
-        MetricId id1 = base.tag("key1", "value1").build();
-        MetricId id2 = base.tag("key1", "value2").build();
+        ImmutableMetricId id1 = base.tag("key1", "value1").build();
+        ImmutableMetricId id2 = base.tag("key1", "value2").build();
         assertThat(id1).isNotEqualTo(id2);
     }
 
     @Test
     @DisplayName("IDs with different tags must be not equal")
     void idsWithDifferentTagsMustBeNotEqual() {
-        MetricId id1 = base.tag("key1", "value1").build();
-        MetricId id2 = base.tag("key2", "value1").build();
+        ImmutableMetricId id1 = base.tag("key1", "value1").build();
+        ImmutableMetricId id2 = base.tag("key2", "value1").build();
         assertThat(id1).isNotEqualTo(id2);
     }
 
     @Test
     @DisplayName("IDs with the same tags and different meta tags must be equal")
     void idsWithTheSameTagsAndDifferentMetaTagsMustBeEqual() {
-        MetricId id1 = base.tag("key1", "value2").meta("metaKey1", "metaValue1").build();
-        MetricId id2 = base.tag("key1", "value2").meta("metaKey2", "metaValue2").build();
+        ImmutableMetricId id1 = base.tag("key1", "value2").meta("metaKey1", "metaValue1").build();
+        ImmutableMetricId id2 = base.tag("key1", "value2").meta("metaKey2", "metaValue2").build();
         assertThat(id1).isEqualTo(id2);
         assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
     }
@@ -66,7 +66,7 @@ class MetricIdTest {
     @Test
     @DisplayName("getting tag value that is not present in id must lead to exception")
     void gettingValueOfNotExistingTagIsIllegal() {
-        MetricId id = base.tag("key1", "value1").build();
+        ImmutableMetricId id = base.tag("key1", "value1").build();
         IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class, () -> id.getTagValue("key2"));
         assertThat(ex).hasMessageContaining("key2");
         Assertions.assertTrue(id.hasTagKey("key1"));
@@ -76,7 +76,7 @@ class MetricIdTest {
     @Test
     @DisplayName("getting meta tag value that is not present in id must lead to exception")
     void gettingValueOfNotExistingMetaTagIsIllegal() {
-        MetricId id = base.meta("key1", "value1").build();
+        ImmutableMetricId id = base.meta("key1", "value1").build();
         IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class, () -> id.getMetaTagValue("key2"));
         assertThat(ex).hasMessageContaining("key2");
         Assertions.assertTrue(id.hasMetaTagKey("key1"));
@@ -86,7 +86,7 @@ class MetricIdTest {
     @Test
     @DisplayName("ID must consist of all (and only) tags specified")
     void idMustConsistsOfTagsSpecified() {
-        MetricId id = base.tag("key1", "value1")
+        ImmutableMetricId id = base.tag("key1", "value1")
                 .tag("key2", "value2")
                 .meta("metaKey1", "metaValue1")
                 .build();
@@ -108,7 +108,7 @@ class MetricIdTest {
 
     @Test
     void specialTagsTest() {
-        MetricId id = base
+        ImmutableMetricId id = base
                 .key("http_requests")
                 .stat(Stat.max())
                 .type(Type.GAUGE)
@@ -116,17 +116,17 @@ class MetricIdTest {
         assertThat(id.getKey()).isEqualTo("http_requests");
         assertThat(id.getStat()).isSameAs(Stat.max());
         assertThat(id.getType()).isSameAs(Type.GAUGE);
-        assertThat(id.getTagValue(MetricId.METRIC_KEY_TAG)).isEqualTo("http_requests");
-        assertThat(id.getTagValue(MetricId.STAT_TAG)).isEqualTo("max");
-        assertThat(id.getTagValue(MetricId.METRIC_TYPE_TAG)).isEqualTo("gauge");
+        assertThat(id.getTagValue(CommonTags.METRIC_KEY.getKey())).isEqualTo("http_requests");
+        assertThat(id.getTagValue(CommonTags.STAT.getKey())).isEqualTo("max");
+        assertThat(id.getTagValue(CommonTags.METRIC_TYPE.getKey())).isEqualTo("gauge");
     }
 
     @Test
     void specialTagsCanBeSetViaGeneralMethod() {
-        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(MetricId.METRIC_KEY_TAG, "http_requests"));
-        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(MetricId.UNIT_TAG, "requests"));
-        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(MetricId.METRIC_TYPE_TAG, "counter"));
-        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(MetricId.STAT_TAG, "min"));
+        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(CommonTags.METRIC_KEY.getKey(), "http_requests"));
+        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(CommonTags.UNIT.getKey(), "requests"));
+        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(CommonTags.METRIC_TYPE.getKey(), "counter"));
+        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(CommonTags.STAT.getKey(), "min"));
     }
 
     @Test
@@ -153,7 +153,7 @@ class MetricIdTest {
         Tags meta = Tags.builder()
                 .tag("agent", "anycollect")
                 .build();
-        MetricId id = base
+        ImmutableMetricId id = base
                 .concatTags(commonTags)
                 .concatMeta(meta)
                 .build();

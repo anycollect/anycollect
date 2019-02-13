@@ -17,6 +17,18 @@ public interface Stat {
         return STD;
     }
 
+    static Stat value() {
+        return VALUE;
+    }
+
+    static Stat percentile(double percentile) {
+        return new Percentile(max(), percentile);
+    }
+
+    static Stat percentile(Stat stat, double percentile) {
+        return new Percentile(stat, percentile);
+    }
+
     static Stat percentile(int num) {
         return new Percentile(max(), num);
     }
@@ -30,6 +42,7 @@ public interface Stat {
                 || stat == max()
                 || stat == mean()
                 || stat == std()
+                || stat == value()
                 || stat.getClass().equals(Percentile.class);
     }
 
@@ -78,6 +91,18 @@ public interface Stat {
         @Override
         public String getTagValue() {
             return "std";
+        }
+    };
+
+    Stat VALUE = new Stat() {
+        @Override
+        public StatType getType() {
+            return StatType.UNKNOWN;
+        }
+
+        @Override
+        public String getTagValue() {
+            return "value";
         }
     };
 
