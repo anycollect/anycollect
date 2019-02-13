@@ -9,7 +9,6 @@ public final class Percentile implements Stat {
     private final Stat stat;
     private final int num;
 
-    @SuppressWarnings("checkstyle:magicnumber")
     public Percentile(final Stat stat, final double percentile) {
         Objects.requireNonNull(stat, "stat must not be null");
         if (percentile <= 0) {
