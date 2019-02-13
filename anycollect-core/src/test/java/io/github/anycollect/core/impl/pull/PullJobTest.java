@@ -5,6 +5,7 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
+import io.github.anycollect.metric.ImmutableMetric;
 import io.github.anycollect.metric.Metric;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class PullJobTest {
     @Test
     void successTest() throws ConnectionException, QueryException {
         when(clock.monotonicTime()).thenReturn( 10L, 25L);
-        Metric metric = mock(Metric.class);
+        Metric metric = mock(ImmutableMetric.class);
         List<Metric> metrics = Collections.singletonList(metric);
         when(target.execute(query)).thenReturn(metrics);
         @SuppressWarnings("unchecked")

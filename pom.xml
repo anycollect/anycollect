@@ -27,6 +27,7 @@
         <module>anycollect-core-api</module>
         <module>anycollect-core</module>
         <module>anycollect-jackson</module>
+        <module>anycollect-micrometer-registry</module>
     </modules>
 
     <build>
