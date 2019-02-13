@@ -38,6 +38,16 @@
             <artifactId>anycollect-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-jackson</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-micrometer-registry</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
