@@ -9,16 +9,16 @@ import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.query.QueryProvider;
 import io.github.anycollect.core.api.target.ServiceDiscovery;
 import io.github.anycollect.core.api.target.Target;
+import io.github.anycollect.core.impl.pull.separate.SchedulerFactory;
 import io.github.anycollect.core.impl.pull.separate.SchedulerFactoryImpl;
 import io.github.anycollect.core.impl.pull.separate.SeparatePullScheduler;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
-import io.github.anycollect.core.impl.pull.separate.SchedulerFactory;
 import io.github.anycollect.core.impl.scheduler.SchedulerImpl;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public final class PullManagerImpl implements PullManager {
         this.defaultPullPeriodInSeconds = config.getDefaultPullPeriodInSeconds();
         this.updater = new SchedulerImpl(new ScheduledThreadPoolExecutor(1));
         // TODO inject
-        MeterRegistry registry = new SimpleMeterRegistry();
+        MeterRegistry registry = new NoopMeterRegistry();
         SchedulerFactory schedulerFactory = new SchedulerFactoryImpl(
                 config.getConcurrencyRule(), config.getDefaultPoolSize(), registry);
         this.puller = new SeparatePullScheduler(schedulerFactory, Clock.getDefault());

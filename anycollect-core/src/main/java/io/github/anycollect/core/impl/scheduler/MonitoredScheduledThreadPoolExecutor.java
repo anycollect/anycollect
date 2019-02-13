@@ -1,9 +1,10 @@
 package io.github.anycollect.core.impl.scheduler;
 
 import io.github.anycollect.core.api.internal.Clock;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.DistributionSummary;
-import io.micrometer.core.instrument.MeterRegistry;
+import io.github.anycollect.metric.Counter;
+import io.github.anycollect.metric.DistributionSummary;
+import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -17,38 +18,39 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
     private final Map<CustomFuture<?>, Long> lastRunStartTimes = new ConcurrentHashMap<>();
     private final DistributionSummary discrepancySummary;
     private final Set<CustomFuture<?>> running = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final Counter processingTimeCounter;
+    private final DistributionSummary processingTimeSummary;
     private final Counter failedJobsCounter;
     private final Counter succeededJobsCounter;
 
     public MonitoredScheduledThreadPoolExecutor(final int corePoolSize,
                                                 @Nonnull final MeterRegistry registry,
-                                                final String... tags) {
+                                                final Tags tags) {
         this(corePoolSize, Clock.getDefault(), registry, tags);
     }
 
     public MonitoredScheduledThreadPoolExecutor(final int corePoolSize,
                                                 @Nonnull final Clock clock,
                                                 @Nonnull final MeterRegistry registry,
-                                                final String... tags) {
+                                                final Tags tags) {
         super(corePoolSize);
         this.clock = clock;
-        discrepancySummary = DistributionSummary.builder("scheduler.discrepancy")
-                .baseUnit("percentage")
-                .publishPercentileHistogram()
-                .tags(tags)
+        discrepancySummary = DistributionSummary.key("scheduler.discrepancy")
+                .unit("percentage")
+                .percentiles(0.5, 0.75, 0.99, 0.999)
+                .concatTags(tags)
                 .register(registry);
-        processingTimeCounter = Counter.builder("scheduler.processing.time")
-                .baseUnit("nanoseconds")
-                .tags(tags)
+        processingTimeSummary = DistributionSummary.key("scheduler.processing.time")
+                .unit("ns")
+                .percentiles(0.5, 0.75, 0.99, 0.999)
+                .concatTags(tags)
                 .register(registry);
-        failedJobsCounter = Counter.builder("scheduler.failed.jobs")
-                .baseUnit("jobs")
-                .tags(tags)
+        failedJobsCounter = Counter.key("scheduler.failed.jobs")
+                .unit("job")
+                .concatTags(tags)
                 .register(registry);
-        succeededJobsCounter = Counter.builder("scheduler.succeeded.jobs")
-                .baseUnit("jobs")
-                .tags(tags)
+        succeededJobsCounter = Counter.key("scheduler.succeeded.jobs")
+                .unit("job")
+                .concatTags(tags)
                 .register(registry);
     }
 
@@ -95,7 +97,7 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
         if (runnable instanceof CustomFuture) {
             CustomFuture<?> future = (CustomFuture<?>) runnable;
             long processingTime = clock.monotonicTime() - lastRunStartTimes.get(future);
-            processingTimeCounter.increment(processingTime);
+            processingTimeSummary.record(processingTime);
             running.remove(future);
             if (throwable == null && future.isDone()) {
                 try {

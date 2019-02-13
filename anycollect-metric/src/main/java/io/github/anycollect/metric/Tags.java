@@ -13,6 +13,10 @@ public interface Tags extends Iterable<Tag> {
         return ImmutableTags.EMPTY;
     }
 
+    static ImmutableTags of(@Nonnull String key, @Nonnull String value) {
+        return builder().tag(key, value).build();
+    }
+
     boolean hasTagKey(String key);
 
     @Nonnull

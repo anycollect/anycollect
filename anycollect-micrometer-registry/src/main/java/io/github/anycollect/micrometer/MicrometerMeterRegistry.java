@@ -28,6 +28,8 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToLongFunction;
@@ -36,6 +38,7 @@ import java.util.stream.Stream;
 public final class MicrometerMeterRegistry extends PushMeterRegistry implements MeterRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(MicrometerMeterRegistry.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private final ConcurrentMap<MeterId, io.github.anycollect.metric.Meter> meters = new ConcurrentHashMap<>();
 
     static {
         MAPPER.registerModule(new AnyCollectModule());
@@ -55,21 +58,29 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
     }
 
     @Override
-    public Counter counter(@Nonnull final MeterId meterId) {
-        String description = getDescription(meterId);
+    public Counter counter(@Nonnull final MeterId id) {
+        return (Counter) meters.computeIfAbsent(id, this::registerNewCounter);
+    }
+
+    private Counter registerNewCounter(@Nonnull final MeterId meterId) {
         return ((MicrometerCounter) io.micrometer.core.instrument.Counter.builder(meterId.getKey())
                 .tags(convertTags(meterId.getTags()))
-                .description(description)
+                .description(getDescription(meterId))
                 .register(this)).getAdapter();
     }
 
     @Override
     public io.github.anycollect.metric.DistributionSummary summary(@Nonnull final MeterId id,
                                                                    @Nonnull final double... percentiles) {
-        String description = getDescription(id);
+        return (io.github.anycollect.metric.DistributionSummary)
+                meters.computeIfAbsent(id, i -> registerNewSummary(i, percentiles));
+    }
+
+    private io.github.anycollect.metric.DistributionSummary registerNewSummary(@Nonnull final MeterId id,
+                                                                               @Nonnull final double[] percentiles) {
         DistributionSummary summary = DistributionSummary.builder(id.getKey())
                 .tags(convertTags(id.getTags()))
-                .description(description)
+                .description(getDescription(id))
                 .percentilePrecision(1)
                 .publishPercentiles(percentiles)
                 .publishPercentileHistogram(false)
@@ -78,6 +89,12 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
                 .maximumExpectedValue(Long.MAX_VALUE)
                 .register(this);
         return new MicrometerDistributionSummary(summary, id, anyClock).getAdapter();
+    }
+
+    @Override
+    public io.github.anycollect.metric.DistributionSummary summary(@Nonnull final MeterId id) {
+        return (io.github.anycollect.metric.DistributionSummary)
+                meters.computeIfAbsent(id, i -> summary(i, new double[]{}));
     }
 
     private String getDescription(@Nonnull final MeterId meterId) {

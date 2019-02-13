@@ -32,12 +32,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- INTERNAL MONITORING -->
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-core</artifactId>
-        </dependency>
-
         <!-- YAML, CONFIGURATION -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -63,6 +57,11 @@
             <artifactId>anycollect-extension-system</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-micrometer-registry</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

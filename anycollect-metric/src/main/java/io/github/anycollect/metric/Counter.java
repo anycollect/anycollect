@@ -7,8 +7,6 @@ public interface Counter extends Meter {
         return new Builder(key);
     }
 
-    double count();
-
     default void increment() {
         increment(1.0);
     }
@@ -34,6 +32,16 @@ public interface Counter extends Meter {
 
         public Builder meta(@Nonnull final String key, @Nonnull final String value) {
             idBuilder.meta(key, value);
+            return this;
+        }
+
+        public Builder concatTags(@Nonnull final Tags addition) {
+            idBuilder.concatTags(addition);
+            return this;
+        }
+
+        public Builder concatMeta(@Nonnull final Tags addition) {
+            idBuilder.concatMeta(addition);
             return this;
         }
 

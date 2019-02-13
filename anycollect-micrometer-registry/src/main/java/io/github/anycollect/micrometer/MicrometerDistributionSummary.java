@@ -83,21 +83,6 @@ public final class MicrometerDistributionSummary implements DistributionSummary 
         }
 
         @Override
-        public long count() {
-            return MicrometerDistributionSummary.this.count();
-        }
-
-        @Override
-        public double totalAmount() {
-            return MicrometerDistributionSummary.this.totalAmount();
-        }
-
-        @Override
-        public double max() {
-            return MicrometerDistributionSummary.this.max();
-        }
-
-        @Override
         public MeterId getId() {
             return MicrometerDistributionSummary.this.id;
         }

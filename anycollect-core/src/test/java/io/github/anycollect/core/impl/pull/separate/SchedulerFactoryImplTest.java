@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.pull.separate;
 
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.scheduler.SchedulerImpl;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class SchedulerFactoryImplTest {
     @BeforeEach
     void setUp() {
         rule = mock(ConcurrencyRule.class);
-        factory = new SchedulerFactoryImpl(rule, 2, new SimpleMeterRegistry());
+        factory = new SchedulerFactoryImpl(rule, 2, new NoopMeterRegistry());
         when(target.getLabel()).thenReturn("app");
     }
 

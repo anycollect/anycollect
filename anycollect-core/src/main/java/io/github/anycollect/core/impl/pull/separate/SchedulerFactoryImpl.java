@@ -4,7 +4,8 @@ import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.scheduler.MonitoredScheduledThreadPoolExecutor;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import io.github.anycollect.core.impl.scheduler.SchedulerImpl;
-import io.micrometer.core.instrument.MeterRegistry;
+import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.metric.Tags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ public final class SchedulerFactoryImpl implements SchedulerFactory {
         int poolSize = rule.getPoolSize(target, defaultPoolSize);
         LOG.debug("creating scheduler for target {} with pool size {}", target, poolSize);
         ScheduledThreadPoolExecutor executorService
-                = new MonitoredScheduledThreadPoolExecutor(poolSize, registry, "target", target.getLabel());
+                = new MonitoredScheduledThreadPoolExecutor(poolSize, registry, Tags.of("target", target.getLabel()));
         return new SchedulerImpl(executorService);
     }
 }

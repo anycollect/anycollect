@@ -1,12 +1,16 @@
 package io.github.anycollect.metric;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Set;
 
+@ToString(of = "tags", includeFieldNames = false)
+@EqualsAndHashCode(of = "tags")
 public final class ImmutableMeterId implements MeterId {
     @Getter
     private final ImmutableTags tags;
@@ -36,6 +40,7 @@ public final class ImmutableMeterId implements MeterId {
         return MetricId.builder()
                 .concatTags(tags)
                 .concatMeta(metaTags)
+                .stat(Stat.value())
                 .type(Type.COUNTER)
                 .unit(unit == null ? getUnit() : unit)
                 .build();

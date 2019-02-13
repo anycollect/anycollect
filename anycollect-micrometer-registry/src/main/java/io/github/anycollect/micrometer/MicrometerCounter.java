@@ -50,11 +50,6 @@ public final class MicrometerCounter implements Counter {
 
     private class AnyCollectAdapter implements io.github.anycollect.metric.Counter {
         @Override
-        public double count() {
-            return MicrometerCounter.this.count();
-        }
-
-        @Override
         public void increment(final double amount) {
             MicrometerCounter.this.increment(amount);
         }

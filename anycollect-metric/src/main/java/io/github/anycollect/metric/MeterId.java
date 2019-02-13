@@ -4,6 +4,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public interface MeterId extends Id {
+    static ImmutableMeterId.Builder key(@Nonnull String key) {
+        return new ImmutableMeterId.Builder().key(key);
+    }
+
     @Nonnull
     String getKey();
 

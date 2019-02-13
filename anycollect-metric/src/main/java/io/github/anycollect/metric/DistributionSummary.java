@@ -9,16 +9,6 @@ public interface DistributionSummary extends Meter {
 
     void record(double amount);
 
-    long count();
-
-    double totalAmount();
-
-    default double mean() {
-        return count() == 0 ? 0 : totalAmount() / count();
-    }
-
-    double max();
-
     class Builder {
         private final ImmutableMeterId.Builder idBuilder = new ImmutableMeterId.Builder();
         private double[] percentiles;
@@ -32,13 +22,23 @@ public interface DistributionSummary extends Meter {
             return this;
         }
 
-        public Builder tags(@Nonnull final String key, @Nonnull final String value) {
+        public Builder tag(@Nonnull final String key, @Nonnull final String value) {
             idBuilder.tag(key, value);
             return this;
         }
 
         public Builder meta(@Nonnull final String key, @Nonnull final String value) {
             idBuilder.meta(key, value);
+            return this;
+        }
+
+        public Builder concatTags(@Nonnull final Tags addition) {
+            idBuilder.concatTags(addition);
+            return this;
+        }
+
+        public Builder concatMeta(@Nonnull final Tags addition) {
+            idBuilder.concatMeta(addition);
             return this;
         }
 

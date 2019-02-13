@@ -6,4 +6,6 @@ public interface MeterRegistry {
     Counter counter(@Nonnull MeterId id);
 
     DistributionSummary summary(@Nonnull MeterId id, @Nonnull double... percentiles);
+
+    DistributionSummary summary(@Nonnull MeterId id);
 }
