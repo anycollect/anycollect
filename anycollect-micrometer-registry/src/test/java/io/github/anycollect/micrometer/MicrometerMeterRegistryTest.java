@@ -24,8 +24,7 @@ class MicrometerMeterRegistryTest {
                 return null;
             }
         });
-        DistributionSummary summary = DistributionSummary.key("test")
-                .percentiles(0.5, 0.75, 0.99, 0.999)
+        Distribution summary = Distribution.key("test")
                 .unit("tests")
                 .meta("plugin", "jmx")
                 .register(registry);

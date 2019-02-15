@@ -9,10 +9,14 @@ public interface MeterId extends Id {
     }
 
     @Nonnull
-    String getKey();
+    default String getKey() {
+        return getTags().getTagValue(CommonTags.METRIC_KEY.getKey());
+    }
 
     @Nonnull
-    String getUnit();
+    default String getUnit() {
+        return getTags().getTagValue(CommonTags.UNIT.getKey());
+    }
 
     default MetricId counter() {
         return counter(null);
@@ -38,15 +42,63 @@ public interface MeterId extends Id {
         return percentile(percentile, null);
     }
 
-    MetricId counter(@Nullable String unit);
+    default MetricId counter(@Nullable final String unit) {
+        return MetricId.builder()
+                .concatTags(getTags())
+                .concatMeta(getMetaTags())
+                .stat(Stat.value())
+                .type(Type.COUNTER)
+                .unit(unit == null ? getUnit() : unit)
+                .build();
+    }
 
-    MetricId max(@Nullable String unit);
+    default MetricId max(@Nullable final String unit) {
+        return MetricId.builder()
+                .concatTags(getTags())
+                .concatMeta(getMetaTags())
+                .type(Type.GAUGE)
+                .unit(unit == null ? getUnit() : unit)
+                .stat(Stat.max())
+                .build();
+    }
 
-    MetricId mean(@Nullable String unit);
+    default MetricId mean(@Nullable final String unit) {
+        return MetricId.builder()
+                .concatTags(getTags())
+                .concatMeta(getMetaTags())
+                .type(Type.GAUGE)
+                .unit(unit == null ? getUnit() : unit)
+                .stat(Stat.mean())
+                .build();
+    }
 
-    MetricId value(@Nullable String unit);
+    default MetricId value(@Nullable final String unit) {
+        return MetricId.builder()
+                .concatTags(getTags())
+                .concatMeta(getMetaTags())
+                .type(Type.GAUGE)
+                .unit(unit == null ? getUnit() : unit)
+                .stat(Stat.value())
+                .build();
+    }
 
-    MetricId percentile(int num, @Nullable String unit);
+    default MetricId percentile(final int num, @Nullable final String unit) {
+        return MetricId.builder()
+                .concatTags(getTags())
+                .concatMeta(getMetaTags())
+                .type(Type.GAUGE)
+                .unit(unit == null ? getUnit() : unit)
+                .stat(Stat.percentile(num))
+                .build();
+    }
 
-    MetricId percentile(double percentile, @Nullable String unit);
+    default MetricId percentile(final double percentile, @Nullable final String unit) {
+        return MetricId.builder()
+                .concatTags(getTags())
+                .concatMeta(getMetaTags())
+                .type(Type.GAUGE)
+                .unit(unit == null ? getUnit() : unit)
+                .stat(Stat.percentile(percentile))
+                .build();
+    }
 }

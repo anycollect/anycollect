@@ -24,6 +24,7 @@ class StatTest {
         assertThat(Stat.mean().getType()).isSameAs(StatType.MEAN);
         assertThat(Stat.std().getType()).isSameAs(StatType.STD);
         assertThat(Stat.percentile(95).getType()).isSameAs(StatType.PERCENTILE);
+        assertThat(Stat.value().getType()).isSameAs(StatType.UNKNOWN);
     }
 
     @Test

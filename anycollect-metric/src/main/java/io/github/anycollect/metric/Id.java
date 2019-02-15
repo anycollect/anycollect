@@ -6,17 +6,29 @@ import java.util.Set;
 public interface Id {
     Tags getTags();
 
-    boolean hasTagKey(@Nonnull String key);
+    default boolean hasTagKey(@Nonnull String key) {
+        return getTags().hasTagKey(key);
+    }
 
-    String getTagValue(@Nonnull String key);
+    default String getTagValue(@Nonnull String key) {
+        return getTags().getTagValue(key);
+    }
 
-    Set<String> getTagKeys();
+    default Set<String> getTagKeys() {
+        return getTags().getTagKeys();
+    }
 
     Tags getMetaTags();
 
-    boolean hasMetaTagKey(@Nonnull String key);
+    default boolean hasMetaTagKey(@Nonnull String key) {
+        return getMetaTags().hasTagKey(key);
+    }
 
-    String getMetaTagValue(@Nonnull String key);
+    default String getMetaTagValue(@Nonnull String key) {
+        return getMetaTags().getTagValue(key);
+    }
 
-    Set<String> getMetaTagKeys();
+    default Set<String> getMetaTagKeys() {
+        return getMetaTags().getTagKeys();
+    }
 }

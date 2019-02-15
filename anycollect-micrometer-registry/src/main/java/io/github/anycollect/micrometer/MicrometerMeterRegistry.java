@@ -69,20 +69,12 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
                 .register(this)).getAdapter();
     }
 
-    @Override
-    public io.github.anycollect.metric.DistributionSummary summary(@Nonnull final MeterId id,
-                                                                   @Nonnull final double... percentiles) {
-        return (io.github.anycollect.metric.DistributionSummary)
-                meters.computeIfAbsent(id, i -> registerNewSummary(i, percentiles));
-    }
-
-    private io.github.anycollect.metric.DistributionSummary registerNewSummary(@Nonnull final MeterId id,
-                                                                               @Nonnull final double[] percentiles) {
+    private Distribution registerNewSummary(@Nonnull final MeterId id) {
         DistributionSummary summary = DistributionSummary.builder(id.getKey())
                 .tags(convertTags(id.getTags()))
                 .description(getDescription(id))
                 .percentilePrecision(1)
-                .publishPercentiles(percentiles)
+                .publishPercentiles(0.5, 0.75, 0.99, 0.999)
                 .publishPercentileHistogram(false)
                 .scale(1.0)
                 .minimumExpectedValue(1L)
@@ -92,9 +84,9 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
     }
 
     @Override
-    public io.github.anycollect.metric.DistributionSummary summary(@Nonnull final MeterId id) {
-        return (io.github.anycollect.metric.DistributionSummary)
-                meters.computeIfAbsent(id, i -> summary(i, new double[]{}));
+    public Distribution distribution(@Nonnull final MeterId id) {
+        return (Distribution)
+                meters.computeIfAbsent(id, this::registerNewSummary);
     }
 
     private String getDescription(@Nonnull final MeterId meterId) {

@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ImmutableMetricIdTest {
     private ImmutableMetricId.Builder base = MetricId.builder()
             .key("test")
+            .stat(Stat.value())
             .unit("tests")
             .type(Type.GAUGE);
 
@@ -90,7 +91,7 @@ class ImmutableMetricIdTest {
                 .tag("key2", "value2")
                 .meta("metaKey1", "metaValue1")
                 .build();
-        assertThat(id.getTagKeys()).containsExactly("what", "unit", "mtype", "key1", "key2");
+        assertThat(id.getTagKeys()).containsExactly("what", "stat", "unit", "mtype", "key1", "key2");
         assertThat(id.getMetaTagKeys()).containsExactly("metaKey1");
         assertThat(id.getTagValue("key1")).isEqualTo("value1");
         assertThat(id.getTagValue("key2")).isEqualTo("value2");
@@ -157,7 +158,7 @@ class ImmutableMetricIdTest {
                 .concatTags(commonTags)
                 .concatMeta(meta)
                 .build();
-        assertThat(id.getTagKeys()).containsExactly("what", "unit", "mtype", "host", "service");
+        assertThat(id.getTagKeys()).containsExactly("what", "stat", "unit", "mtype", "host", "service");
         assertThat(id.getMetaTagKeys()).containsExactly("agent");
     }
 }

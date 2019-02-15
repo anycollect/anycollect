@@ -14,7 +14,17 @@ class ImmutableTagsTest {
                 .tag("key2", "value2")
                 .tag("key1", "value1")
                 .build();
-        assertThat(tags.getTagKeys()).containsExactly("key2", "key1");
         assertThat(tags).containsExactly(Tag.of("key2", "value2"), Tag.of("key1", "value1"));
+    }
+
+    @Test
+    void singletonTagTest() {
+        ImmutableTags tags = Tags.of("test", "valeu");
+        assertThat(tags.getTagKeys()).containsExactly("test");
+    }
+
+    @Test
+    void emptyTagsMustBeSingleton() {
+        assertThat(Tags.empty()).isSameAs(Tags.empty());
     }
 }

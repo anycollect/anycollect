@@ -11,11 +11,19 @@ public interface MetricId extends Id {
         return new ImmutableMetricId.Builder();
     }
 
-    String getKey();
+    default String getKey() {
+        return getTagValue(CommonTags.METRIC_KEY.getKey());
+    }
 
-    Stat getStat();
+    default Stat getStat() {
+        return Stat.parse(getTagValue(CommonTags.STAT.getKey()));
+    }
 
-    Type getType();
+    default Type getType() {
+        return Type.parse(getTagValue(CommonTags.METRIC_TYPE.getKey()));
+    }
 
-    String getUnit();
+    default String getUnit() {
+        return getTagValue(CommonTags.UNIT.getKey());
+    }
 }

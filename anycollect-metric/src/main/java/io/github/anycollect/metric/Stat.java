@@ -21,19 +21,19 @@ public interface Stat {
         return VALUE;
     }
 
-    static Stat percentile(double percentile) {
+    static Percentile percentile(double percentile) {
         return new Percentile(max(), percentile);
     }
 
-    static Stat percentile(Stat stat, double percentile) {
+    static Percentile percentile(Stat stat, double percentile) {
         return new Percentile(stat, percentile);
     }
 
-    static Stat percentile(int num) {
+    static Percentile percentile(int num) {
         return new Percentile(max(), num);
     }
 
-    static Stat percentile(Stat stat, int num) {
+    static Percentile percentile(Stat stat, int num) {
         return new Percentile(stat, num);
     }
 

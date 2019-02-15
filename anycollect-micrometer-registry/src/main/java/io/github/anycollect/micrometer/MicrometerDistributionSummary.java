@@ -1,6 +1,7 @@
 package io.github.anycollect.micrometer;
 
 import io.github.anycollect.core.api.internal.Clock;
+import io.github.anycollect.metric.Distribution;
 import io.github.anycollect.metric.MeterId;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.MetricId;
@@ -15,7 +16,7 @@ import java.util.stream.Stream;
 
 public final class MicrometerDistributionSummary implements DistributionSummary {
     private final DistributionSummary delegate;
-    private final io.github.anycollect.metric.DistributionSummary adapter;
+    private final Distribution adapter;
     private final MeterId id;
     private final Clock clock;
     private final List<SnapshotMetric> metrics;
@@ -72,11 +73,11 @@ public final class MicrometerDistributionSummary implements DistributionSummary 
         return delegate.getId();
     }
 
-    public io.github.anycollect.metric.DistributionSummary getAdapter() {
+    public Distribution getAdapter() {
         return adapter;
     }
 
-    private class AnyCollectAdapter implements io.github.anycollect.metric.DistributionSummary {
+    private class AnyCollectAdapter implements Distribution {
         @Override
         public void record(final double amount) {
             MicrometerDistributionSummary.this.record(amount);

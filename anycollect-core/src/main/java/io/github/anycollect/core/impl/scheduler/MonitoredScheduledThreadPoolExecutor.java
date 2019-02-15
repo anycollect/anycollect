@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.scheduler;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.Counter;
-import io.github.anycollect.metric.DistributionSummary;
+import io.github.anycollect.metric.Distribution;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.Tags;
 
@@ -16,9 +16,9 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
     private static final double ONE_HUNDRED_PERCENTS = 100.0;
     private final Clock clock;
     private final Map<CustomFuture<?>, Long> lastRunStartTimes = new ConcurrentHashMap<>();
-    private final DistributionSummary discrepancySummary;
+    private final Distribution discrepancySummary;
     private final Set<CustomFuture<?>> running = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final DistributionSummary processingTimeSummary;
+    private final Distribution processingTimeSummary;
     private final Counter failedJobsCounter;
     private final Counter succeededJobsCounter;
 
@@ -34,14 +34,12 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
                                                 final Tags tags) {
         super(corePoolSize);
         this.clock = clock;
-        discrepancySummary = DistributionSummary.key("scheduler.discrepancy")
+        discrepancySummary = Distribution.key("scheduler.discrepancy")
                 .unit("percentage")
-                .percentiles(0.5, 0.75, 0.99, 0.999)
                 .concatTags(tags)
                 .register(registry);
-        processingTimeSummary = DistributionSummary.key("scheduler.processing.time")
-                .unit("ns")
-                .percentiles(0.5, 0.75, 0.99, 0.999)
+        processingTimeSummary = Distribution.key("scheduler.processing.time")
+                .nanos()
                 .concatTags(tags)
                 .register(registry);
         failedJobsCounter = Counter.key("scheduler.failed.jobs")

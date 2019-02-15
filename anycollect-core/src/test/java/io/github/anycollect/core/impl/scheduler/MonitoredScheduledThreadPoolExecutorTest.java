@@ -29,7 +29,7 @@ class MonitoredScheduledThreadPoolExecutorTest {
             }
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
-        DistributionSummary summary = registry.summary(MeterId.key("scheduler.discrepancy").unit("percentage").build());
+        Distribution summary = registry.distribution(MeterId.key("scheduler.discrepancy").unit("percentage").build());
         assertThat(summary.measure().map(Metric::getId)).contains(
                 MetricId.key("scheduler.discrepancy")
                         .unit("percentage")
