@@ -1,6 +1,6 @@
 package io.github.anycollect.readers.jmx.server.pool.impl;
 
-import io.github.anycollect.readers.jmx.ConnectionException;
+import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.readers.jmx.server.JmxConnection;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.junit.jupiter.api.Assertions;

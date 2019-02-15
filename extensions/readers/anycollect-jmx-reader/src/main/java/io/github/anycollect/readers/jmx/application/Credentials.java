@@ -11,9 +11,7 @@ import java.util.Objects;
 @ToString
 @EqualsAndHashCode
 public final class Credentials {
-    @Nonnull
     private final String username;
-    @Nonnull
     private final String password;
 
     public Credentials(@Nonnull final String username, @Nonnull final String password) {

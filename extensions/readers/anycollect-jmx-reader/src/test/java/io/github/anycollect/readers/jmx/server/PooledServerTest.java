@@ -1,11 +1,9 @@
 package io.github.anycollect.readers.jmx.server;
 
-import io.github.anycollect.readers.jmx.ConnectionException;
-import io.github.anycollect.readers.jmx.QueryException;
-import io.github.anycollect.readers.jmx.application.Application;
-import io.github.anycollect.readers.jmx.application.SimpleQueryMatcher;
+import io.github.anycollect.core.exceptions.ConnectionException;
+import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.readers.jmx.query.JmxQuery;
 import io.github.anycollect.readers.jmx.query.NoopQuery;
-import io.github.anycollect.readers.jmx.query.Query;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,24 +14,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class PooledServerTest {
-    private Application dummy = new Application("dummy",
-            new SimpleQueryMatcher("group", "label"),
-            null,
-            null,
-            false);
     private JmxConnectionPool pool = mock(JmxConnectionPool.class);
 
     @Test
-    void mustCheckQueryBeforeExecute() {
-        Server server = new PooledServer("dummy-server", dummy, pool);
-        IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class,
-                () -> server.execute(new NoopQuery("group", "wrong")));
-        assertThat(ex).hasMessageContaining("query");
-    }
-
-    @Test
     void mustBorrowAndThenReturnConnectionToPool() throws ConnectionException, QueryException {
-        Server server = new PooledServer("dummy-server", dummy, pool);
+        JavaApp server = new PooledJavaApp("dummy-server", pool);
         JmxConnection jmxConnection = mock(JmxConnection.class);
         when(pool.borrowConnection()).thenReturn(jmxConnection);
         server.execute(new NoopQuery("group", "label"));
@@ -42,11 +27,11 @@ class PooledServerTest {
 
     @Test
     void mustInvalidateConnectionIfExceptionDuringExecution() throws ConnectionException, QueryException {
-        Server server = new PooledServer("dummy-server", dummy, pool);
+        JavaApp server = new PooledJavaApp("dummy-server", pool);
         MBeanServerConnection serverConnection = mock(MBeanServerConnection.class);
         JmxConnection jmxConnection = new JmxConnection(null, serverConnection);
         when(pool.borrowConnection()).thenReturn(jmxConnection);
-        Query query = spy(new NoopQuery("group", "label"));
+        JmxQuery query = spy(new NoopQuery("group", "label"));
         when(query.executeOn(any())).thenThrow(new ConnectionException("timeout"));
         ConnectionException ex = Assertions.assertThrows(ConnectionException.class, () -> server.execute(query));
         assertThat(ex).hasMessage("timeout");
@@ -55,7 +40,7 @@ class PooledServerTest {
 
     @Test
     void mustForwardBusinessExceptionFromPool() throws ConnectionException {
-        Server server = new PooledServer("dummy-server", dummy, pool);
+        JavaApp server = new PooledJavaApp("dummy-server", pool);
         when(pool.borrowConnection()).thenThrow(new ConnectionException("dummy"));
         ConnectionException ex = Assertions.assertThrows(ConnectionException.class, () -> server.execute(new NoopQuery("group", "label")));
         assertThat(ex).hasMessage("dummy");
@@ -63,7 +48,7 @@ class PooledServerTest {
 
     @Test
     void mustForwardBusinessExceptionFromQuery() throws ConnectionException, QueryException {
-        Server server = new PooledServer("dummy-server", dummy, pool);
+        JavaApp server = new PooledJavaApp("dummy-server", pool);
         NoopQuery query = spy(new NoopQuery("group", "label"));
         when(pool.borrowConnection()).thenReturn(new JmxConnection(null, mock(MBeanServerConnection.class)));
         when(query.executeOn(any())).thenThrow(new QueryException("dummy"));
@@ -73,8 +58,7 @@ class PooledServerTest {
 
     @Test
     void propertiesTest() {
-        Server server = new PooledServer("dummy-server", dummy, pool);
+        JavaApp server = new PooledJavaApp("dummy-server", pool);
         assertThat(server.getId()).isEqualTo("dummy-server");
-        assertThat(server.getApplication()).isSameAs(dummy);
     }
 }

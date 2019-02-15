@@ -1,7 +1,10 @@
 package io.github.anycollect.core.api.query;
 
+import lombok.EqualsAndHashCode;
+
 import javax.annotation.Nonnull;
 
+@EqualsAndHashCode
 public abstract class AbstractQuery implements Query {
     private final String group;
     private final String label;

@@ -9,12 +9,14 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface Target<Q extends Query> {
-    String DEFAULT_LABEL = "default";
-
-    @Nonnull
-    default String getLabel() {
-        return DEFAULT_LABEL;
-    }
+    /**
+     * Instance id for application that can unique identify the target.
+     * It can be for example in "127.0.0.1:8080" or "users-123" formats.
+     * This value should be unique across all monitored by anycollect targets.
+     *
+     * @return instance id
+     */
+    String getId();
 
     List<Metric> execute(@Nonnull Q query) throws QueryException, ConnectionException;
 }
