@@ -7,7 +7,7 @@ extenstions:
     pullPeriod: 15
     defaultPoolSize: 1
     rules:
-    - label: app1
+    - targetId: "app1-.*"
       poolSize: 3
-    - label: app2
+    - targetId: "app2-.*"
       poolSize: 2

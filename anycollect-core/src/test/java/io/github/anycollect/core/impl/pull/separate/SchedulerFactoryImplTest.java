@@ -21,7 +21,7 @@ class SchedulerFactoryImplTest {
     void setUp() {
         rule = mock(ConcurrencyRule.class);
         factory = new SchedulerFactoryImpl(rule, 2, new NoopMeterRegistry());
-        when(target.getLabel()).thenReturn("app");
+        when(target.getId()).thenReturn("app");
     }
 
     @Test

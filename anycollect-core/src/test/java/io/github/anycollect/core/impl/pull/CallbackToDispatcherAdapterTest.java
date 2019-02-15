@@ -52,7 +52,7 @@ class CallbackToDispatcherAdapterTest {
         void success() {
             TestTarget target = mock(TestTarget.class);
             TestQuery query = mock(TestQuery.class);
-            adapter.call(Result.fail(target, query, new QueryException(), 10));
+            adapter.call(Result.fail(target, query, new QueryException("test"), 10));
         }
 
         @Test

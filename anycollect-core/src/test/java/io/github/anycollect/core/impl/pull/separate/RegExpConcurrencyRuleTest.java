@@ -25,7 +25,7 @@ class RegExpConcurrencyRuleTest {
         @DisplayName("must return configured pool size")
         void mustReturnConfiguredPoolSize() {
             Target target = mock(Target.class);
-            when(target.getLabel()).thenReturn("app1");
+            when(target.getId()).thenReturn("app1");
             assertThat(rule.getPoolSize(target, -1)).isEqualTo(3);
         }
     }
@@ -44,7 +44,7 @@ class RegExpConcurrencyRuleTest {
         @DisplayName("must return fallback")
         void mustReturnFallback() {
             Target target = mock(Target.class);
-            when(target.getLabel()).thenReturn("app1");
+            when(target.getId()).thenReturn("app1");
             assertThat(rule.getPoolSize(target, -1)).isEqualTo(-1);
             assertThat(rule.getPoolSize(target, 10)).isEqualTo(10);
         }

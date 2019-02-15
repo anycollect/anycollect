@@ -58,7 +58,7 @@ class PullJobTest {
     @Test
     void failTest() throws ConnectionException, QueryException {
         when(clock.monotonicTime()).thenReturn( 5L, 15L);
-        QueryException ex = new QueryException();
+        QueryException ex = new QueryException("test");
         when(target.execute(query)).thenThrow(ex);
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Result<TestTarget, TestQuery>> captor = ArgumentCaptor.forClass(Result.class);

@@ -10,19 +10,19 @@ import java.util.regex.Pattern;
 
 @ToString
 public final class RegExpConcurrencyRule implements ConcurrencyRule {
-    private final Pattern labelPattern;
+    private final Pattern idRegexp;
     private final int poolSize;
 
     @JsonCreator
-    public RegExpConcurrencyRule(@Nonnull @JsonProperty("label") final String labelRegexp,
+    public RegExpConcurrencyRule(@Nonnull @JsonProperty("targetId") final String idRegexp,
                                  @JsonProperty("poolSize") final int poolSize) {
-        this.labelPattern = Pattern.compile(labelRegexp);
+        this.idRegexp = Pattern.compile(idRegexp);
         this.poolSize = poolSize;
     }
 
     @Override
     public int getPoolSize(@Nonnull final Target<?> target, final int fallback) {
-        if (labelPattern.matcher(target.getLabel()).matches()) {
+        if (idRegexp.matcher(target.getId()).matches()) {
             return poolSize;
         }
         return fallback;

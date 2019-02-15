@@ -1,10 +1,7 @@
 package io.github.anycollect.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.anycollect.metric.Metric;
-import io.github.anycollect.metric.MetricId;
-import io.github.anycollect.metric.Stat;
-import io.github.anycollect.metric.Type;
+import io.github.anycollect.metric.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,5 +30,12 @@ class AnyCollectModuleTest {
         String json = mapper.writeValueAsString(metric);
         Metric restored = mapper.readValue(json, Metric.class);
         assertThat(metric).isEqualToComparingFieldByFieldRecursively(restored);
+    }
+
+    @Test
+    void metaIsOptional() throws Exception {
+        String json = "{\"id\":{\"tags\":{\"what\":\"test\",\"unit\":\"tests\",\"stat\":\"max\",\"mtype\":\"gauge\"}},\"value\":15.0,\"timestamp\":1550273897001}";
+        Metric restored = mapper.readValue(json, Metric.class);
+        assertThat(restored.getId().getMetaTags()).isEqualTo(Tags.empty());
     }
 }

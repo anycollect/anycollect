@@ -33,7 +33,7 @@ public final class SchedulerFactoryImpl implements SchedulerFactory {
         int poolSize = rule.getPoolSize(target, defaultPoolSize);
         LOG.debug("creating scheduler for target {} with pool size {}", target, poolSize);
         ScheduledThreadPoolExecutor executorService
-                = new MonitoredScheduledThreadPoolExecutor(poolSize, registry, Tags.of("target", target.getLabel()));
+                = new MonitoredScheduledThreadPoolExecutor(poolSize, registry, Tags.of("target", target.getId()));
         return new SchedulerImpl(executorService);
     }
 }
