@@ -2,3 +2,4 @@
 **.iml
 **/target/
 !**/src/**/*
+**/*/.DS_Store
