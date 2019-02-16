@@ -4,11 +4,11 @@ import io.github.anycollect.core.api.internal.ImmutableState;
 import io.github.anycollect.core.api.internal.State;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
-import io.github.anycollect.core.impl.pull.DesiredStateManagerImpl;
-import io.github.anycollect.core.impl.pull.PullScheduler;
-import io.github.anycollect.core.impl.pull.ResultCallback;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;
 
@@ -27,8 +27,8 @@ class DesiredStateManagerImplTest {
     @DisplayName("after target with two queries added")
     class AfterTargetWithTwoQueriesAdded {
         private TestTarget target1 = mock(TestTarget.class);
-        private TestQuery query11 = new TestQuery("group1", "label1");
-        private TestQuery query12 = new TestQuery("group1", "label2");
+        private TestQuery query11 = new TestQuery("id11");
+        private TestQuery query12 = new TestQuery("id12");
         private State<TestTarget, TestQuery> state;
         private Cancellation query11Cancellation = mock(Cancellation.class);
         private Cancellation query12Cancellation = mock(Cancellation.class);
@@ -56,8 +56,8 @@ class DesiredStateManagerImplTest {
         @DisplayName("when remove target from new state")
         class WhenRemoveTargetFromNewState {
             private TestTarget target2 = mock(TestTarget.class);
-            private TestQuery query21 = new TestQuery("group2", "label1");
-            private TestQuery query22 = new TestQuery("group2", "label2");
+            private TestQuery query21 = new TestQuery("id21");
+            private TestQuery query22 = new TestQuery("id22");
             private State<TestTarget, TestQuery> state;
 
             @BeforeEach
@@ -86,8 +86,8 @@ class DesiredStateManagerImplTest {
         @Nested
         @DisplayName("when change queries to existing target")
         class WhenChangeQueriesToExistingTarget {
-            private TestQuery query13 = new TestQuery("group1", "label3");
-            private TestQuery query14 = new TestQuery("group1", "label4");
+            private TestQuery query13 = new TestQuery("id13");
+            private TestQuery query14 = new TestQuery("id14");
             private State<TestTarget, TestQuery> state;
 
             @BeforeEach
@@ -123,8 +123,8 @@ class DesiredStateManagerImplTest {
         @Nested
         @DisplayName("when add queries to existing target")
         class WhenAddQueriesToExistingTarget {
-            private TestQuery query15 = new TestQuery("group1", "label5");
-            private TestQuery query16 = new TestQuery("group1", "label6");
+            private TestQuery query15 = new TestQuery("id15");
+            private TestQuery query16 = new TestQuery("id16");
             private State<TestTarget, TestQuery> state;
 
             @BeforeEach

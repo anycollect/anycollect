@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 
 class PullJobTest {
     private TestTarget target = mock(TestTarget.class);
-    private TestQuery query = new TestQuery("group", "test");
+    private TestQuery query = new TestQuery("id");
     @SuppressWarnings("unchecked")
     private ResultCallback<TestTarget, TestQuery> callback = (ResultCallback<TestTarget, TestQuery>) mock(ResultCallback.class);
     private Clock clock = mock(Clock.class);

@@ -6,23 +6,15 @@ import javax.annotation.Nonnull;
 
 @EqualsAndHashCode
 public abstract class AbstractQuery implements Query {
-    private final String group;
-    private final String label;
+    private final String id;
 
-    public AbstractQuery(@Nonnull final String group, @Nonnull final String label) {
-        this.group = group;
-        this.label = label;
+    public AbstractQuery(@Nonnull final String id) {
+        this.id = id;
     }
 
     @Nonnull
     @Override
-    public final String getGroup() {
-        return group;
-    }
-
-    @Nonnull
-    @Override
-    public final String getLabel() {
-        return label;
+    public final String getId() {
+        return id;
     }
 }

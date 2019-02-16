@@ -1,11 +1,13 @@
 package io.github.anycollect.core.impl.pull;
 
-import io.github.anycollect.core.api.internal.*;
+import io.github.anycollect.core.api.internal.ImmutablePeriodicQuery;
+import io.github.anycollect.core.api.internal.QueryMatcher;
+import io.github.anycollect.core.api.internal.QueryMatcherResolver;
+import io.github.anycollect.core.api.internal.State;
 import io.github.anycollect.core.api.query.QueryProvider;
 import io.github.anycollect.core.api.target.ServiceDiscovery;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
-import io.github.anycollect.core.impl.pull.StdDesiredStateProvider;
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.Test;
 
@@ -18,9 +20,8 @@ class StdDesiredStateProviderTest {
     @SuppressWarnings("unchecked")
     private QueryProvider<TestQuery> provider = mock(QueryProvider.class);
     @SuppressWarnings("unchecked")
-    private QueryMatcher<TestTarget, TestQuery> matcher = mock(QueryMatcher.class);
-    @SuppressWarnings("unchecked")
-    private QueryMatcherResolver<TestTarget, TestQuery> resolver = mock(QueryMatcherResolver.class);
+    private QueryMatcher matcher = mock(QueryMatcher.class);
+    private QueryMatcherResolver resolver = mock(QueryMatcherResolver.class);
 
     private StdDesiredStateProvider<TestTarget, TestQuery> desired = new StdDesiredStateProvider<>(
             discovery,
@@ -31,8 +32,8 @@ class StdDesiredStateProviderTest {
     @Test
     void desiredStateTest() {
         TestTarget target = mock(TestTarget.class);
-        TestQuery query1 = new TestQuery("group", "test1");
-        TestQuery query2 = new TestQuery("group", "test2");
+        TestQuery query1 = new TestQuery("id1");
+        TestQuery query2 = new TestQuery("id2");
         when(discovery.discover()).thenReturn(Sets.newLinkedHashSet(target));
         when(provider.provide()).thenReturn(Sets.newLinkedHashSet(query1, query2));
         when(matcher.getPeriodInSeconds(target, query1, 30)).thenReturn(-1);

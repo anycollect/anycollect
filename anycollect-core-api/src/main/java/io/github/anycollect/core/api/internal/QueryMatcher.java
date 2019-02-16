@@ -6,8 +6,7 @@ import io.github.anycollect.core.api.target.Target;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public interface QueryMatcher<T extends Target<Q>, Q extends Query> {
-    @SuppressWarnings("rawtypes")
+public interface QueryMatcher {
     QueryMatcher ALL = (target, query, defaultPeriod) -> {
         Objects.requireNonNull(target, "target must not be null");
         Objects.requireNonNull(query, "query must not be null");
@@ -17,9 +16,8 @@ public interface QueryMatcher<T extends Target<Q>, Q extends Query> {
         return defaultPeriod;
     };
 
-    @SuppressWarnings("unchecked")
-    static <T extends Target<Q>, Q extends Query> QueryMatcher<T, Q> all() {
-        return (QueryMatcher<T, Q>) ALL;
+    static QueryMatcher all() {
+        return ALL;
     }
 
     /**
@@ -31,5 +29,5 @@ public interface QueryMatcher<T extends Target<Q>, Q extends Query> {
      * @param defaultPeriod - default period in seconds, greater than zero
      * @return period if given query must be executed on given target and -1 otherwise
      */
-    int getPeriodInSeconds(@Nonnull T target, @Nonnull Q query, int defaultPeriod);
+    int getPeriodInSeconds(@Nonnull Target target, @Nonnull Query query, int defaultPeriod);
 }

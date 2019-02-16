@@ -2,9 +2,9 @@ package io.github.anycollect.core.api.internal;
 
 import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.common.Plugin;
-import io.github.anycollect.core.api.query.Query;
-import io.github.anycollect.core.api.target.Target;
+import io.github.anycollect.extensions.annotations.ExtPoint;
 
-public interface QueryMatcherResolver<T extends Target<Q>, Q extends Query> extends Plugin, Lifecycle {
-    QueryMatcher<T, Q> current();
+@ExtPoint
+public interface QueryMatcherResolver extends Plugin, Lifecycle {
+    QueryMatcher current();
 }

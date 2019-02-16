@@ -4,8 +4,5 @@ import javax.annotation.Nonnull;
 
 public interface Query {
     @Nonnull
-    String getGroup();
-
-    @Nonnull
-    String getLabel();
+    String getId();
 }

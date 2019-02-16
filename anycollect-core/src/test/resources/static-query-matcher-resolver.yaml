@@ -1,0 +1,11 @@
+extensions:
+- !load
+  extension: StaticQueryMatcherResolver
+  instance: matcher
+  config:
+    rules:
+    - instanceId: "users-[0-9]+"
+      queryId: "users.*"
+      period: 60
+    - queryId: "jvm.*"
+      period: 30

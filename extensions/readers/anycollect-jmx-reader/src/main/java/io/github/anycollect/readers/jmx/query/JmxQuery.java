@@ -16,8 +16,8 @@ import java.util.List;
 @ThreadSafe
 @EqualsAndHashCode(callSuper = true)
 public abstract class JmxQuery extends AbstractQuery {
-    public JmxQuery(@Nonnull final String group, @Nonnull final String label) {
-        super(group, label);
+    public JmxQuery(@Nonnull final String id) {
+        super(id);
     }
 
     @Nonnull

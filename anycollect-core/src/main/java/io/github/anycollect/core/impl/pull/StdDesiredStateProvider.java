@@ -12,12 +12,12 @@ import java.util.Set;
 public final class StdDesiredStateProvider<T extends Target<Q>, Q extends Query> implements DesiredStateProvider<T, Q> {
     private final ServiceDiscovery<? extends T> discovery;
     private final QueryProvider<? extends Q> provider;
-    private final QueryMatcherResolver<? super T, ? super Q> resolver;
+    private final QueryMatcherResolver resolver;
     private final int defaultPeriodInSeconds;
 
     public StdDesiredStateProvider(@Nonnull final ServiceDiscovery<? extends T> discovery,
                                    @Nonnull final QueryProvider<? extends Q> provider,
-                                   @Nonnull final QueryMatcherResolver<? super T, ? super Q> resolver,
+                                   @Nonnull final QueryMatcherResolver resolver,
                                    final int defaultPeriodInSeconds) {
         this.discovery = discovery;
         this.provider = provider;
@@ -30,7 +30,7 @@ public final class StdDesiredStateProvider<T extends Target<Q>, Q extends Query>
     public State<T, Q> current() {
         Set<? extends T> targets = discovery.discover();
         Set<? extends Q> queries = provider.provide();
-        QueryMatcher<? super T, ? super Q> matcher = resolver.current();
+        QueryMatcher matcher = resolver.current();
         ImmutableState.Builder<T, Q> builder = ImmutableState.builder();
         for (T target : targets) {
             for (Q query : queries) {

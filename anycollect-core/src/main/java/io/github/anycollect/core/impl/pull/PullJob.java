@@ -46,6 +46,6 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
 
     @Override
     public String toString() {
-        return target.getId() + ".execute(" + query.getGroup() + ":" + query.getLabel() + ")";
+        return target.getId() + ".execute(" + query.getId() + ")";
     }
 }

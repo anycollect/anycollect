@@ -7,8 +7,6 @@ import io.github.anycollect.core.api.internal.State;
 import io.github.anycollect.core.impl.JitScheduler;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
-import io.github.anycollect.core.impl.pull.PullManagerImpl;
-import io.github.anycollect.core.impl.pull.PullScheduler;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import org.junit.jupiter.api.Test;
 
@@ -27,8 +25,8 @@ class PullManagerImplTest {
         Dispatcher dispatcher = mock(Dispatcher.class);
         @SuppressWarnings("unchecked")
         TestTarget target1 = mock(TestTarget.class);
-        TestQuery query11 = new TestQuery("group1", "label1");
-        TestQuery query12 = new TestQuery("group1", "label2");
+        TestQuery query11 = new TestQuery("id1");
+        TestQuery query12 = new TestQuery("id2");
         State<TestTarget, TestQuery> state = ImmutableState.<TestTarget, TestQuery>builder()
                 .put(target1, query11, 1)
                 .put(target1, query12, 2)

@@ -1,8 +1,8 @@
 package io.github.anycollect.core.api.processor;
 
+import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.common.Plugin;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
-import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;

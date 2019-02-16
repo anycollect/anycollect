@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class NoopQuery extends JmxQuery {
-    public NoopQuery(@Nonnull String group, @Nonnull String label) {
-        super(group, label);
+    public NoopQuery(@Nonnull String id) {
+        super(id);
     }
 
     @Nonnull

@@ -22,7 +22,7 @@ class CurrentAppTest {
     @Test
     void connectionMustBeOfTypeMBeanServer() throws ConnectionException, QueryException {
         JmxConnectionPoolFactory poolFactory = new MockJmxConnectionPoolFactory();
-        JmxQuery query = spy(new NoopQuery("group", "label"));
+        JmxQuery query = spy(new NoopQuery("id"));
         when(query.executeOn(any())).thenReturn(Collections.emptyList());
         CurrentApp discovery = new CurrentApp("dummy", poolFactory);
 

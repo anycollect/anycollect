@@ -60,7 +60,7 @@ public final class PullManagerImpl implements PullManager {
     @Override
     public <T extends Target<Q>, Q extends Query> void start(@Nonnull final ServiceDiscovery<T> discovery,
                                                              @Nonnull final QueryProvider<Q> provider,
-                                                             @Nonnull final QueryMatcherResolver<T, Q> resolver,
+                                                             @Nonnull final QueryMatcherResolver resolver,
                                                              @Nonnull final Dispatcher dispatcher) {
         start(new StdDesiredStateProvider<>(
                 discovery,
