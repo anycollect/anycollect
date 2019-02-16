@@ -16,6 +16,7 @@ public interface Target<Q extends Query> {
      *
      * @return instance id
      */
+    @Nonnull
     String getId();
 
     List<Metric> execute(@Nonnull Q query) throws QueryException, ConnectionException;

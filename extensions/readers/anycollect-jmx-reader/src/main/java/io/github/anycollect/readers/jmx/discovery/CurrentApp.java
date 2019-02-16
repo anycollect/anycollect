@@ -1,8 +1,9 @@
 package io.github.anycollect.readers.jmx.discovery;
 
+import io.github.anycollect.extensions.annotations.Extension;
+import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.server.JmxConnection;
 import io.github.anycollect.readers.jmx.server.JmxConnectionFactory;
-import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPoolFactory;
 
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
+@Extension(name = "CurrentApp", point = JavaAppDiscovery.class)
 public final class CurrentApp implements JavaAppDiscovery {
     private static final JmxConnectionFactory JMX_CONNECTION_FACTORY = new JmxConnectionFactory() {
         @Nonnull

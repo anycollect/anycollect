@@ -1,4 +1,4 @@
-package io.github.anycollect.readers.jmx.application;
+package io.github.anycollect.readers.jmx.config;
 
 import org.junit.jupiter.api.Test;
 

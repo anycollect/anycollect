@@ -1,5 +1,7 @@
-package io.github.anycollect.readers.jmx.application;
+package io.github.anycollect.readers.jmx.config;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -14,7 +16,9 @@ public final class Credentials {
     private final String username;
     private final String password;
 
-    public Credentials(@Nonnull final String username, @Nonnull final String password) {
+    @JsonCreator
+    public Credentials(@JsonProperty("username") @Nonnull final String username,
+                       @JsonProperty("password") @Nonnull final String password) {
         Objects.requireNonNull(username, "username must not be null");
         Objects.requireNonNull(password, "password must not be null");
         this.username = username;
