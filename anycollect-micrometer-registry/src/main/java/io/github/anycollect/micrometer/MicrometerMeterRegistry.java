@@ -158,12 +158,42 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
         return new MicrometerCounter(new CumulativeCounter(id), meterId, anyClock);
     }
 
+    @Override
+    protected DistributionSummary newDistributionSummary(
+            @Nonnull final Meter.Id id,
+            @Nonnull final DistributionStatisticConfig distributionStatisticConfig,
+            final double scale) {
+        DistributionSummary summary = new StepDistributionSummary(id, clock, distributionStatisticConfig, scale,
+                config.step().toMillis(), false);
+        return new MicrometerDistributionSummary(summary, convertId(id), anyClock);
+    }
+
     private ImmutableMeterId convertId(@Nonnull final Meter.Id id) {
         return new ImmutableMeterId.Builder()
                 .key(id.getName())
                 .concatTags(extractTags(id))
                 .concatMeta(extractMetaTags(id))
                 .build();
+    }
+
+    private Tags extractTags(final Meter.Id micrometerId) {
+        ImmutableTags.Builder builder = Tags.builder();
+        for (io.micrometer.core.instrument.Tag tag : micrometerId.getTags()) {
+            builder.tag(tag.getKey(), tag.getValue());
+        }
+        return builder.build();
+    }
+
+    private Tags extractMetaTags(final Meter.Id micrometerId) {
+        if (micrometerId.getDescription() == null) {
+            return Tags.empty();
+        }
+        try {
+            return MAPPER.readValue(micrometerId.getDescription(), Tags.class);
+        } catch (IOException e) {
+            LOG.debug("could not convert description to meta tags");
+        }
+        return Tags.empty();
     }
 
     @Override
@@ -176,16 +206,6 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
                              @Nonnull final DistributionStatisticConfig distributionStatisticConfig,
                              @Nonnull final PauseDetector pauseDetector) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected DistributionSummary newDistributionSummary(
-            @Nonnull final Meter.Id id,
-            @Nonnull final DistributionStatisticConfig distributionStatisticConfig,
-            final double scale) {
-        DistributionSummary summary = new StepDistributionSummary(id, clock, distributionStatisticConfig, scale,
-                config.step().toMillis(), false);
-        return new MicrometerDistributionSummary(summary, convertId(id), anyClock);
     }
 
     @Override
@@ -209,25 +229,5 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
                                                      @Nonnull final T obj,
                                                      @Nonnull final ToDoubleFunction<T> countFunction) {
         throw new UnsupportedOperationException();
-    }
-
-    private Tags extractTags(final Meter.Id micrometerId) {
-        ImmutableTags.Builder builder = Tags.builder();
-        for (io.micrometer.core.instrument.Tag tag : micrometerId.getTags()) {
-            builder.tag(tag.getKey(), tag.getValue());
-        }
-        return builder.build();
-    }
-
-    private Tags extractMetaTags(final Meter.Id micrometerId) {
-        if (micrometerId.getDescription() == null) {
-            return Tags.empty();
-        }
-        try {
-            return MAPPER.readValue(micrometerId.getDescription(), Tags.class);
-        } catch (IOException e) {
-            LOG.debug("could not convert description to meta tags");
-        }
-        return Tags.empty();
     }
 }
