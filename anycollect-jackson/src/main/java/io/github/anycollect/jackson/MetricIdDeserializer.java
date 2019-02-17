@@ -19,14 +19,15 @@ public final class MetricIdDeserializer extends StdDeserializer<MetricId> {
     }
 
     @Override
-    public MetricId deserialize(final JsonParser parser, final DeserializationContext ctxt) throws IOException {
-        JsonNode node = parser.getCodec().readTree(parser);
+    public MetricId deserialize(final JsonParser parser, final DeserializationContext ctx) throws IOException {
+        ObjectCodec codec = parser.getCodec();
+        JsonNode node = codec.readTree(parser);
         String key = node.get("what").asText();
         String unit = node.get("unit").asText();
-        Stat stat = Stat.parse(node.get("stat").asText());
-        Type type = Type.parse(node.get("mtype").asText());
-        Tags tags = serializeTags(node.get("tags"), parser.getCodec(), ctxt);
-        Tags meta = serializeTags(node.get("meta"), parser.getCodec(), ctxt);
+        Stat stat = node.get("stat").traverse(codec).readValueAs(Stat.class);
+        Type type = node.get("mtype").traverse(codec).readValueAs(Type.class);
+        Tags tags = serializeTags(node.get("tags"), codec, ctx);
+        Tags meta = serializeTags(node.get("meta"), codec, ctx);
         return MetricId.key(key)
                 .unit(unit)
                 .stat(stat)

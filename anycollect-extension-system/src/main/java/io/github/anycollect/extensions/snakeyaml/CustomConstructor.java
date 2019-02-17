@@ -7,6 +7,7 @@ import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
+import io.github.anycollect.jackson.AnyCollectModule;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,10 @@ final class CustomConstructor extends Constructor {
     private final Map<String, Definition> extensionRegistry;
     private final Map<String, Instance> instanceRegistry;
     private String extensionName;
+
+    static {
+        MAPPER.registerModule(new AnyCollectModule());
+    }
 
     CustomConstructor(final Collection<Definition> extensions) {
         this.extensionRegistry = new HashMap<>();
