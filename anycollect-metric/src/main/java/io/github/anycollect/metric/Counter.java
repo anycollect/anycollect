@@ -15,8 +15,8 @@ public interface Counter extends Meter {
 
 
     final class CounterBuilder extends BaseMeterBuilder<CounterBuilder> {
-        CounterBuilder(@Nonnull final String value) {
-            super(value);
+        CounterBuilder(@Nonnull final String key) {
+            super(key);
         }
 
         @Override
@@ -24,8 +24,14 @@ public interface Counter extends Meter {
             return this;
         }
 
+        public CounterBuilder unit(@Nonnull final String unit) {
+            return super.unit(unit);
+        }
+
         public Counter register(@Nonnull final MeterRegistry registry) {
-            return registry.counter(new ImmutableMeterId(getTagsBuilder().build(), getMetaBuilder().build()));
+            ImmutableMeterId id = new ImmutableMeterId(getKey(), getUnit(),
+                    getTagsBuilder().build(), getMetaBuilder().build());
+            return registry.counter(id);
         }
     }
 }

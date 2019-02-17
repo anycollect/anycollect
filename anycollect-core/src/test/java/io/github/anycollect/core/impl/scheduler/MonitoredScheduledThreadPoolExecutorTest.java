@@ -30,13 +30,7 @@ class MonitoredScheduledThreadPoolExecutorTest {
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
         Distribution summary = registry.distribution(MeterId.key("scheduler.discrepancy").unit("percentage").build());
-        assertThat(summary.measure().map(Metric::getId)).contains(
-                MetricId.key("scheduler.discrepancy")
-                        .unit("percentage")
-                        .type(Type.GAUGE)
-                        .stat(Stat.MEAN)
-                        .build()
-        );
+        assertThat(summary.measure().getMeasurements()).first().extracting(Measurement::getValue).isNotEqualTo(0.0);
     }
 
     @Test
@@ -51,13 +45,7 @@ class MonitoredScheduledThreadPoolExecutorTest {
         future.cancel(true);
         Thread.sleep(1000);
         Counter failedJobs = registry.counter(MeterId.key("scheduler.failed.jobs").unit("job").build());
-        assertThat(failedJobs.measure().map(Metric::getId)).contains(
-                MetricId.key("scheduler.failed.jobs")
-                        .unit("job")
-                        .stat(Stat.value())
-                        .type(Type.COUNTER)
-                        .build()
-        );
+        assertThat(failedJobs.measure().getMeasurements()).first().extracting(Measurement::getValue).isNotEqualTo(0.0);
     }
 
     @Test
@@ -72,12 +60,6 @@ class MonitoredScheduledThreadPoolExecutorTest {
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
         Counter failedJobs = registry.counter(MeterId.key("scheduler.failed.jobs").unit("job").build());
-        assertThat(failedJobs.measure().map(Metric::getId)).contains(
-                MetricId.key("scheduler.failed.jobs")
-                        .unit("job")
-                        .stat(Stat.value())
-                        .type(Type.COUNTER)
-                        .build()
-        );
+        assertThat(failedJobs.measure().getMeasurements()).first().extracting(Measurement::getValue).isNotEqualTo(0.0);
     }
 }

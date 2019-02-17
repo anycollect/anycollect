@@ -7,7 +7,8 @@ import java.util.Map;
 
 @ExtPoint
 public interface MetricIdBuilderFactory {
-    MetricIdBuilder create(Map<String, String> tagExpressions, Map<String, String> metaTagExpressions)
+    MetricIdBuilder create(String key, String unit, String stat, String type,
+                           Map<String, String> tagExpressions, Map<String, String> metaTagExpressions)
             throws ParseException;
 
 }

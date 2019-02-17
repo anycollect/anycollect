@@ -3,7 +3,7 @@ package io.github.anycollect.core.impl.pull;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.MetricFamily;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -20,7 +20,7 @@ public final class CallbackToDispatcherAdapter<T extends Target<Q>, Q extends Qu
     @Override
     public void call(@Nonnull final Result<T, Q> result) {
         if (result.isSuccess()) {
-            List<Metric> metrics = result.getMetrics();
+            List<MetricFamily> metrics = result.getMetrics();
             Objects.requireNonNull(metrics);
             dispatcher.dispatch(metrics);
         }

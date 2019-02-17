@@ -1,9 +1,11 @@
 package io.github.anycollect.metric;
 
-import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 public interface Meter {
+    @Nonnull
     MeterId getId();
 
-    Stream<Metric> measure();
+    @Nonnull
+    MetricFamily measure();
 }

@@ -13,6 +13,15 @@ class StatTest {
         assertThat(Stat.parse("mean")).isSameAs(Stat.mean());
         assertThat(Stat.parse("std")).isSameAs(Stat.std());
         assertThat(Stat.parse("max_99")).isEqualTo(new Percentile(Stat.max(), 99));
+        assertThat(Stat.parse("le_Infinity")).isInstanceOf(LeBucket.class)
+                .extracting(stat -> ((LeBucket) stat).getMax())
+                .isEqualTo(Double.POSITIVE_INFINITY);
+        assertThat(Stat.parse("le_100")).isInstanceOf(LeBucket.class)
+                .extracting(stat -> ((LeBucket) stat).getMax())
+                .isEqualTo(100.0);
+        assertThat(Stat.parse("le_0.05")).isInstanceOf(LeBucket.class)
+                .extracting(stat -> ((LeBucket) stat).getMax())
+                .isEqualTo(0.05);
         IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class, () -> Stat.parse("undefined"));
         assertThat(ex).hasMessageContaining("undefined");
     }
@@ -24,17 +33,22 @@ class StatTest {
         assertThat(Stat.mean().getType()).isSameAs(StatType.MEAN);
         assertThat(Stat.std().getType()).isSameAs(StatType.STD);
         assertThat(Stat.percentile(95).getType()).isSameAs(StatType.PERCENTILE);
+        assertThat(Stat.leInf().getType()).isSameAs(StatType.LE_BUCKET);
         assertThat(Stat.value().getType()).isSameAs(StatType.UNKNOWN);
     }
 
     @Test
     void tagValueTest() {
-        assertThat(Stat.min().getTagValue()).isEqualTo("min");
-        assertThat(Stat.max().getTagValue()).isEqualTo("max");
-        assertThat(Stat.mean().getTagValue()).isEqualTo("mean");
-        assertThat(Stat.std().getTagValue()).isEqualTo("std");
-        assertThat(Stat.percentile(99).getTagValue()).isEqualTo("max_99");
-        assertThat(Stat.percentile(999).getTagValue()).isEqualTo("max_999");
+        assertThat(Stat.min().getTagValue()).isEqualTo("min").isEqualTo(Stat.min().toString());
+        assertThat(Stat.max().getTagValue()).isEqualTo("max").isEqualTo(Stat.max().toString());
+        assertThat(Stat.mean().getTagValue()).isEqualTo("mean").isEqualTo(Stat.mean().toString());
+        assertThat(Stat.std().getTagValue()).isEqualTo("std").isEqualTo(Stat.std().toString());
+        assertThat(Stat.percentile(99).getTagValue()).isEqualTo("max_99").isEqualTo(Stat.percentile(99).toString());
+        assertThat(Stat.percentile(999).getTagValue()).isEqualTo("max_999").isEqualTo(Stat.percentile(999).toString());
+        assertThat(Stat.le(0.4).getTagValue()).isEqualTo("le_0.4").isEqualTo(Stat.le(0.4).toString());
+        assertThat(Stat.le(120).getTagValue()).isEqualTo("le_120.0").isEqualTo(Stat.le(120).toString());
+        assertThat(Stat.leInf().getTagValue()).isEqualTo("le_Infinity").isEqualTo(Stat.leInf().toString());
+        assertThat(Stat.value().getTagValue()).isEqualTo("value").isEqualTo(Stat.value().toString());
     }
 
     @Test
@@ -44,6 +58,9 @@ class StatTest {
         assertThat(Stat.isValid(Stat.mean())).isTrue();
         assertThat(Stat.isValid(Stat.std())).isTrue();
         assertThat(Stat.isValid(new Percentile(Stat.max(), 75))).isTrue();
+        assertThat(Stat.isValid(LeBucket.inf())).isTrue();
+        assertThat(Stat.isValid(LeBucket.of(100))).isTrue();
+        assertThat(Stat.isValid(LeBucket.of(0.6))).isTrue();
         assertThat(Stat.isValid(new Stat() {
             @Override
             public StatType getType() {

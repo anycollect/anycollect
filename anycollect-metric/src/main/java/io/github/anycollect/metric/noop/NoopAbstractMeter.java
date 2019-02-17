@@ -2,11 +2,10 @@ package io.github.anycollect.metric.noop;
 
 import io.github.anycollect.metric.Meter;
 import io.github.anycollect.metric.MeterId;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.MetricFamily;
 import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
-import java.util.stream.Stream;
 
 @EqualsAndHashCode(of = "id")
 public class NoopAbstractMeter implements Meter {
@@ -16,13 +15,15 @@ public class NoopAbstractMeter implements Meter {
         this.id = id;
     }
 
+    @Nonnull
     @Override
     public final MeterId getId() {
         return id;
     }
 
+    @Nonnull
     @Override
-    public final Stream<Metric> measure() {
-        return Stream.empty();
+    public final MetricFamily measure() {
+        return MetricFamily.empty(id, System.currentTimeMillis());
     }
 }

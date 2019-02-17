@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.pull;
 
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.MetricFamily;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public final class Result<T extends Target<Q>, Q extends Query> {
     private final T target;
     private final Q query;
-    private final List<Metric> metrics;
+    private final List<MetricFamily> metrics;
     private final Type type;
     private final Exception exception;
     private final long processingTime;
@@ -24,7 +24,7 @@ public final class Result<T extends Target<Q>, Q extends Query> {
     public static <T extends Target<Q>, Q extends Query> Result<T, Q> success(
             @Nonnull final T target,
             @Nonnull final Q query,
-            @Nonnull final List<Metric> metrics,
+            @Nonnull final List<MetricFamily> metrics,
             final long processingTime) {
         return new Result<>(target, query,
                 new ArrayList<>(metrics),
@@ -50,7 +50,7 @@ public final class Result<T extends Target<Q>, Q extends Query> {
 
     private Result(@Nonnull final T target,
                    @Nonnull final Q query,
-                   @Nonnull final List<Metric> metrics,
+                   @Nonnull final List<MetricFamily> metrics,
                    @Nonnull final Type type,
                    @Nullable final Exception exception,
                    final long processingTime) {
@@ -73,8 +73,8 @@ public final class Result<T extends Target<Q>, Q extends Query> {
     }
 
     @Nonnull
-    public List<Metric> getMetrics() {
-        if (metrics == Collections.<Metric>emptyList()) {
+    public List<MetricFamily> getMetrics() {
+        if (metrics == Collections.<MetricFamily>emptyList()) {
             return metrics;
         }
         return Collections.unmodifiableList(metrics);

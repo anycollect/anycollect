@@ -20,7 +20,10 @@ public interface Distribution extends Meter {
         }
 
         public Distribution register(@Nonnull final MeterRegistry registry) {
-            return registry.distribution(new ImmutableMeterId(getTagsBuilder().build(), getMetaBuilder().build()));
+            ImmutableMeterId id = new ImmutableMeterId(
+                    getKey(), getUnit(),
+                    getTagsBuilder().build(), getMetaBuilder().build());
+            return registry.distribution(id);
         }
     }
 }

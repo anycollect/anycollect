@@ -2,7 +2,7 @@ package io.github.anycollect.metric;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 import static org.mockito.Mockito.*;
 
@@ -26,13 +26,15 @@ class CounterTest {
 
             }
 
+            @Nonnull
             @Override
             public MeterId getId() {
                 return null;
             }
 
+            @Nonnull
             @Override
-            public Stream<Metric> measure() {
+            public MetricFamily measure() {
                 return null;
             }
         });

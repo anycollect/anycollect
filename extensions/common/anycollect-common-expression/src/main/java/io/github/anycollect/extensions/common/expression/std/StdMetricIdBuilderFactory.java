@@ -17,17 +17,23 @@ public final class StdMetricIdBuilderFactory implements MetricIdBuilderFactory {
     private final ExpressionFactory expressionFactory;
 
     @ExtCreator
-    public StdMetricIdBuilderFactory(@ExtDependency(qualifier = "expressions")
-                                         final ExpressionFactory expressionFactory) {
+    public StdMetricIdBuilderFactory(
+            @ExtDependency(qualifier = "expressions") final ExpressionFactory expressionFactory) {
         this.expressionFactory = expressionFactory;
     }
 
     @Override
-    public MetricIdBuilder create(final Map<String, String> tagExpressions,
-                                  final Map<String, String> metaTagExpressions) throws ParseException {
+    public MetricIdBuilder create(
+            final String key, final String unit, final String stat, final String type,
+            final Map<String, String> tagExpressions,
+            final Map<String, String> metaTagExpressions) throws ParseException {
         Map<String, Expression> tags = parse(tagExpressions);
         Map<String, Expression> metaTags = parse(metaTagExpressions);
-        return new StdMetricIdBuilder(tags, metaTags);
+        return new StdMetricIdBuilder(expressionFactory.create(key),
+                expressionFactory.create(unit),
+                expressionFactory.create(stat),
+                expressionFactory.create(type),
+                tags, metaTags);
     }
 
     private Map<String, Expression> parse(final Map<String, String> expressionStrings) throws ParseException {

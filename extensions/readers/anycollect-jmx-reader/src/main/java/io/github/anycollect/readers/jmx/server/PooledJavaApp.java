@@ -1,8 +1,8 @@
 package io.github.anycollect.readers.jmx.server;
 
+import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.Metric;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
 
@@ -16,13 +16,12 @@ public final class PooledJavaApp extends JavaApp {
 
     public PooledJavaApp(@Nonnull final String id, @Nonnull final JmxConnectionPool pool) {
         super(id);
-        Objects.requireNonNull(id, "instance id must not be null");
         Objects.requireNonNull(pool, "jmx connection pool must not be null");
         this.pool = pool;
     }
 
     @Nonnull
-    public List<Metric> execute(@Nonnull final JmxQuery query) throws QueryException, ConnectionException {
+    public List<MetricFamily> execute(@Nonnull final JmxQuery query) throws QueryException, ConnectionException {
         JmxConnection jmxConnection = null;
         try {
             jmxConnection = pool.borrowConnection();

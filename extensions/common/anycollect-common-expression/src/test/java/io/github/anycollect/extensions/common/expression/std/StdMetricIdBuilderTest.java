@@ -1,10 +1,8 @@
 package io.github.anycollect.extensions.common.expression.std;
 
-import com.google.common.collect.ImmutableMap;
 import io.github.anycollect.extensions.common.expression.Args;
 import io.github.anycollect.extensions.common.expression.EvaluationException;
 import io.github.anycollect.extensions.common.expression.Expression;
-import io.github.anycollect.metric.CommonTags;
 import io.github.anycollect.metric.MetricId;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
@@ -39,12 +37,8 @@ class StdMetricIdBuilderTest {
         when(keyValueExp.process(any())).thenReturn("metric");
         when(metaTagValueExp.process(any())).thenReturn("meta");
         builder = new StdMetricIdBuilder(
-                ImmutableMap.of(
-                        CommonTags.METRIC_KEY.getKey(), keyValueExp,
-                        CommonTags.STAT.getKey(), statValueExp,
-                        CommonTags.UNIT.getKey(), unitValueExp,
-                        CommonTags.METRIC_TYPE.getKey(), typeValueExp
-                ),
+                keyValueExp, unitValueExp, statValueExp, typeValueExp,
+                Collections.emptyMap(),
                 Collections.singletonMap("metaTag", metaTagValueExp)
         );
     }

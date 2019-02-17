@@ -10,6 +10,7 @@ final class StatHelper {
     private static final Pattern STD_VALUE_PATTERN = Pattern.compile("std");
     private static final Pattern MEAN_VALUE_PATTERN = Pattern.compile("mean");
     private static final Pattern PERCENTILE_VALUE_PATTERN = Pattern.compile("(max|upper|mean)_([0-9]+)");
+    private static final Pattern LE_BUCKET_VALUE_PATTERN = Pattern.compile("le_(\\d+(\\.\\d+)*|Infinity)");
     private static final Pattern VALUE_PATTERN = Pattern.compile("value");
 
     private StatHelper() {
@@ -37,6 +38,10 @@ final class StatHelper {
             Stat subStat = parse(matcher.group(1));
             int num = Integer.parseInt(matcher.group(2));
             return Stat.percentile(subStat, num);
+        }
+        matcher = LE_BUCKET_VALUE_PATTERN.matcher(stat);
+        if (matcher.matches()) {
+            return LeBucket.of(Double.parseDouble(matcher.group(1)));
         }
         throw new IllegalArgumentException("unrecognized stat: " + stat);
     }

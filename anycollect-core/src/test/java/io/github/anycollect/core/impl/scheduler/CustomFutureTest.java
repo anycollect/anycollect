@@ -6,9 +6,7 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.RunnableScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class CustomFutureTest {
     @Test

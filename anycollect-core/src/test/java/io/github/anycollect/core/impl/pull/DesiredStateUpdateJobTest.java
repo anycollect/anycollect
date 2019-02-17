@@ -4,8 +4,6 @@ import io.github.anycollect.core.api.internal.DesiredStateProvider;
 import io.github.anycollect.core.api.internal.State;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
-import io.github.anycollect.core.impl.pull.DesiredStateManager;
-import io.github.anycollect.core.impl.pull.DesiredStateUpdateJob;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;

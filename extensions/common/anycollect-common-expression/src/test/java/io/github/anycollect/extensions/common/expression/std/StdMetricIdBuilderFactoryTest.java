@@ -27,7 +27,7 @@ class StdMetricIdBuilderFactoryTest {
         Map<String, String> metaTags = spy(new HashMap<>());
         tags.put("keyspace", "${keyspace}");
         metaTags.put("agent", "anycollect");
-        factory.create(tags, metaTags);
+        factory.create("key", "ns", "max", "gauge", tags, metaTags);
         verify(expressionFactory, times(1)).create("${keyspace}");
         verify(expressionFactory, times(1)).create("anycollect");
         verify(expressionFactory, never()).create("keyspace");

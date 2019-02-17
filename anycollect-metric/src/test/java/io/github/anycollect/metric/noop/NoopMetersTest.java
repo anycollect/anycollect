@@ -12,7 +12,7 @@ class NoopMetersTest {
         MeterId id = mock(MeterId.class);
         NoopCounter counter = new NoopCounter(id);
         counter.increment(10);
-        assertThat(counter.measure()).isEmpty();
+        assertThat(counter.measure().isEmpty()).isTrue();
         assertThat(counter.getId()).isSameAs(id);
     }
 
@@ -21,7 +21,7 @@ class NoopMetersTest {
         MeterId id = mock(MeterId.class);
         NoopDistribution distribution = new NoopDistribution(id);
         distribution.record(10);
-        assertThat(distribution.measure()).isEmpty();
+        assertThat(distribution.measure().isEmpty()).isTrue();
         assertThat(distribution.getId()).isSameAs(id);
     }
 

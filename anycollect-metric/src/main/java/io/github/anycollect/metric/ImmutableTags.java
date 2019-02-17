@@ -62,6 +62,14 @@ public final class ImmutableTags implements Tags {
             return this;
         }
 
+        public Builder concat(@Nonnull final Tags addition) {
+            Objects.requireNonNull(addition, " tags must not be null");
+            for (Tag tag : addition) {
+                tags.put(tag.getKey(), tag.getValue());
+            }
+            return this;
+        }
+
         public ImmutableTags build() {
             return new ImmutableTags(this);
         }

@@ -37,13 +37,22 @@ public interface Stat {
         return new Percentile(stat, num);
     }
 
+    static LeBucket le(double max) {
+        return LeBucket.of(max);
+    }
+
+    static LeBucket leInf() {
+        return LeBucket.inf();
+    }
+
     static boolean isValid(final Stat stat) {
         return stat == min()
                 || stat == max()
                 || stat == mean()
                 || stat == std()
                 || stat == value()
-                || stat.getClass().equals(Percentile.class);
+                || stat.getClass().equals(Percentile.class)
+                || stat.getClass().equals(LeBucket.class);
     }
 
     Stat MIN = new Stat() {
@@ -55,6 +64,11 @@ public interface Stat {
         @Override
         public String getTagValue() {
             return "min";
+        }
+
+        @Override
+        public String toString() {
+            return getTagValue();
         }
     };
 
@@ -68,6 +82,11 @@ public interface Stat {
         public String getTagValue() {
             return "max";
         }
+
+        @Override
+        public String toString() {
+            return getTagValue();
+        }
     };
 
     Stat MEAN = new Stat() {
@@ -79,6 +98,11 @@ public interface Stat {
         @Override
         public String getTagValue() {
             return "mean";
+        }
+
+        @Override
+        public String toString() {
+            return getTagValue();
         }
     };
 
@@ -92,6 +116,11 @@ public interface Stat {
         public String getTagValue() {
             return "std";
         }
+
+        @Override
+        public String toString() {
+            return getTagValue();
+        }
     };
 
     Stat VALUE = new Stat() {
@@ -103,6 +132,11 @@ public interface Stat {
         @Override
         public String getTagValue() {
             return "value";
+        }
+
+        @Override
+        public String toString() {
+            return getTagValue();
         }
     };
 

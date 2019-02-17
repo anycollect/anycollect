@@ -5,13 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.jackson.AnyCollectModule;
-import io.github.anycollect.metric.*;
 import io.github.anycollect.metric.Counter;
+import io.github.anycollect.metric.*;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
 import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.cumulative.CumulativeCounter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
@@ -27,12 +28,12 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToLongFunction;
-import java.util.stream.Stream;
 
 public final class MicrometerMeterRegistry extends PushMeterRegistry implements MeterRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(MicrometerMeterRegistry.class);
@@ -65,7 +66,7 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
         return ((MicrometerCounter) io.micrometer.core.instrument.Counter.builder(meterId.getKey())
                 .tags(convertTags(meterId.getTags()))
                 .description(getDescription(meterId))
-                .register(this)).getAdapter();
+                .register(this)).getMeter();
     }
 
     private Distribution registerNewSummary(@Nonnull final MeterId id) {
@@ -79,7 +80,7 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
                 .minimumExpectedValue(1L)
                 .maximumExpectedValue(Long.MAX_VALUE)
                 .register(this);
-        return new MicrometerDistributionSummary(summary, id, anyClock).getAdapter();
+        return new MicrometerDistributionSummary(summary, id, anyClock).getMeter();
     }
 
     @Override
@@ -101,33 +102,26 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
     private Iterable<io.micrometer.core.instrument.Tag> convertTags(final Tags tags) {
         List<io.micrometer.core.instrument.Tag> converted = new ArrayList<>();
         for (Tag tag : tags) {
-            if (!tag.getKey().equals(CommonTags.METRIC_KEY.getKey())) {
-                converted.add(io.micrometer.core.instrument.Tag.of(tag.getKey(), tag.getValue()));
-            }
+            converted.add(io.micrometer.core.instrument.Tag.of(tag.getKey(), tag.getValue()));
         }
         return converted;
     }
 
     @Override
     protected void publish() {
-        getMeters().stream().flatMap(this::convert).forEach(this::dispatch);
+        getMeters().stream().map(this::convert).filter(Objects::nonNull).forEach(this::dispatch);
     }
 
-    private Stream<Metric> convert(final Meter meter) {
-        if (meter instanceof MicrometerCounter) {
-            return ((MicrometerCounter) meter).getAdapter().measure();
+    private MetricFamily convert(final Meter meter) {
+        if (meter instanceof MeterAdapter) {
+            io.github.anycollect.metric.Meter anycollectMeter = ((MeterAdapter) meter).getMeter();
+            return anycollectMeter.measure();
         }
-        if (meter instanceof MicrometerDistributionSummary) {
-            return ((MicrometerDistributionSummary) meter).getAdapter().measure();
-        }
-        if (meter instanceof MicrometerGauge) {
-            return ((MicrometerGauge) meter).getAdapter().measure();
-        }
-        return Stream.empty();
+        return null;
     }
 
-    private void dispatch(final Metric metric) {
-        dispatcher.dispatch(metric);
+    private void dispatch(final MetricFamily family) {
+        dispatcher.dispatch(family);
     }
 
     @Override
@@ -149,13 +143,13 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
                                  @Nonnull final ToDoubleFunction<T> valueFunction) {
 
         DefaultGauge<T> gauge = new DefaultGauge<>(id, obj, valueFunction);
-        return new MicrometerGauge(gauge, convertId(id), anyClock);
+        return new MicrometerGauge(anyClock, gauge, convertId(id));
     }
 
     @Override
     protected MicrometerCounter newCounter(@Nonnull final Meter.Id id) {
         ImmutableMeterId meterId = convertId(id);
-        return new MicrometerCounter(new CumulativeCounter(id), meterId, anyClock);
+        return new MicrometerCounter(anyClock, new CumulativeCounter(id), meterId);
     }
 
     @Override

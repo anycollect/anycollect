@@ -4,10 +4,30 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public abstract class BaseBuilder<T extends BaseBuilder<T>> {
+    private String key;
+    private String unit;
+    private Stat stat;
+    private Type type;
     private final ImmutableTags.Builder tagsBuilder = new ImmutableTags.Builder();
     private final ImmutableTags.Builder metaBuilder = new ImmutableTags.Builder();
 
     protected abstract T self();
+
+    protected String getKey() {
+        return key;
+    }
+
+    protected String getUnit() {
+        return unit;
+    }
+
+    protected Stat getStat() {
+        return stat;
+    }
+
+    protected Type getType() {
+        return type;
+    }
 
     protected ImmutableTags.Builder getTagsBuilder() {
         return tagsBuilder;
@@ -17,18 +37,21 @@ public abstract class BaseBuilder<T extends BaseBuilder<T>> {
         return metaBuilder;
     }
 
-    protected T key(@Nonnull final String value) {
-        tagsBuilder.tag(CommonTags.METRIC_KEY.getKey(), value);
+    protected T key(@Nonnull final String key) {
+        Objects.requireNonNull(key, "key must not be null");
+        this.key = key;
         return self();
     }
 
-    protected T type(@Nonnull final Type value) {
-        tagsBuilder.tag(CommonTags.METRIC_TYPE.getKey(), value.getTagValue());
+    protected T type(@Nonnull final Type type) {
+        Objects.requireNonNull(type, "type must not be null");
+        this.type = type;
         return self();
     }
 
-    protected T unit(@Nonnull final String value) {
-        tagsBuilder.tag(CommonTags.UNIT.getKey(), value);
+    protected T unit(@Nonnull final String unit) {
+        Objects.requireNonNull(unit, "unit must not be null");
+        this.unit = unit;
         return self();
     }
 
@@ -37,26 +60,15 @@ public abstract class BaseBuilder<T extends BaseBuilder<T>> {
     }
 
     protected T stat(@Nonnull final Stat stat) {
+        Objects.requireNonNull(stat, "stat must not be null");
         if (!Stat.isValid(stat)) {
             throw new IllegalArgumentException("stat " + stat + " is not valid");
         }
-        tagsBuilder.tag(CommonTags.STAT.getKey(), stat.getTagValue());
+        this.stat = stat;
         return self();
     }
 
     public T tag(@Nonnull final String key, @Nonnull final String value) {
-        if (CommonTags.METRIC_KEY.getKey().equals(key)) {
-            return key(value);
-        }
-        if (CommonTags.METRIC_TYPE.getKey().equals(key)) {
-            return type(Type.parse(value));
-        }
-        if (CommonTags.UNIT.getKey().equals(key)) {
-            return unit(value);
-        }
-        if (CommonTags.STAT.getKey().equals(key)) {
-            return stat(Stat.parse(value));
-        }
         tagsBuilder.tag(key, value);
         return self();
     }
@@ -68,17 +80,13 @@ public abstract class BaseBuilder<T extends BaseBuilder<T>> {
 
     public T concatTags(@Nonnull final Tags addition) {
         Objects.requireNonNull(addition, "addition must not be null");
-        for (Tag tag : addition) {
-            tag(tag.getKey(), tag.getValue());
-        }
+        tagsBuilder.concat(addition);
         return self();
     }
 
     public T concatMeta(@Nonnull final Tags addition) {
         Objects.requireNonNull(addition, "addition must not be null");
-        for (Tag tag : addition) {
-            meta(tag.getKey(), tag.getValue());
-        }
+        metaBuilder.concat(addition);
         return self();
     }
 }

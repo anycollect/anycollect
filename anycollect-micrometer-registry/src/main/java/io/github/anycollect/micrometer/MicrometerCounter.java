@@ -1,26 +1,24 @@
 package io.github.anycollect.micrometer;
 
 import io.github.anycollect.core.api.internal.Clock;
+import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.MeterId;
-import io.github.anycollect.metric.Metric;
-import io.github.anycollect.metric.MetricId;
+import io.github.anycollect.metric.MetricFamily;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Meter;
 
-import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
-public final class MicrometerCounter implements Counter {
+public final class MicrometerCounter implements Counter, MeterAdapter {
+    private final Clock clock;
     private final Counter delegate;
     private final MeterId id;
-    private final MetricId counterMetricId;
-    private final Clock clock;
     private final AnyCollectAdapter adapter;
 
-    public MicrometerCounter(final Counter delegate, final MeterId id, final Clock clock) {
+    public MicrometerCounter(final Clock clock, final Counter delegate, final MeterId id) {
+        this.clock = clock;
         this.delegate = delegate;
         this.id = id;
-        this.clock = clock;
-        counterMetricId = id.counter();
         adapter = new AnyCollectAdapter();
     }
 
@@ -44,7 +42,8 @@ public final class MicrometerCounter implements Counter {
         return delegate.getId();
     }
 
-    public io.github.anycollect.metric.Counter getAdapter() {
+    @Override
+    public io.github.anycollect.metric.Counter getMeter() {
         return adapter;
     }
 
@@ -54,14 +53,16 @@ public final class MicrometerCounter implements Counter {
             MicrometerCounter.this.increment(amount);
         }
 
+        @Nonnull
         @Override
         public MeterId getId() {
             return id;
         }
 
+        @Nonnull
         @Override
-        public Stream<Metric> measure() {
-            return Stream.of(Metric.of(counterMetricId, count(), clock.wallTime()));
+        public MetricFamily measure() {
+            return MetricFamily.of(getId(), Measurement.counter(count()), clock.wallTime());
         }
     }
 }

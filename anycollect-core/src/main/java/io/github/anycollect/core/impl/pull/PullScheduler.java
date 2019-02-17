@@ -23,9 +23,10 @@ public interface PullScheduler {
 
     /**
      * Signals that the target is no longer needed to be monitored.
-     *
+     * <p>
      * All jobs associated with given target must be terminated. If there is no jobs associated with target
      * nothing happens
+     *
      * @param target - target that must be unmonitored
      */
     void release(@Nonnull Target<?> target);

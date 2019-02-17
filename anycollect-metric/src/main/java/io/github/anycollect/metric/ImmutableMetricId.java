@@ -7,31 +7,28 @@ import lombok.ToString;
 import javax.annotation.Nonnull;
 import java.util.Set;
 
+@Getter
 @ToString(of = "tags", includeFieldNames = false)
-@EqualsAndHashCode(of = "tags")
+@EqualsAndHashCode(of = {"key", "unit", "stat", "type", "tags"})
 public final class ImmutableMetricId implements MetricId {
-    @Getter
+    private final String key;
+    private final String unit;
+    private final Stat stat;
+    private final Type type;
     private final Tags tags;
-    @Getter
     private final Tags metaTags;
 
-    public static Builder builder() {
-        return new Builder();
+    public static Builder key(@Nonnull final String key) {
+        return new Builder(key);
     }
 
     private ImmutableMetricId(final Builder builder) {
+        this.key = builder.getKey();
+        this.unit = builder.getUnit();
+        this.stat = builder.getStat();
+        this.type = builder.getType();
         this.tags = builder.getTagsBuilder().build();
         this.metaTags = builder.getMetaBuilder().build();
-        assertRequiredTag(tags, CommonTags.METRIC_KEY);
-        assertRequiredTag(tags, CommonTags.UNIT);
-        assertRequiredTag(tags, CommonTags.METRIC_TYPE);
-        assertRequiredTag(tags, CommonTags.STAT);
-    }
-
-    private static void assertRequiredTag(final Tags tags, final CommonTags tag) {
-        if (!tags.hasTagKey(tag.getKey())) {
-            throw new IllegalArgumentException("tag \"" + tag.getKey() + "\" is required");
-        }
     }
 
     @Override
@@ -40,21 +37,21 @@ public final class ImmutableMetricId implements MetricId {
     }
 
     public static final class Builder extends BaseBuilder<Builder> {
+        public Builder(@Nonnull final String key) {
+            key(key);
+        }
+
         @Override
         protected Builder self() {
             return this;
         }
 
-        public Builder key(@Nonnull final String value) {
-            return super.key(value);
+        public Builder type(@Nonnull final Type type) {
+            return super.type(type);
         }
 
-        public Builder type(@Nonnull final Type value) {
-            return super.type(value);
-        }
-
-        public Builder unit(@Nonnull final String value) {
-            return super.unit(value);
+        public Builder unit(@Nonnull final String unit) {
+            return super.unit(unit);
         }
 
         public Builder stat(@Nonnull final Stat stat) {

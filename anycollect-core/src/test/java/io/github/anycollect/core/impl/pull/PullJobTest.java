@@ -5,8 +5,8 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
-import io.github.anycollect.metric.ImmutableMetric;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.ImmutableMetricFamily;
+import io.github.anycollect.metric.MetricFamily;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -37,9 +37,9 @@ class PullJobTest {
 
     @Test
     void successTest() throws ConnectionException, QueryException {
-        when(clock.monotonicTime()).thenReturn( 10L, 25L);
-        Metric metric = mock(ImmutableMetric.class);
-        List<Metric> metrics = Collections.singletonList(metric);
+        when(clock.monotonicTime()).thenReturn(10L, 25L);
+        MetricFamily metric = mock(ImmutableMetricFamily.class);
+        List<MetricFamily> metrics = Collections.singletonList(metric);
         when(target.execute(query)).thenReturn(metrics);
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Result<TestTarget, TestQuery>> captor = ArgumentCaptor.forClass(Result.class);
@@ -57,7 +57,7 @@ class PullJobTest {
 
     @Test
     void failTest() throws ConnectionException, QueryException {
-        when(clock.monotonicTime()).thenReturn( 5L, 15L);
+        when(clock.monotonicTime()).thenReturn(5L, 15L);
         QueryException ex = new QueryException("test");
         when(target.execute(query)).thenThrow(ex);
         @SuppressWarnings("unchecked")

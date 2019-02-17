@@ -16,6 +16,10 @@ public final class MetricIdSerializer extends StdSerializer<MetricId> {
     public void serialize(final MetricId value, final JsonGenerator gen, final SerializerProvider provider)
             throws IOException {
         gen.writeStartObject();
+        gen.writeStringField("what", value.getKey());
+        gen.writeStringField("unit", value.getUnit());
+        gen.writeStringField("stat", value.getStat().getTagValue());
+        gen.writeStringField("mtype", value.getType().getTagValue());
         gen.writeObjectField("tags", value.getTags());
         gen.writeObjectField("meta", value.getMetaTags());
         gen.writeEndObject();

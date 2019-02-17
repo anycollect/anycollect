@@ -19,8 +19,7 @@ class AnyCollectModuleTest {
 
     @Test
     void requiredTagsAndMeta() throws Exception {
-        MetricId id = MetricId.builder()
-                .key("test")
+        MetricId id = MetricId.key("test")
                 .unit("tests")
                 .stat(Stat.MAX)
                 .type(Type.GAUGE)
@@ -33,9 +32,13 @@ class AnyCollectModuleTest {
     }
 
     @Test
-    void metaIsOptional() throws Exception {
-        String json = "{\"id\":{\"tags\":{\"what\":\"test\",\"unit\":\"tests\",\"stat\":\"max\",\"mtype\":\"gauge\"}},\"value\":15.0,\"timestamp\":1550273897001}";
+    void tagsAndMetaAreOptional() throws Exception {
+        String json = "{\"id\":{\"what\":\"test\",\"unit\":\"tests\",\"stat\":\"max\",\"mtype\":\"gauge\",\"tags\":{}},\"value\":15.0,\"timestamp\":1550273897001}";
         Metric restored = mapper.readValue(json, Metric.class);
         assertThat(restored.getId().getMetaTags()).isEqualTo(Tags.empty());
+        assertThat(restored.getId().getKey()).isEqualTo("test");
+        assertThat(restored.getId().getUnit()).isEqualTo("tests");
+        assertThat(restored.getId().getStat()).isEqualTo(Stat.max());
+        assertThat(restored.getId().getType()).isEqualTo(Type.GAUGE);
     }
 }

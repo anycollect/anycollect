@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import java.util.Objects;
 
 @EqualsAndHashCode
-public final class Percentile implements Stat {
+public final class Percentile implements Stat, Comparable<Percentile> {
     private final Stat stat;
     private final int num;
 
@@ -44,5 +44,10 @@ public final class Percentile implements Stat {
     @Override
     public String toString() {
         return getTagValue();
+    }
+
+    @Override
+    public int compareTo(final Percentile that) {
+        return Integer.compare(num, that.num);
     }
 }

@@ -4,7 +4,7 @@ import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.MetricFamily;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -29,7 +29,7 @@ class CallbackToDispatcherAdapterTest {
     @Nested
     @DisplayName("when success")
     class WhenSuccess {
-        private List<Metric> metrics = new ArrayList<>();
+        private List<MetricFamily> metrics = new ArrayList<>();
 
         @BeforeEach
         void success() {

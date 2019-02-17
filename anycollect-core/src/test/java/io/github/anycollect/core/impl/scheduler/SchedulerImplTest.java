@@ -3,7 +3,9 @@ package io.github.anycollect.core.impl.scheduler;
 import org.junit.jupiter.api.*;
 import org.mockito.stubbing.Answer;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -31,7 +33,8 @@ class SchedulerImplTest {
         @DisplayName("when schedule job")
         class WhenScheduleJob {
             private Cancellation cancellation;
-            private Runnable job = () -> {};
+            private Runnable job = () -> {
+            };
             private ScheduledFuture future;
 
             @BeforeEach
@@ -90,7 +93,8 @@ class SchedulerImplTest {
             @Test
             @DisplayName("must not accept new jobs")
             void mustNotAcceptNewJobs() {
-                Assertions.assertThrows(IllegalStateException.class, () -> scheduler.scheduleAtFixedRate(() -> { }, 10, TimeUnit.SECONDS));
+                Assertions.assertThrows(IllegalStateException.class, () -> scheduler.scheduleAtFixedRate(() -> {
+                }, 10, TimeUnit.SECONDS));
             }
         }
     }

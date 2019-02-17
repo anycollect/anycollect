@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Metric ID tests")
 class ImmutableMetricIdTest {
-    private ImmutableMetricId.Builder base = MetricId.builder()
+    private ImmutableMetricId.Builder base = MetricId
             .key("test")
             .stat(Stat.value())
             .unit("tests")
@@ -22,12 +22,6 @@ class ImmutableMetricIdTest {
         assertThat(id.getKey()).isEqualTo("test");
         assertThat(id.getUnit()).isEqualTo("tests");
         assertThat(id.getType()).isSameAs(Type.GAUGE);
-    }
-
-    @Test
-    void metricKeyIsRequired() {
-        IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class, () -> MetricId.builder().unit("tests").type(Type.GAUGE).build());
-        assertThat(ex).hasMessageContaining(CommonTags.METRIC_KEY.getKey());
     }
 
     @Test
@@ -91,7 +85,7 @@ class ImmutableMetricIdTest {
                 .tag("key2", "value2")
                 .meta("metaKey1", "metaValue1")
                 .build();
-        assertThat(id.getTagKeys()).containsExactly("what", "stat", "unit", "mtype", "key1", "key2");
+        assertThat(id.getTagKeys()).containsExactly("key1", "key2");
         assertThat(id.getMetaTagKeys()).containsExactly("metaKey1");
         assertThat(id.getTagValue("key1")).isEqualTo("value1");
         assertThat(id.getTagValue("key2")).isEqualTo("value2");
@@ -105,29 +99,6 @@ class ImmutableMetricIdTest {
         Assertions.assertThrows(NullPointerException.class, () -> base.tag("key", null));
         Assertions.assertThrows(NullPointerException.class, () -> base.meta(null, "value"));
         Assertions.assertThrows(NullPointerException.class, () -> base.meta("key", null));
-    }
-
-    @Test
-    void specialTagsTest() {
-        ImmutableMetricId id = base
-                .key("http_requests")
-                .stat(Stat.max())
-                .type(Type.GAUGE)
-                .build();
-        assertThat(id.getKey()).isEqualTo("http_requests");
-        assertThat(id.getStat()).isSameAs(Stat.max());
-        assertThat(id.getType()).isSameAs(Type.GAUGE);
-        assertThat(id.getTagValue(CommonTags.METRIC_KEY.getKey())).isEqualTo("http_requests");
-        assertThat(id.getTagValue(CommonTags.STAT.getKey())).isEqualTo("max");
-        assertThat(id.getTagValue(CommonTags.METRIC_TYPE.getKey())).isEqualTo("gauge");
-    }
-
-    @Test
-    void specialTagsCanBeSetViaGeneralMethod() {
-        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(CommonTags.METRIC_KEY.getKey(), "http_requests"));
-        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(CommonTags.UNIT.getKey(), "requests"));
-        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(CommonTags.METRIC_TYPE.getKey(), "counter"));
-        Assertions.assertDoesNotThrow(() -> MetricId.builder().tag(CommonTags.STAT.getKey(), "min"));
     }
 
     @Test
@@ -158,7 +129,7 @@ class ImmutableMetricIdTest {
                 .concatTags(commonTags)
                 .concatMeta(meta)
                 .build();
-        assertThat(id.getTagKeys()).containsExactly("what", "stat", "unit", "mtype", "host", "service");
+        assertThat(id.getTagKeys()).containsExactly("host", "service");
         assertThat(id.getMetaTagKeys()).containsExactly("agent");
     }
 }
