@@ -11,13 +11,13 @@ import javax.annotation.Nonnull;
 public final class MicrometerGauge implements Gauge, MeterAdapter {
     private final Clock clock;
     private final Gauge delegate;
-    private final MeterId meterId;
+    private final MeterId id;
     private final AnyCollectAdapter adapter;
 
-    public MicrometerGauge(final Clock clock, final Gauge delegate, final MeterId meterId) {
+    public MicrometerGauge(final Clock clock, final Gauge delegate, final MeterId id) {
         this.clock = clock;
         this.delegate = delegate;
-        this.meterId = meterId;
+        this.id = id;
         adapter = new AnyCollectAdapter();
     }
 
@@ -40,13 +40,13 @@ public final class MicrometerGauge implements Gauge, MeterAdapter {
         @Nonnull
         @Override
         public MeterId getId() {
-            return meterId;
+            return id;
         }
 
         @Nonnull
         @Override
         public MetricFamily measure() {
-            return MetricFamily.of(getId(), Measurement.gauge(value()), clock.wallTime());
+            return MetricFamily.of(getId(), Measurement.gauge(value(), id.getUnit()), clock.wallTime());
         }
     }
 }

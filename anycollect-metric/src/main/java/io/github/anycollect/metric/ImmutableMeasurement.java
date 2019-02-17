@@ -12,13 +12,16 @@ import javax.annotation.Nonnull;
 public final class ImmutableMeasurement implements Measurement {
     private final Stat stat;
     private final Type type;
+    private final String unit;
     private final double value;
 
     public ImmutableMeasurement(@Nonnull final Stat stat,
                                 @Nonnull final Type type,
+                                @Nonnull final String unit,
                                 final double value) {
         this.stat = stat;
         this.type = type;
+        this.unit = unit;
         this.value = value;
     }
 }

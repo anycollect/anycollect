@@ -14,16 +14,12 @@ public interface MetricFamily {
     }
 
     static MetricFamily of(@Nonnull MeterId id, List<Measurement> measurements, long timestamp) {
-        return new ImmutableMetricFamily(
-                id.getKey(), id.getUnit(), timestamp,
+        return new ImmutableMetricFamily(id.getKey(), timestamp,
                 measurements, id.getTags(), id.getMetaTags());
     }
 
     @Nonnull
     String getKey();
-
-    @Nonnull
-    String getUnit();
 
     long getTimestamp();
 

@@ -103,21 +103,21 @@ public final class MicrometerDistributionSummary implements DistributionSummary,
         Measurement measure(HistogramSnapshot snapshot, long timestamp);
     }
 
-    private static class MaxMetric implements SnapshotMetric {
+    private class MaxMetric implements SnapshotMetric {
         @Override
         public Measurement measure(final HistogramSnapshot snapshot, final long timestamp) {
-            return Measurement.max(snapshot.max());
+            return Measurement.max(snapshot.max(), id.getUnit());
         }
     }
 
-    private static class MeanMetric implements SnapshotMetric {
+    private class MeanMetric implements SnapshotMetric {
         @Override
         public Measurement measure(final HistogramSnapshot snapshot, final long timestamp) {
-            return Measurement.mean(snapshot.mean());
+            return Measurement.mean(snapshot.mean(), id.getUnit());
         }
     }
 
-    private static class Percentile implements SnapshotMetric {
+    private class Percentile implements SnapshotMetric {
         private final double percentile;
         private final int index;
 
@@ -132,7 +132,7 @@ public final class MicrometerDistributionSummary implements DistributionSummary,
 
         @Override
         public Measurement measure(final HistogramSnapshot snapshot, final long timestamp) {
-            return Measurement.percentile(percentile, getValue(snapshot));
+            return Measurement.percentile(percentile, getValue(snapshot), id.getUnit());
         }
     }
 }

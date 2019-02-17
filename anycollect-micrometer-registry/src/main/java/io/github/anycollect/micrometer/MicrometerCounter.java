@@ -62,7 +62,7 @@ public final class MicrometerCounter implements Counter, MeterAdapter {
         @Nonnull
         @Override
         public MetricFamily measure() {
-            return MetricFamily.of(getId(), Measurement.counter(count()), clock.wallTime());
+            return MetricFamily.of(getId(), Measurement.counter(count(), id.getUnit()), clock.wallTime());
         }
     }
 }
