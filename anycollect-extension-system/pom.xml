@@ -25,6 +25,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-core-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- YAML, CONFIGURATION -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

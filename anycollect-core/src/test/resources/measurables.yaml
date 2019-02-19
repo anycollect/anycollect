@@ -1,0 +1,23 @@
+extenstions:
+- !load
+  extension: Measurers
+  instance: measurers
+  config:
+    measurables:
+    - name: histogram
+      measurements:
+      - { id: min, path: Min, type: gauge, stat: min, useBaseUnit: true }
+      - { id: max, path: Max, type: gauge, stat: max, useBaseUnit: true }
+      - { id: mean, path: Mean, type: gauge, stat: mean, useBaseUnit: true }
+      - { id: std, path: StdDev, type: gauge, stat: std, useBaseUnit: true }
+      - { id: max_50, path: 75thPercentile, type: gauge, stat: max_75, useBaseUnit: true }
+    - name: counter
+      measurements:
+      - { id: count, path: Count, type: counter, stat: value, useBaseUnit: true }
+# TODO support for rates
+#    - name: meter
+#      measurements:
+#      - { id: count, path: Count, stat: value, type: counter, useBaseUnit: true }
+#      - { id: rate_1m, path: OneMinuteRate, stat: rate_1m, type: gauge, unitOf: RateUnit, useBaseUnit: false }
+#      - { id: rate_5m, path: FiveMinuteRate, stat: rate_5m, type: gauge, unitOf: RateUnit, useBaseUnit: false }
+#      - { id: rate_15m, path: FifteenMinuteRate, stat: rate_15m, type: gauge, unitOf: RateUnit, useBaseUnit: false }

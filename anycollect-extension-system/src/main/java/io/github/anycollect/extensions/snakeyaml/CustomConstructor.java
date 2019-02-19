@@ -1,7 +1,9 @@
 package io.github.anycollect.extensions.snakeyaml;
 
+import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.extensions.definitions.ConfigDefinition;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
@@ -30,10 +32,14 @@ final class CustomConstructor extends Constructor {
     private static final String CONFIG = "config";
     private final Map<String, Definition> extensionRegistry;
     private final Map<String, Instance> instanceRegistry;
+    private static final InjectableValues.Std VALUES;
     private String extensionName;
 
     static {
         MAPPER.registerModule(new AnyCollectModule());
+        VALUES = new InjectableValues.Std();
+        VALUES.addValue(Clock.class, Clock.getDefault());
+        MAPPER.setInjectableValues(VALUES);
     }
 
     CustomConstructor(final Collection<Definition> extensions) {
@@ -70,6 +76,9 @@ final class CustomConstructor extends Constructor {
             Map<String, Instance> singleDependencies = getSingleDependencies();
             Map<String, List<Instance>> multiDependencies = getMultiDependencies();
             Instance instance = definition.createInstance(instanceName, config, singleDependencies, multiDependencies);
+            Object resolved = instance.resolve();
+            // TODO on condition in entry point?
+            VALUES.addValue(instance.getDefinition().getExtensionPointClass(), resolved);
             LOG.debug("instance has been successfully loaded: {}", instance);
             instanceRegistry.put(instance.getInstanceName(), instance);
             return instance;
