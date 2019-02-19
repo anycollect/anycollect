@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.stream.Collectors.joining;
+
 @Getter
 public final class ImmutableMetricFamily implements MetricFamily {
     private final String key;
@@ -25,5 +27,10 @@ public final class ImmutableMetricFamily implements MetricFamily {
         this.measurements = Collections.unmodifiableList(new ArrayList<>(measurements));
         this.tags = tags;
         this.meta = meta;
+    }
+
+    @Override
+    public String toString() {
+        return key + ";" + (!tags.isEmpty() ? tags + ";" : "") + measurements.stream().map(Measurement::toString).collect(joining(","));
     }
 }

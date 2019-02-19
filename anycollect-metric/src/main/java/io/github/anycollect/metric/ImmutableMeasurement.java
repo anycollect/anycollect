@@ -7,7 +7,6 @@ import lombok.ToString;
 import javax.annotation.Nonnull;
 
 @Getter
-@ToString
 @EqualsAndHashCode
 public final class ImmutableMeasurement implements Measurement {
     private final Stat stat;
@@ -23,5 +22,10 @@ public final class ImmutableMeasurement implements Measurement {
         this.type = type;
         this.unit = unit;
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return stat + "[" + type + "]" + "=" + value + "(" + unit + ")";
     }
 }

@@ -9,7 +9,6 @@ class TypeTest {
     @Test
     void tagValueTest() {
         assertThat(Type.RATE.getTagValue()).isEqualTo("rate");
-        assertThat(Type.COUNT.getTagValue()).isEqualTo("count");
         assertThat(Type.GAUGE.getTagValue()).isEqualTo("gauge");
         assertThat(Type.COUNTER.getTagValue()).isEqualTo("counter");
         assertThat(Type.TIMESTAMP.getTagValue()).isEqualTo("timestamp");

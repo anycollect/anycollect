@@ -1,12 +1,12 @@
 package io.github.anycollect.metric;
 
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
-@ToString(of = "tags", includeFieldNames = false)
+import static java.util.stream.Collectors.joining;
+
 @EqualsAndHashCode(of = "tags")
 public final class ImmutableTags implements Tags {
     public static final ImmutableTags EMPTY = new ImmutableTags.Builder().build();
@@ -50,6 +50,16 @@ public final class ImmutableTags implements Tags {
     @Override
     public Iterator<Tag> iterator() {
         return tagList.iterator();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return tagList.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return tagList.stream().map(Tag::toString).collect(joining(","));
     }
 
     public static final class Builder {

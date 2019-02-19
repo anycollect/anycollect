@@ -1,15 +1,22 @@
 package io.github.anycollect.metric;
 
 public enum Type {
-    RATE("rate"), COUNT("count"), GAUGE("gauge"), COUNTER("counter"), TIMESTAMP("timestamp");
+    RATE("rate", "r"), GAUGE("gauge", "g"), COUNTER("counter", "c"), TIMESTAMP("timestamp", "t");
     private final String tagValue;
+    private final String shortString;
 
-    Type(final String tagValue) {
+    Type(final String tagValue, final String shortString) {
         this.tagValue = tagValue;
+        this.shortString = shortString;
     }
 
     public String getTagValue() {
         return tagValue;
+    }
+
+    @Override
+    public String toString() {
+        return shortString;
     }
 
     public static Type parse(final String value) {

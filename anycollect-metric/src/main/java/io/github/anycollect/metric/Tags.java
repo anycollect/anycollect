@@ -28,4 +28,6 @@ public interface Tags extends Iterable<Tag> {
     @Nonnull
     @Override
     Iterator<Tag> iterator();
+
+    boolean isEmpty();
 }
