@@ -17,4 +17,9 @@ public abstract class AbstractQuery implements Query {
     public final String getId() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }

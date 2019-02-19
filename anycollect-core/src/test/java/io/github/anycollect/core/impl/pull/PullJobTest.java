@@ -49,7 +49,6 @@ class PullJobTest {
         assertThat(result.getTarget()).isSameAs(target);
         assertThat(result.getQuery()).isSameAs(query);
         assertThat(result.getProcessingTime()).isEqualTo(15L);
-        assertThat(result.getException()).isEmpty();
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.isFailed()).isFalse();
         assertThat(result.getMetrics()).isEqualTo(metrics);
@@ -68,7 +67,7 @@ class PullJobTest {
         assertThat(result.getTarget()).isSameAs(target);
         assertThat(result.getQuery()).isSameAs(query);
         assertThat(result.getProcessingTime()).isEqualTo(10L);
-        assertThat(result.getException()).contains(ex);
+        assertThat(result.getException()).isSameAs(ex);
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.isFailed()).isTrue();
         assertThat(result.getMetrics()).isSameAs(Collections.emptyList());

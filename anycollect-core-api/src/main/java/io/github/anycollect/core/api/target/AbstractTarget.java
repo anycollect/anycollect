@@ -20,4 +20,9 @@ public abstract class AbstractTarget<Q extends Query> implements Target<Q> {
     public String getId() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }

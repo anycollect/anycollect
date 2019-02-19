@@ -1,16 +1,18 @@
 package io.github.anycollect.readers.jmx.server;
 
-import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
+import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
 import javax.management.MBeanServerConnection;
 import java.util.List;
 import java.util.Objects;
 
+@EqualsAndHashCode(callSuper = true)
 public final class PooledJavaApp extends JavaApp {
     private final JmxConnectionPool pool;
 

@@ -12,7 +12,6 @@ import lombok.ToString;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-@ToString
 @EqualsAndHashCode(callSuper = true)
 public abstract class JavaApp extends AbstractTarget<JmxQuery> {
     protected JavaApp(@Nonnull final String id) {

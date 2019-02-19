@@ -47,7 +47,7 @@ public class JmxConnectionFactoryImpl implements JmxConnectionFactory {
         } catch (IOException e) {
             LOG.debug("could not connect to {}, url: {}", config.getInstanceId(), serviceURL, e);
             throw new ConnectionException("could not connect to " + config.getInstanceId()
-                    + "url: " + serviceURL, e);
+                    + " url: " + serviceURL, e);
         }
     }
 }

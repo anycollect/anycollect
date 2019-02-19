@@ -10,7 +10,6 @@ import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Immutable
 public final class Result<T extends Target<Q>, Q extends Query> {
@@ -89,8 +88,11 @@ public final class Result<T extends Target<Q>, Q extends Query> {
     }
 
     @Nonnull
-    public Optional<Exception> getException() {
-        return Optional.ofNullable(exception);
+    public Exception getException() {
+        if (exception == null) {
+            throw new IllegalStateException("result is successful");
+        }
+        return exception;
     }
 
     public long getProcessingTime() {

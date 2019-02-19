@@ -6,6 +6,8 @@ import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
 import lombok.EqualsAndHashCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.GuardedBy;
@@ -18,6 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import static java.util.stream.Collectors.toSet;
 
 public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query> implements DesiredStateManager<T, Q> {
+    private static final Logger LOG = LoggerFactory.getLogger(DesiredStateManagerImpl.class);
     private final PullScheduler puller;
     private final ResultCallback<T, Q> callback;
     @GuardedBy("lock")
@@ -36,6 +39,8 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
     @Override
     public void update(@Nonnull final State<T, Q> desiredState) {
         lock.lock();
+        int cancelledQueries = 0;
+        int newQueries = 0;
         try {
             State<T, Q> previousState = currentState;
             Set<T> previousTargets = previousState.getTargets();
@@ -43,6 +48,7 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
             for (T target : previousTargets) {
                 if (!desiredTargets.contains(target)) {
                     puller.release(target);
+                    cancelledQueries += previousState.getQueries(target).size();
                 }
             }
             for (T target : desiredTargets) {
@@ -54,6 +60,7 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
                         int period = periodicQuery.getPeriodInSeconds();
                         JobId<T, Q> id = new JobId<>(target, query, period);
                         cancellations.get(id).cancel();
+                        cancelledQueries++;
                     }
                 }
                 for (PeriodicQuery<Q> periodicQuery : desiredQueries) {
@@ -63,10 +70,13 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
                         Cancellation cancellation = puller.schedulePull(target, query, callback, period);
                         JobId<T, Q> id = new JobId<>(target, query, period);
                         cancellations.put(id, cancellation);
+                        newQueries++;
                     }
                 }
             }
             this.currentState = desiredState;
+            LOG.debug("desired state has been successfully updated: cancelled queries: {}, new queries: {}",
+                    cancelledQueries, newQueries);
         } finally {
             lock.unlock();
         }
