@@ -1,18 +1,21 @@
 package io.github.anycollect.readers.jmx.query;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.github.anycollect.core.api.query.AbstractQuery;
-import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.metric.MetricFamily;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.management.MBeanServerConnection;
 import java.util.List;
 
-@ToString
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.PROPERTY,
+        defaultImpl = StdJmxQuery.class)
 @ThreadSafe
 @EqualsAndHashCode(callSuper = true)
 public abstract class JmxQuery extends AbstractQuery {

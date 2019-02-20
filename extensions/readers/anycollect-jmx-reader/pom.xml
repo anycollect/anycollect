@@ -28,7 +28,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
 
         <!-- UTILS -->
@@ -51,6 +50,12 @@
         <dependency>
             <groupId>io.github.anycollect</groupId>
             <artifactId>anycollect-extension-system</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

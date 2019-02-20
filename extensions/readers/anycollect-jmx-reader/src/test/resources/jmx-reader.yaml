@@ -1,0 +1,68 @@
+extensions:
+- !load
+  extension: PullEngine
+  instance: puller
+  config:
+    updatePeriod: 5
+    pullPeriod: 3
+    defaultPoolSize: 1
+    rules:
+    - targetId: "test"
+      poolSize: 1
+- !load
+  extension: Measurers
+  instance: measurers
+  config:
+    families:
+    - name: test-histogram
+      measurements:
+      - { id: min, path: Min, type: gauge, stat: min }
+      - { id: max, path: Max, type: gauge, stat: max }
+      - { id: mean, path: Mean, type: gauge, stat: mean }
+      - { id: std, path: StdDev, type: gauge, stat: std }
+      - { id: max_50, path: 50thPercentile, type: gauge, stat: max_50 }
+      - { id: max_75, path: 75thPercentile, type: gauge, stat: max_75 }
+      - { id: max_90, path: 90thPercentile, type: gauge, stat: max_90 }
+      - { id: max_95, path: 95thPercentile, type: gauge, stat: max_95 }
+      - { id: max_99, path: 99thPercentile, type: gauge, stat: max_99 }
+- !load
+  extension: CurrentApp
+  instance: discovery
+  config:
+    name: test
+- !load
+  extension: StaticJmxQueryProvider
+  instance: queries
+  config:
+    queries:
+    - queryId: tests
+      mbean: "test:name=Test,k1=*,k2=*"
+      restriction:
+        keys: [k1, k2]
+        values:
+        - [k1val2, k2val1]
+      families:
+      - what: histogram
+        tagKeys: [k1, k2]
+        name: test-histogram
+        baseUnit: events
+        tags:
+          key1: value1
+        meta:
+          key2: value2
+- !load
+  extension: StaticQueryMatcherResolver
+  instance: matcher
+  config:
+    rules:
+    - instanceId: "test"
+      queryId: ".*"
+      period: 10
+- !load
+  extension: JmxReader
+  instance: jmx
+  dependencies:
+    puller: !ref puller
+    discovery: !ref discovery
+    queries: !ref queries
+    matcher: !ref matcher

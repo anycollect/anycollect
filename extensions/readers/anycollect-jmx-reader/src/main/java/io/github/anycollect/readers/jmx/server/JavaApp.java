@@ -1,13 +1,12 @@
 package io.github.anycollect.readers.jmx.server;
 
-import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.core.api.target.AbstractTarget;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.annotation.Nonnull;
 import java.util.List;

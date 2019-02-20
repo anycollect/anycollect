@@ -15,6 +15,16 @@ public class MetricFamilyAssert extends AbstractAssert<MetricFamilyAssert, Metri
         return new MetricFamilyAssert(actual);
     }
 
+    public MetricFamilyAssert hasTags(final String... tags) {
+        TagsAssert.assertThat(actual.getTags()).hasTags(tags);
+        return this;
+    }
+
+    public MetricFamilyAssert hasMeta(final String... tags) {
+        TagsAssert.assertThat(actual.getMeta()).hasTags(tags);
+        return this;
+    }
+
     public MetricFamilyAssert hasMeasurement(final Stat stat, final Type type, final String unit, final double value) {
         boolean has = false;
         for (Measurement measurement : actual.getMeasurements()) {
