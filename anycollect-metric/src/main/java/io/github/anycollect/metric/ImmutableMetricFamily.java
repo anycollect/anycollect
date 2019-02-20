@@ -31,6 +31,8 @@ public final class ImmutableMetricFamily implements MetricFamily {
 
     @Override
     public String toString() {
-        return key + ";" + (!tags.isEmpty() ? tags + ";" : "") + measurements.stream().map(Measurement::toString).collect(joining(","));
+        return key + ";" + (!tags.isEmpty() ? tags + ";" : "") + measurements.stream()
+                .map(Measurement::toString)
+                .collect(joining(","));
     }
 }

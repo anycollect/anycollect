@@ -2,7 +2,6 @@ package io.github.anycollect.metric;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
 import javax.annotation.Nonnull;
 
