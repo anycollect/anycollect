@@ -41,4 +41,20 @@ class AnyCollectModuleTest {
         assertThat(restored.getId().getStat()).isEqualTo(Stat.max());
         assertThat(restored.getId().getType()).isEqualTo(Type.GAUGE);
     }
+
+    @Test
+    void statSerialization() throws Exception {
+        MetricId id = MetricId.key("test")
+                .unit("tests")
+                .stat(Stat.MAX)
+                .type(Type.GAUGE)
+                .build();
+        String json = mapper.writeValueAsString(id);
+        assertThat(json).isEqualTo("{\"what\":\"test\"," +
+                "\"unit\":\"tests\"," +
+                "\"stat\":\"max\"," +
+                "\"mtype\":\"gauge\"," +
+                "\"tags\":{}," +
+                "\"meta\":{}}");
+    }
 }

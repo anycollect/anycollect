@@ -18,8 +18,8 @@ public final class MetricIdSerializer extends StdSerializer<MetricId> {
         gen.writeStartObject();
         gen.writeStringField("what", value.getKey());
         gen.writeStringField("unit", value.getUnit());
-        gen.writeStringField("stat", value.getStat().getTagValue());
-        gen.writeStringField("mtype", value.getType().getTagValue());
+        gen.writeObjectField("stat", value.getStat());
+        gen.writeObjectField("mtype", value.getType());
         gen.writeObjectField("tags", value.getTags());
         gen.writeObjectField("meta", value.getMetaTags());
         gen.writeEndObject();

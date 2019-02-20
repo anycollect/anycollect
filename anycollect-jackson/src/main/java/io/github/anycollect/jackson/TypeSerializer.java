@@ -15,8 +15,6 @@ public class TypeSerializer extends StdSerializer<Type> {
     @Override
     public void serialize(final Type type, final JsonGenerator gen, final SerializerProvider provider)
             throws IOException {
-        gen.writeStartObject();
-        gen.writeStringField("id", type.getTagValue());
-        gen.writeEndObject();
+        gen.writeString(type.getTagValue());
     }
 }

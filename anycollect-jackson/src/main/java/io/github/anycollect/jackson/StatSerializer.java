@@ -15,8 +15,6 @@ public class StatSerializer extends StdSerializer<Stat> {
     @Override
     public void serialize(final Stat value, final JsonGenerator gen, final SerializerProvider provider)
             throws IOException {
-        gen.writeStartObject();
-        gen.writeStringField("id", value.getTagValue());
-        gen.writeEndObject();
+        gen.writeString(value.getTagValue());
     }
 }
