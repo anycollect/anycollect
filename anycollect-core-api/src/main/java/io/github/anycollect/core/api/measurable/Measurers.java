@@ -8,5 +8,7 @@ import javax.annotation.Nonnull;
 
 @ExtPoint
 public interface Measurers extends Plugin, Lifecycle {
+    boolean hasDefinition(@Nonnull String familyName);
+
     <T extends Measurable> Measurer<T> make(@Nonnull FamilyConfig config);
 }

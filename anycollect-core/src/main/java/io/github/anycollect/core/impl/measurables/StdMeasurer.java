@@ -8,11 +8,14 @@ import io.github.anycollect.metric.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 // TODO and unit map: milliseconds -> ms!
-public final class StdMeasurer<T extends Measurable> implements Measurer<T> {
+public final class StdMeasurer implements Measurer<Measurable> {
     private final FamilyConfig config;
     private final List<MeasurementDefinition> measurementDefinitions;
 
@@ -24,22 +27,25 @@ public final class StdMeasurer<T extends Measurable> implements Measurer<T> {
         this.measurementDefinitions = measurements;
     }
 
+    @Nonnull
     @Override
     public Set<String> getPaths() {
         return measurementDefinitions.stream().flatMap(measurement -> measurement.getPaths().stream())
                 .collect(Collectors.toSet());
     }
 
+    @Nonnull
     @Override
-    public MetricFamily measure(@Nonnull final T obj, final long timestamp) throws QueryException {
+    public MetricFamily measure(@Nonnull final Measurable measurable, final long timestamp) throws QueryException {
+        Objects.requireNonNull(measurable, "measurable must not be null");
         List<Measurement> measurements = new ArrayList<>();
         for (MeasurementDefinition measurementDefinition : measurementDefinitions) {
-            Measurement measurement = resolve(obj, measurementDefinition, config.getBaseUnit());
+            Measurement measurement = resolve(measurable, measurementDefinition, config.getBaseUnit());
             measurements.add(measurement);
         }
         ImmutableTags.Builder builder = Tags.builder().concat(config.getTags());
         for (String tagKey : config.getTagKeys()) {
-            String tagValue = obj.getTag(tagKey);
+            String tagValue = measurable.getTag(tagKey);
             if (tagValue == null) {
                 throw new QueryException("could not find tag value for key: \"" + tagKey + "\"");
             }
@@ -48,22 +54,26 @@ public final class StdMeasurer<T extends Measurable> implements Measurer<T> {
         return new ImmutableMetricFamily(config.getKey(), timestamp, measurements, builder.build(), config.getMeta());
     }
 
-    private Measurement resolve(final T obj, final MeasurementDefinition config, @Nullable final String baseUnit)
+    private Measurement resolve(@Nonnull final Measurable obj,
+                                @Nonnull final MeasurementDefinition config,
+                                @Nullable final String baseUnit)
             throws QueryException {
-        double value = (double) obj.getValue(config.getPath());
-
-        if (config.isUseBaseUnit()) {
-            if (baseUnit != null) {
-                return new ImmutableMeasurement(config.getStat(), config.getType(), baseUnit, value);
-            } else {
-                throw new QueryException("base unit is required");
-            }
+        Object objValue = obj.getValue(config.getPath());
+        if (objValue == null) {
+            throw new QueryException("could not find value for path: " + config.getPath());
         }
-        if (config.getUnitOf() != null) {
-            String unit = obj.getUnit(config.getUnitOf());
-            return new ImmutableMeasurement(config.getStat(), config.getType(), unit, value);
-        } else {
-            throw new QueryException("unitOf is null");
+        if (!(objValue instanceof Number)) {
+            throw new QueryException("value returned for path: " + config.getPath()
+                    + " has type " + objValue.getClass());
         }
+        double value = ((Number) objValue).doubleValue();
+        if (config.getUnitOf() == null) {
+            return new ImmutableMeasurement(config.getStat(), config.getType(), baseUnit, value);
+        }
+        String unit = obj.getUnit(config.getUnitOf());
+        if (unit == null) {
+            throw new QueryException("could not find unit for path: " + config.getUnitOf());
+        }
+        return new ImmutableMeasurement(config.getStat(), config.getType(), unit, value);
     }
 }

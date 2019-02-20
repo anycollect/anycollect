@@ -53,6 +53,11 @@
         <!-- TESTING -->
         <dependency>
             <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-assertj-extension</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
             <artifactId>anycollect-extension-system</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

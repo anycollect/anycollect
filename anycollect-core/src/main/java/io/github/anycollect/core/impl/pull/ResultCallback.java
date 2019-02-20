@@ -7,8 +7,7 @@ import javax.annotation.Nonnull;
 
 public interface ResultCallback<T extends Target<Q>, Q extends Query> {
     @SuppressWarnings("rawtypes")
-    ResultCallback NOOP = result -> {
-    };
+    ResultCallback NOOP = result -> { };
 
     @SuppressWarnings("unchecked")
     static <T extends Target<Q>, Q extends Query> ResultCallback<T, Q> noop() {

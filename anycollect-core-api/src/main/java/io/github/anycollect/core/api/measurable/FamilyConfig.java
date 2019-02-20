@@ -28,22 +28,10 @@ public final class FamilyConfig {
                         @JsonProperty("meta") @Nullable final Tags meta,
                         @JsonProperty(value = "name", required = true) @Nonnull final String metricFamilyName) {
         this.key = key;
-        this.baseUnit = baseUnit;
-        if (tagKeys != null) {
-            this.tagKeys = new HashSet<>(tagKeys);
-        } else {
-            this.tagKeys = Collections.emptySet();
-        }
-        if (tags != null) {
-            this.tags = tags;
-        } else {
-            this.tags = Tags.empty();
-        }
-        if (meta != null) {
-            this.meta = meta;
-        } else {
-            this.meta = Tags.empty();
-        }
+        this.tagKeys = tagKeys != null ? new HashSet<>(tagKeys) : Collections.emptySet();
+        this.tags = tags != null ? tags : Tags.empty();
+        this.meta = meta != null ? meta : Tags.empty();
+        this.baseUnit = baseUnit != null ? baseUnit : "";
         this.metricFamilyName = metricFamilyName;
     }
 }

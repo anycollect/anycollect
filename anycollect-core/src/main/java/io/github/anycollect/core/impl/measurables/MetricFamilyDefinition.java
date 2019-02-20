@@ -13,8 +13,9 @@ public final class MetricFamilyDefinition {
     private final List<MeasurementDefinition> measurements;
 
     @JsonCreator
-    public MetricFamilyDefinition(@JsonProperty("name") @Nonnull final String name,
-                                  @JsonProperty("measurements") @Nonnull final List<MeasurementDefinition> measurements) {
+    public MetricFamilyDefinition(
+            @JsonProperty("name") @Nonnull final String name,
+            @JsonProperty("measurements") @Nonnull final List<MeasurementDefinition> measurements) {
         this.name = name;
         this.measurements = new ArrayList<>(measurements);
     }

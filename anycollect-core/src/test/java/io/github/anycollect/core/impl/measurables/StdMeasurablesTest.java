@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.measurables;
 
+import io.github.anycollect.core.api.measurable.FamilyConfig;
 import io.github.anycollect.extensions.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.DefinitionLoader;
 import io.github.anycollect.extensions.InstanceLoader;
@@ -19,9 +20,10 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class StdMeasurableTypesTest {
-    private StdMeasurers measurables;
+class StdMeasurablesTest {
+    private StdMeasurers measurers;
 
     @BeforeEach
     void createPullManager() throws Exception {
@@ -30,12 +32,27 @@ class StdMeasurableTypesTest {
         File config = FileUtils.getFile("src", "test", "resources", "measurables.yaml");
         InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config), definitions);
         List<Instance> instances = new ArrayList<>(instanceLoader.load());
-        measurables = (StdMeasurers) instances.get(0).resolve();
+        measurers = (StdMeasurers) instances.get(0).resolve();
     }
 
     @Test
     @DisplayName("is successfully instantiated by extension system")
     void isInstantiatedBySystem() {
-        assertThat(measurables).isNotNull();
+        assertThat(measurers).isNotNull();
+    }
+
+    @Test
+    void mustNotCreateMeasurerIfThereIsNoDefinitions() {
+        FamilyConfig config = new FamilyConfig(
+                "key",
+                null,
+                null,
+                null,
+                null,
+                "wrong"
+        );
+        assertThat(measurers.hasDefinition("wrong")).isFalse();
+        assertThatThrownBy(() -> measurers.make(config))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
