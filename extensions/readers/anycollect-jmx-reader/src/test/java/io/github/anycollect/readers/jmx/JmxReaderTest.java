@@ -83,7 +83,8 @@ class JmxReaderTest {
             assertThat(families).hasSize(1);
             MetricFamily family = families.get(0);
             assertThat(family)
-                    .hasTags("key1", "value1",
+                    .hasTags("instance", "test",
+                            "key1", "value1",
                             "k1", "k1val2",
                             "k2", "k2val1")
                     .hasMeta("key2", "value2")

@@ -10,6 +10,7 @@ import io.github.anycollect.core.api.measurable.Measurers;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Tags;
 import lombok.EqualsAndHashCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,8 @@ public final class StdJmxQuery extends JmxQuery {
 
     @Nonnull
     @Override
-    public List<MetricFamily> executeOn(@Nonnull final MBeanServerConnection connection)
+    public List<MetricFamily> executeOn(@Nonnull final MBeanServerConnection connection,
+                                        @Nonnull final Tags targetTags)
             throws QueryException, ConnectionException {
         Set<ObjectName> objectNames;
         long networkTime = 0;
@@ -96,7 +98,7 @@ public final class StdJmxQuery extends JmxQuery {
                     throw new ConnectionException("could not get attributes", e);
                 }
                 // TODO maybe cache, do benchmark?
-                MBean mbean = new MBean(objectName, attributeList);
+                MBean mbean = new MBean(objectName, attributeList, targetTags);
                 for (Measurer<MBean> measurer : measurers) {
                     metricFamilies.add(measurer.measure(mbean, timestamp));
                 }

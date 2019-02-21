@@ -32,7 +32,7 @@ class PooledServerTest {
         JmxConnection jmxConnection = new JmxConnection(null, serverConnection);
         when(pool.borrowConnection()).thenReturn(jmxConnection);
         JmxQuery query = spy(new NoopQuery("id"));
-        when(query.executeOn(any())).thenThrow(new ConnectionException("timeout"));
+        when(query.executeOn(any(), any())).thenThrow(new ConnectionException("timeout"));
         ConnectionException ex = Assertions.assertThrows(ConnectionException.class, () -> server.execute(query));
         assertThat(ex).hasMessage("timeout");
         verify(pool, times(1)).invalidateConnection(jmxConnection);
@@ -51,7 +51,7 @@ class PooledServerTest {
         JavaApp server = new PooledJavaApp("dummy-server", pool);
         NoopQuery query = spy(new NoopQuery("id"));
         when(pool.borrowConnection()).thenReturn(new JmxConnection(null, mock(MBeanServerConnection.class)));
-        when(query.executeOn(any())).thenThrow(new QueryException("dummy"));
+        when(query.executeOn(any(), any())).thenThrow(new QueryException("dummy"));
         QueryException ex = Assertions.assertThrows(QueryException.class, () -> server.execute(query));
         assertThat(ex).hasMessage("dummy");
     }

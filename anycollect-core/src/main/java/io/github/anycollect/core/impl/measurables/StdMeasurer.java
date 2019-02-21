@@ -43,7 +43,7 @@ public final class StdMeasurer implements Measurer<Measurable> {
             Measurement measurement = resolve(measurable, measurementDefinition, config.getBaseUnit());
             measurements.add(measurement);
         }
-        ImmutableTags.Builder builder = Tags.builder().concat(config.getTags());
+        ImmutableTags.Builder builder = Tags.builder().concat(config.getTags()).concat(measurable.getTags());
         for (String tagKey : config.getTagKeys()) {
             String tagValue = measurable.getTag(tagKey);
             if (tagValue == null) {

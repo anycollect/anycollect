@@ -2,9 +2,12 @@ package io.github.anycollect.core.impl.pull;
 
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
+import io.github.anycollect.core.impl.pull.availability.Health;
+import io.github.anycollect.core.impl.pull.availability.HealthCheck;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.Future;
 
 public interface PullScheduler {
     /**
@@ -20,6 +23,8 @@ public interface PullScheduler {
      */
     <T extends Target<Q>, Q extends Query> Cancellation schedulePull(
             T target, Q query, ResultCallback<T, Q> callback, int periodInSeconds);
+
+    <T extends Target<Q>, Q extends Query> Future<Health> check(HealthCheck<T, Q> check);
 
     /**
      * Signals that the target is no longer needed to be monitored.

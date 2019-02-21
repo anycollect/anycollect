@@ -6,11 +6,14 @@ import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.pull.PullJob;
 import io.github.anycollect.core.impl.pull.PullScheduler;
 import io.github.anycollect.core.impl.pull.ResultCallback;
+import io.github.anycollect.core.impl.pull.availability.Health;
+import io.github.anycollect.core.impl.pull.availability.HealthCheck;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public final class SeparatePullScheduler implements PullScheduler {
@@ -32,6 +35,12 @@ public final class SeparatePullScheduler implements PullScheduler {
         PullJob<T, Q> job = new PullJob<>(target, query, callback, clock);
         Scheduler scheduler = activeSchedulers.computeIfAbsent(target, factory::create);
         return scheduler.scheduleAtFixedRate(job, periodInSeconds, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public <T extends Target<Q>, Q extends Query> Future<Health> check(@Nonnull final HealthCheck<T, Q> check) {
+        Scheduler scheduler = activeSchedulers.computeIfAbsent(check.getTarget(), factory::create);
+        return scheduler.executeImmediately(check);
     }
 
     @Override

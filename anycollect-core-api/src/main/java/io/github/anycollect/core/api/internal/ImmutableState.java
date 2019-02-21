@@ -37,6 +37,11 @@ public final class ImmutableState<T extends Target<Q>, Q extends Query> implemen
             return this;
         }
 
+        public Builder<T, Q> put(@Nonnull final T target) {
+            state.putIfAbsent(target, new HashSet<>());
+            return this;
+        }
+
         public ImmutableState<T, Q> build() {
             return new ImmutableState<>(this);
         }

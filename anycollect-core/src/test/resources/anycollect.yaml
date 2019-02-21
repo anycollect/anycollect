@@ -11,3 +11,11 @@ extenstions:
       poolSize: 3
     - targetId: "app2-.*"
       poolSize: 2
+    healthChecks:
+      period: 2
+      timeout: 1
+      checks:
+      - targetId: "app.*"
+        service: app1
+        period: 5
+        timeout: 2

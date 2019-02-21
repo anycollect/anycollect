@@ -20,14 +20,14 @@ class CurrentAppTest {
     @Test
     void connectionMustBeOfTypeMBeanServer() throws ConnectionException, QueryException {
         JmxQuery query = spy(new NoopQuery("id"));
-        when(query.executeOn(any())).thenReturn(Collections.emptyList());
+        when(query.executeOn(any(), any())).thenReturn(Collections.emptyList());
         CurrentApp discovery = new CurrentApp("dummy");
 
         JavaApp server = discovery.discover().iterator().next();
         server.execute(query);
 
         ArgumentCaptor<MBeanServerConnection> mbeanServer = ArgumentCaptor.forClass(MBeanServerConnection.class);
-        verify(query, times(1)).executeOn(mbeanServer.capture());
+        verify(query, times(1)).executeOn(mbeanServer.capture(), any());
         MBeanServerConnection connection = mbeanServer.getValue();
         assertThat(connection).isInstanceOf(MBeanServer.class);
     }

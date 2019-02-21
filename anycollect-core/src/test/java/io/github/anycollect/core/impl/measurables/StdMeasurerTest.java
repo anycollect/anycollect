@@ -73,6 +73,7 @@ class StdMeasurerTest {
             );
             measurer = new StdMeasurer(familyConfig, Lists.list(min, max));
             measurable = mock(Measurable.class);
+            when(measurable.getTags()).thenReturn(Tags.empty());
             when(measurable.getTag("tag1")).thenReturn("value1");
             when(measurable.getTag("tag2")).thenReturn("value2");
             when(measurable.getValue("Min")).thenReturn(1.0);

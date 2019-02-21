@@ -5,6 +5,16 @@ import java.util.Collections;
 import java.util.List;
 
 public interface MetricFamily {
+    static MetricFamily of(@Nonnull String key,
+                           @Nonnull Tags tags,
+                           @Nonnull Tags meta,
+                           @Nonnull Measurement measurement,
+                           long timestamp) {
+        return new ImmutableMetricFamily(
+                key, timestamp, Collections.singletonList(measurement), tags, meta
+        );
+    }
+
     static MetricFamily empty(@Nonnull MeterId id, long timestamp) {
         return of(id, Collections.emptyList(), timestamp);
     }

@@ -2,9 +2,7 @@ package io.github.anycollect.core.impl.scheduler;
 
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public final class SchedulerImpl implements Scheduler {
     private final ScheduledThreadPoolExecutor service;
@@ -22,6 +20,12 @@ public final class SchedulerImpl implements Scheduler {
         }
         ScheduledFuture<?> future = service.scheduleAtFixedRate(runnable, 0L, period, unit);
         return new ScheduledFeatureAdapter(future);
+    }
+
+    @Override
+    public <V> Future<V> executeImmediately(@Nonnull final Callable<V> callable) {
+        // TODO priority
+        return service.schedule(callable, 0L, TimeUnit.NANOSECONDS);
     }
 
     @Override

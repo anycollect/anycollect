@@ -1,8 +1,11 @@
 package io.github.anycollect.core.impl.pull;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import io.github.anycollect.core.api.internal.Clock;
+import io.github.anycollect.core.impl.pull.availability.HealthChecksConfig;
 import io.github.anycollect.core.impl.pull.separate.ConcurrencyRule;
 import io.github.anycollect.core.impl.pull.separate.ConcurrencyRules;
 import lombok.Getter;
@@ -23,6 +26,8 @@ public final class PullManagerConfig {
     private final int defaultPullPeriodInSeconds;
     private final int defaultPoolSize;
     private final ConcurrencyRule concurrencyRule;
+    private final HealthChecksConfig healthChecks;
+    private final Clock clock;
 
     public static Builder builder() {
         return new Builder();
@@ -33,6 +38,8 @@ public final class PullManagerConfig {
         this.defaultPullPeriodInSeconds = builder.defaultPullPeriodInSeconds;
         this.defaultPoolSize = builder.defaultPoolSize;
         this.concurrencyRule = builder.concurrencyRulesBuilder.build();
+        this.healthChecks = builder.healthChecks;
+        this.clock = builder.clock;
     }
 
     @JsonPOJOBuilder
@@ -41,6 +48,14 @@ public final class PullManagerConfig {
         private int defaultPullPeriodInSeconds = DEFAULT_PULL_INTERVAL_IN_SECONDS;
         private int defaultPoolSize = DEFAULT_POOL_SIZE;
         private ConcurrencyRules.Builder concurrencyRulesBuilder = ConcurrencyRules.builder();
+        private HealthChecksConfig healthChecks;
+        private Clock clock;
+
+        @JacksonInject
+        public Builder withClock(@Nonnull final Clock clock) {
+            this.clock = clock;
+            return this;
+        }
 
         @JsonProperty("updatePeriod")
         public Builder withUpdatePeriod(final int seconds) {
@@ -68,6 +83,12 @@ public final class PullManagerConfig {
         @JsonProperty("rules")
         public Builder withRules(@Nonnull final List<ConcurrencyRule> rules) {
             this.concurrencyRulesBuilder.withRules(rules);
+            return this;
+        }
+
+        @JsonProperty("healthChecks")
+        public Builder withRules(@Nonnull final HealthChecksConfig healthChecks) {
+            this.healthChecks = healthChecks;
             return this;
         }
 

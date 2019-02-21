@@ -17,9 +17,12 @@ public interface PullManager extends Plugin, Lifecycle {
             @Nonnull ServiceDiscovery<T> discovery,
             @Nonnull QueryProvider<Q> provider,
             @Nonnull QueryMatcherResolver resolver,
-            @Nonnull Dispatcher dispatcher
+            @Nonnull Dispatcher dispatcher,
+            @Nonnull Q healthCheck
     );
 
     <T extends Target<Q>, Q extends Query> void start(@Nonnull DesiredStateProvider<T, Q> stateProvider,
-                                                      @Nonnull Dispatcher dispatcher);
+                                                      @Nonnull Dispatcher dispatcher,
+                                                      @Nonnull Q healthCheck);
+
 }

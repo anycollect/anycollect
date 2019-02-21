@@ -9,6 +9,7 @@ import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.readers.jmx.discovery.JavaAppDiscovery;
+import io.github.anycollect.readers.jmx.query.JmxHealthCheck;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
 import io.github.anycollect.readers.jmx.query.JmxQueryProvider;
 
@@ -35,6 +36,6 @@ public class JmxReader implements ServiceReader {
 
     @Override
     public void start(@Nonnull final Dispatcher dispatcher) {
-        puller.start(discovery, queries, matcher, dispatcher);
+        puller.start(discovery, queries, matcher, dispatcher, new JmxHealthCheck());
     }
 }

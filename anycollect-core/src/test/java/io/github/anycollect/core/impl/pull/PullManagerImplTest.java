@@ -19,7 +19,7 @@ class PullManagerImplTest {
     void scheduleInitialState() {
         PullScheduler scheduler = mock(PullScheduler.class);
         Scheduler updater = new JitScheduler();
-        PullManagerImpl manager = new PullManagerImpl(scheduler, updater, 1, 10);
+        PullManagerImpl manager = new PullManagerImpl(scheduler, updater, mock(Scheduler.class),1, 10);
         @SuppressWarnings("unchecked")
         DesiredStateProvider<TestTarget, TestQuery> provider = mock(DesiredStateProvider.class);
         Dispatcher dispatcher = mock(Dispatcher.class);
@@ -32,7 +32,7 @@ class PullManagerImplTest {
                 .put(target1, query12, 2)
                 .build();
         when(provider.current()).thenReturn(state);
-        manager.start(provider, dispatcher);
+        manager.start(provider, dispatcher, mock(TestQuery.class));
         verify(scheduler, times(1)).schedulePull(eq(target1), eq(query11), any(), eq(1));
         verify(scheduler, times(1)).schedulePull(eq(target1), eq(query12), any(), eq(2));
     }

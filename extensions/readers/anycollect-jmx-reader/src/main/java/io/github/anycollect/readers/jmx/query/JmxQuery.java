@@ -5,6 +5,7 @@ import io.github.anycollect.core.api.query.AbstractQuery;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Tags;
 import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
@@ -24,6 +25,7 @@ public abstract class JmxQuery extends AbstractQuery {
     }
 
     @Nonnull
-    public abstract List<MetricFamily> executeOn(@Nonnull MBeanServerConnection connection)
+    public abstract List<MetricFamily> executeOn(@Nonnull MBeanServerConnection connection,
+                                                 @Nonnull Tags targetTags)
             throws QueryException, ConnectionException;
 }

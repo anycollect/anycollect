@@ -3,6 +3,7 @@ package io.github.anycollect.readers.jmx.server;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
 
 import javax.annotation.Nonnull;
@@ -19,7 +20,13 @@ public final class SimpleServer extends JavaApp {
 
     @Nonnull
     @Override
+    public Tags getTags() {
+        return Tags.empty();
+    }
+
+    @Nonnull
+    @Override
     public List<MetricFamily> execute(@Nonnull final JmxQuery query) throws QueryException, ConnectionException {
-        return query.executeOn(connection.getConnection());
+        return query.executeOn(connection.getConnection(), getTags());
     }
 }

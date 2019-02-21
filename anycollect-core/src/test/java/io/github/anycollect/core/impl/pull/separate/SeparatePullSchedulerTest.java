@@ -5,6 +5,7 @@ import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
 import io.github.anycollect.core.impl.pull.ResultCallback;
+import io.github.anycollect.core.impl.pull.availability.HealthCheck;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +26,43 @@ class SeparatePullSchedulerTest {
         when(factory.create(any())).thenReturn(scheduler);
         Clock clock = mock(Clock.class);
         puller = new SeparatePullScheduler(factory, clock);
+    }
+
+    @Nested
+    @DisplayName("when target is not scheduled")
+    class WhenTargetIsNotScheduled {
+        @Test
+        @DisplayName("scheduler must be created")
+        void executor() {
+            HealthCheck<TestTarget, TestQuery> healthCheck = new HealthCheck<>(
+                    mock(TestTarget.class),
+                    mock(TestQuery.class)
+            );
+            puller.check(healthCheck);
+            verify(scheduler, times(1)).executeImmediately(healthCheck);
+        }
+    }
+
+    @Nested
+    @DisplayName("when target is scheduled")
+    class WhenTargetIsScheduled {
+        private TestTarget target;
+
+        @BeforeEach
+        void setUp() {
+            target = mock(TestTarget.class);
+            puller.schedulePull(target, mock(TestQuery.class), ResultCallback.noop(), 1);
+        }
+
+        @Test
+        @DisplayName("health status must be got from health check")
+        void healthCheckMustBeFailed() {
+            @SuppressWarnings("unchecked")
+            HealthCheck<TestTarget, TestQuery> healthCheck = mock(HealthCheck.class);
+            when(healthCheck.getTarget()).thenReturn(target);
+            puller.check(healthCheck);
+            verify(scheduler, times(1)).executeImmediately(healthCheck);
+        }
     }
 
     @Nested

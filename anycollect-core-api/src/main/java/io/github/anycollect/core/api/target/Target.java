@@ -1,9 +1,10 @@
 package io.github.anycollect.core.api.target;
 
-import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -18,6 +19,9 @@ public interface Target<Q extends Query> {
      */
     @Nonnull
     String getId();
+
+    @Nonnull
+    Tags getTags();
 
     List<MetricFamily> execute(@Nonnull Q query) throws QueryException, ConnectionException;
 }
