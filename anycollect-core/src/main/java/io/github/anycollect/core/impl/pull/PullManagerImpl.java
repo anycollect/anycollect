@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.pull;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.internal.DesiredStateProvider;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 @Extension(name = "PullEngine", point = PullManager.class)
@@ -45,14 +47,20 @@ public final class PullManagerImpl implements PullManager {
         LOG.debug("create pull manager with config {}", config);
         this.updatePeriodInSeconds = config.getUpdatePeriodInSeconds();
         this.defaultPullPeriodInSeconds = config.getDefaultPullPeriodInSeconds();
-        this.updater = new SchedulerImpl(new ScheduledThreadPoolExecutor(1));
+        ThreadFactory updaterThreads = new ThreadFactoryBuilder()
+                .setNameFormat("anycollect-state-updater-[%d]")
+                .build();
+        this.updater = new SchedulerImpl(new ScheduledThreadPoolExecutor(1, updaterThreads));
         // TODO inject
         MeterRegistry registry = new NoopMeterRegistry();
         SchedulerFactory schedulerFactory = new SchedulerFactoryImpl(
                 config.getConcurrencyRule(), config.getDefaultPoolSize(), registry);
         this.puller = new SeparatePullScheduler(schedulerFactory, Clock.getDefault());
         this.healthChecks = config.getHealthChecks();
-        this.healthCheckScheduler = new SchedulerImpl(new ScheduledThreadPoolExecutor(1));
+        ThreadFactory healthCheckThreads = new ThreadFactoryBuilder()
+                .setNameFormat("anycollect-health-check-[%d]")
+                .build();
+        this.healthCheckScheduler = new SchedulerImpl(new ScheduledThreadPoolExecutor(1, healthCheckThreads));
         this.clock = config.getClock();
     }
 

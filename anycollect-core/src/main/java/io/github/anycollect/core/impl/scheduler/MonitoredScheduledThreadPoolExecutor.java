@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.scheduler;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.Counter;
 import io.github.anycollect.metric.Distribution;
@@ -25,14 +26,23 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
     public MonitoredScheduledThreadPoolExecutor(final int corePoolSize,
                                                 @Nonnull final MeterRegistry registry,
                                                 final Tags tags) {
-        this(corePoolSize, Clock.getDefault(), registry, tags);
+        this(corePoolSize, new ThreadFactoryBuilder().setNameFormat("thread-[%d]").build(),
+                Clock.getDefault(), registry, tags);
     }
 
     public MonitoredScheduledThreadPoolExecutor(final int corePoolSize,
+                                                final ThreadFactory threadFactory,
+                                                @Nonnull final MeterRegistry registry,
+                                                final Tags tags) {
+        this(corePoolSize, threadFactory, Clock.getDefault(), registry, tags);
+    }
+
+    public MonitoredScheduledThreadPoolExecutor(final int corePoolSize,
+                                                final ThreadFactory threadFactory,
                                                 @Nonnull final Clock clock,
                                                 @Nonnull final MeterRegistry registry,
                                                 final Tags tags) {
-        super(corePoolSize);
+        super(corePoolSize, threadFactory);
         this.clock = clock;
         discrepancySummary = Distribution.key("scheduler.discrepancy")
                 .unit("percentage")
@@ -115,5 +125,4 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
             }
         }
     }
-
 }

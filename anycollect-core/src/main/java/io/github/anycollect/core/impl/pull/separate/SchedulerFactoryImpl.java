@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.pull.separate;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.scheduler.MonitoredScheduledThreadPoolExecutor;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 
 public final class SchedulerFactoryImpl implements SchedulerFactory {
     private static final Logger LOG = LoggerFactory.getLogger(SchedulerFactoryImpl.class);
@@ -26,14 +28,17 @@ public final class SchedulerFactoryImpl implements SchedulerFactory {
         this.registry = registry;
     }
 
-    // TODO ThreadFactory
     @Nonnull
     @Override
     public Scheduler create(final Target<?> target) {
         int poolSize = rule.getPoolSize(target, defaultPoolSize);
         LOG.debug("creating scheduler for target {} with pool size {}", target, poolSize);
+        ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                .setNameFormat("anycollect-pull-(" + target.getId() + ")-[%d]")
+                .build();
         ScheduledThreadPoolExecutor executorService
-                = new MonitoredScheduledThreadPoolExecutor(poolSize, registry, Tags.of("target", target.getId()));
+                = new MonitoredScheduledThreadPoolExecutor(
+                        poolSize, threadFactory, registry, Tags.of("target", target.getId()));
         return new SchedulerImpl(executorService);
     }
 }
