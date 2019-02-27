@@ -4,7 +4,7 @@ import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.PullManager;
 import io.github.anycollect.core.api.internal.QueryMatcherResolver;
 import io.github.anycollect.core.api.query.QueryProvider;
-import io.github.anycollect.core.api.reader.ServiceReader;
+import io.github.anycollect.core.api.Reader;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
@@ -15,8 +15,8 @@ import io.github.anycollect.readers.jmx.query.JmxQueryProvider;
 
 import javax.annotation.Nonnull;
 
-@Extension(name = JmxReader.NAME, point = ServiceReader.class)
-public class JmxReader implements ServiceReader {
+@Extension(name = JmxReader.NAME, point = Reader.class)
+public class JmxReader implements Reader {
     public static final String NAME = "JmxReader";
     private final PullManager puller;
     private final JavaAppDiscovery discovery;
