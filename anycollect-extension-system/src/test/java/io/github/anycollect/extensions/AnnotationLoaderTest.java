@@ -2,13 +2,15 @@ package io.github.anycollect.extensions;
 
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
-import io.github.anycollect.extensions.annotations.ExtPoint;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.definitions.ConfigDefinition;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.MultiDependencyDefinition;
 import io.github.anycollect.extensions.definitions.SingleDependencyDefinition;
-import io.github.anycollect.extensions.exceptions.*;
+import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.extensions.exceptions.ExtensionDescriptorException;
+import io.github.anycollect.extensions.exceptions.UnresolvableConstructorException;
+import io.github.anycollect.extensions.exceptions.WrongExtensionMappingException;
 import io.github.anycollect.extensions.samples.*;
 import io.github.anycollect.extensions.utils.ConstrictorUtils;
 import org.junit.jupiter.api.Assertions;
@@ -106,11 +108,10 @@ class AnnotationLoaderTest {
     }
 
     @Test
-    @DisplayName("extension point must have annotation")
-    void extensionPointMustHaveAnnotation() {
+    @DisplayName("extension point must not have annotation")
+    void extensionPointMustNotHaveAnnotation() {
         AnnotationDefinitionLoader loader = create(ExtensionPointWithoutAnnotaionImpl.class);
-        ExtensionDescriptorException ex = Assertions.assertThrows(ExtensionDescriptorException.class, loader::load);
-        assertThat(ex).hasMessageContaining(ExtPoint.class.getName());
+        Assertions.assertDoesNotThrow(loader::load);
     }
 
     @Test

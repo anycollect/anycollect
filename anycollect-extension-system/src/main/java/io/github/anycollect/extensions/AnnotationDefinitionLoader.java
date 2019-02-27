@@ -204,13 +204,7 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
 
     private Class loadExtensionPointClass(final Class extClass) {
         Extension extension = (Extension) extClass.getAnnotation(Extension.class);
-        Class extPointClass = extension.point();
-        ExtPoint extPoint = (ExtPoint) extPointClass.getAnnotation(ExtPoint.class);
-        if (extPoint == null) {
-            LOG.error("extension point class must have {} annotation on the class declaration", ExtPoint.class);
-            throw new ExtensionDescriptorException("extension point class must have " + ExtPoint.class + " annotation");
-        }
-        return extPointClass;
+        return extension.point();
     }
 
     private static class AnnotatedParameter<T extends Annotation> {
