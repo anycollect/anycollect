@@ -44,20 +44,4 @@ class StdDesiredStateProviderTest {
         assertThat(state.getTargets()).containsExactly(target);
         assertThat(state.getQueries(target)).containsExactly(new ImmutablePeriodicQuery<>(query2, 2));
     }
-
-    @Test
-    void initTest() {
-        desired.init();
-        verify(discovery, times(1)).init();
-        verify(provider, times(1)).init();
-        verify(resolver, times(1)).init();
-    }
-
-    @Test
-    void destroyTest() {
-        desired.destroy();
-        verify(discovery, times(1)).destroy();
-        verify(provider, times(1)).destroy();
-        verify(resolver, times(1)).destroy();
-    }
 }

@@ -42,18 +42,4 @@ public final class StdDesiredStateProvider<T extends Target<Q>, Q extends Query>
         }
         return builder.build();
     }
-
-    @Override
-    public void init() {
-        discovery.init();
-        provider.init();
-        resolver.init();
-    }
-
-    @Override
-    public void destroy() {
-        discovery.destroy();
-        provider.destroy();
-        resolver.destroy();
-    }
 }
