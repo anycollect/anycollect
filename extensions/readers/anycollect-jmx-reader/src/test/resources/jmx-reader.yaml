@@ -63,6 +63,8 @@ extensions:
   instance: jmx
   dependencies:
     puller: !ref puller
-    discovery: !ref discovery
-    queries: !ref queries
+    discovery: !refs
+    - discovery
+    queries: !refs
+    - queries
     matcher: !ref matcher
