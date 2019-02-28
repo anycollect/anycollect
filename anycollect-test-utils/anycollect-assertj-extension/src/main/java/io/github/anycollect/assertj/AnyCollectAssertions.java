@@ -4,6 +4,8 @@ import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.metric.Tags;
 import org.assertj.core.api.Assertions;
 
+import java.util.List;
+
 public final class AnyCollectAssertions extends Assertions {
     private AnyCollectAssertions() {
     }
@@ -14,5 +16,9 @@ public final class AnyCollectAssertions extends Assertions {
 
     public static MetricFamilyAssert assertThat(final MetricFamily actual) {
         return MetricFamilyAssert.assertThat(actual);
+    }
+
+    public static ListMetricFamilyAssert assertThatFamilies(final List<MetricFamily> actual) {
+        return new ListMetricFamilyAssert(actual);
     }
 }

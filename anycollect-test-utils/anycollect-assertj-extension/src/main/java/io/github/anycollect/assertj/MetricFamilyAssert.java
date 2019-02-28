@@ -6,7 +6,7 @@ import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
 import org.assertj.core.api.AbstractAssert;
 
-public class MetricFamilyAssert extends AbstractAssert<MetricFamilyAssert, MetricFamily> {
+public final class MetricFamilyAssert extends AbstractAssert<MetricFamilyAssert, MetricFamily> {
     public MetricFamilyAssert(final MetricFamily actual) {
         super(actual, MetricFamilyAssert.class);
     }
