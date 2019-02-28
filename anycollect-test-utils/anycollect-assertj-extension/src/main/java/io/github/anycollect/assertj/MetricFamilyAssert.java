@@ -15,6 +15,13 @@ public class MetricFamilyAssert extends AbstractAssert<MetricFamilyAssert, Metri
         return new MetricFamilyAssert(actual);
     }
 
+    public MetricFamilyAssert hasKey(final String key) {
+        if (!key.equals(actual.getKey())) {
+            failWithMessage("expected <%s> to have key %s but was <%s>", actual, key, actual.getKey());
+        }
+        return this;
+    }
+
     public MetricFamilyAssert hasTags(final String... tags) {
         TagsAssert.assertThat(actual.getTags()).hasTags(tags);
         return this;
