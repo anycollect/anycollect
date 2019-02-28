@@ -2,7 +2,6 @@ package io.github.anycollect.core.impl.writers.socket;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public interface Sender {
     void connected() throws IOException;

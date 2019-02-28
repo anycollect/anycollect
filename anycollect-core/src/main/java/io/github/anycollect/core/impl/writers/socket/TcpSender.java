@@ -16,8 +16,6 @@ import java.nio.charset.StandardCharsets;
 
 public final class TcpSender implements Sender {
     private static final Logger LOG = LoggerFactory.getLogger(TcpSender.class);
-    private final String host;
-    private final int port;
     private final InetSocketAddress address;
     private final SocketFactory socketFactory;
     private final Charset charset = StandardCharsets.UTF_8;
@@ -25,8 +23,6 @@ public final class TcpSender implements Sender {
     private volatile Writer writer;
 
     public TcpSender(final String host, final int port) {
-        this.host = host;
-        this.port = port;
         socketFactory = SocketFactory.getDefault();
         address = new InetSocketAddress(host, port);
     }
