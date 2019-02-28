@@ -11,6 +11,7 @@ import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
 import io.micrometer.core.instrument.*;
+import io.micrometer.core.instrument.FunctionCounter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.Meter;
@@ -27,11 +28,13 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToLongFunction;
 
@@ -57,9 +60,26 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
         this.config = config;
     }
 
+    @Nonnull
+    @Override
+    public <T> io.github.anycollect.metric.Gauge gauge(@Nonnull final MeterId id,
+                                                       @Nonnull final T obj,
+                                                       @Nonnull final ToDoubleFunction<T> value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
     @Override
     public Counter counter(@Nonnull final MeterId id) {
         return (Counter) meters.computeIfAbsent(id, this::registerNewCounter);
+    }
+
+    @Nonnull
+    @Override
+    public <T> io.github.anycollect.metric.FunctionCounter counter(@Nonnull final MeterId id,
+                                                                   @Nonnull final T obj,
+                                                                   @Nonnull final ToDoubleFunction<T> value) {
+        throw new UnsupportedOperationException();
     }
 
     private Counter registerNewCounter(@Nonnull final MeterId meterId) {
@@ -83,10 +103,16 @@ public final class MicrometerMeterRegistry extends PushMeterRegistry implements 
         return new MicrometerDistributionSummary(summary, id, anyClock).getMeter();
     }
 
+    @Nonnull
     @Override
     public Distribution distribution(@Nonnull final MeterId id) {
         return (Distribution)
                 meters.computeIfAbsent(id, this::registerNewSummary);
+    }
+
+    @Override
+    public List<MetricFamily> measure(@Nonnull final Predicate<MeterId> filter) {
+        return Collections.emptyList();
     }
 
     private String getDescription(@Nonnull final MeterId meterId) {

@@ -3,18 +3,18 @@ package io.github.anycollect.metric;
 import javax.annotation.Nonnull;
 import java.util.function.ToDoubleFunction;
 
-public interface Gauge extends Meter {
-    static <T> GaugeBuilder<T> make(@Nonnull final String key,
+public interface FunctionCounter extends Meter {
+    static <T> FunctionCounterBuilder<T> make(@Nonnull final String key,
                                    @Nonnull final T obj,
                                    @Nonnull final ToDoubleFunction<T> value) {
-        return new GaugeBuilder<>(key, obj, value);
+        return new FunctionCounterBuilder<>(key, obj, value);
     }
 
-    final class GaugeBuilder<T> extends BaseMeterBuilder<GaugeBuilder<T>> {
+    final class FunctionCounterBuilder<T> extends BaseMeterBuilder<FunctionCounterBuilder<T>> {
         private final T obj;
         private final ToDoubleFunction<T> value;
 
-        GaugeBuilder(@Nonnull final String key,
+        FunctionCounterBuilder(@Nonnull final String key,
                      @Nonnull final T obj,
                      @Nonnull final ToDoubleFunction<T> value) {
             super(key);
@@ -23,18 +23,18 @@ public interface Gauge extends Meter {
         }
 
         @Override
-        protected GaugeBuilder<T> self() {
+        protected FunctionCounterBuilder<T> self() {
             return this;
         }
 
-        public GaugeBuilder<T> unit(@Nonnull final String unit) {
+        public FunctionCounterBuilder<T> unit(@Nonnull final String unit) {
             return super.unit(unit);
         }
 
-        public Gauge register(@Nonnull final MeterRegistry registry) {
+        public FunctionCounter register(@Nonnull final MeterRegistry registry) {
             ImmutableMeterId id = new ImmutableMeterId(getKey(), getUnit(),
                     getTagsBuilder().build(), getMetaBuilder().build());
-            return registry.gauge(id, obj, value);
+            return registry.counter(id, obj, value);
         }
     }
 }
