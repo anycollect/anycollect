@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 @EqualsAndHashCode(callSuper = true)
 public final class StdJmxQuery extends JmxQuery {
@@ -76,24 +75,14 @@ public final class StdJmxQuery extends JmxQuery {
     public List<MetricFamily> executeOn(@Nonnull final MBeanServerConnection connection,
                                         @Nonnull final Tags targetTags)
             throws QueryException, ConnectionException {
-        Set<ObjectName> objectNames;
-        long networkTime = 0;
-        try {
-            long start = clock.monotonicTime();
-            objectNames = connection.queryNames(objectPattern, null);
-            networkTime += clock.monotonicTime() - start;
-        } catch (IOException e) {
-            throw new ConnectionException("could not query names", e);
-        }
+        Set<ObjectName> objectNames = queryNames(connection, objectPattern);
         List<MetricFamily> metricFamilies = new ArrayList<>();
         long timestamp = clock.wallTime();
         for (ObjectName objectName : objectNames) {
             if (restriction.allows(objectName)) {
                 AttributeList attributeList;
                 try {
-                    long start = clock.monotonicTime();
                     attributeList = connection.getAttributes(objectName, this.attributes);
-                    networkTime += clock.monotonicTime() - start;
                 } catch (InstanceNotFoundException | ReflectionException | IOException e) {
                     throw new ConnectionException("could not get attributes", e);
                 }
@@ -104,7 +93,6 @@ public final class StdJmxQuery extends JmxQuery {
                 }
             }
         }
-        LOG.debug("network time: {}ms", TimeUnit.NANOSECONDS.toMillis(networkTime));
         return metricFamilies;
     }
 }

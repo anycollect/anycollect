@@ -10,12 +10,15 @@ import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.management.MBeanServerConnection;
+import javax.management.*;
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
+        use = JsonTypeInfo.Id.MINIMAL_CLASS,
         include = JsonTypeInfo.As.PROPERTY,
+        property = "@class",
         defaultImpl = StdJmxQuery.class)
 @ThreadSafe
 @EqualsAndHashCode(callSuper = true)
@@ -28,4 +31,13 @@ public abstract class JmxQuery extends AbstractQuery {
     public abstract List<MetricFamily> executeOn(@Nonnull MBeanServerConnection connection,
                                                  @Nonnull Tags targetTags)
             throws QueryException, ConnectionException;
+
+    protected Set<ObjectName> queryNames(@Nonnull final MBeanServerConnection connection,
+                                         @Nonnull final ObjectName objectPattern) throws ConnectionException {
+        try {
+            return connection.queryNames(objectPattern, null);
+        } catch (IOException e) {
+            throw new ConnectionException("could not query names", e);
+        }
+    }
 }
