@@ -59,5 +59,10 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-assertj-extension</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
