@@ -1,8 +1,12 @@
 package io.github.anycollect.readers.jmx.discovery;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
+import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.server.JmxConnection;
 import io.github.anycollect.readers.jmx.server.JmxConnectionFactory;
@@ -27,14 +31,26 @@ public final class CurrentApp implements JavaAppDiscovery {
     private final Set<JavaApp> app;
 
     @ExtCreator
-    public CurrentApp(@ExtConfig(key = "name") @Nonnull final String currentApplicationName) {
+    public CurrentApp(@ExtConfig @Nonnull final Config config) {
         JmxConnectionPoolFactory poolFactory = new CommonsJmxConnectionPoolFactory();
         JmxConnectionPool pool = poolFactory.create(JMX_CONNECTION_FACTORY);
-        app = Collections.singleton(JavaApp.create(currentApplicationName, pool));
+        app = Collections.singleton(JavaApp.create(config.currentApplicationName, pool, config.registry));
     }
 
     @Override
     public Set<JavaApp> discover() {
         return app;
+    }
+
+    public static class Config {
+        private final MeterRegistry registry;
+        private final String currentApplicationName;
+
+        @JsonCreator
+        public Config(@JacksonInject @Nonnull final MeterRegistry registry,
+                      @JsonProperty("name") @Nonnull final String currentApplicationName) {
+            this.registry = registry;
+            this.currentApplicationName = currentApplicationName;
+        }
     }
 }

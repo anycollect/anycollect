@@ -2,6 +2,7 @@ package io.github.anycollect.readers.jmx.discovery;
 
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
 import io.github.anycollect.readers.jmx.query.NoopQuery;
 import io.github.anycollect.readers.jmx.server.JavaApp;
@@ -21,7 +22,7 @@ class CurrentAppTest {
     void connectionMustBeOfTypeMBeanServer() throws ConnectionException, QueryException {
         JmxQuery query = spy(new NoopQuery("id"));
         when(query.executeOn(any(), any())).thenReturn(Collections.emptyList());
-        CurrentApp discovery = new CurrentApp("dummy");
+        CurrentApp discovery = new CurrentApp(new CurrentApp.Config(new NoopMeterRegistry(), "dummy"));
 
         JavaApp server = discovery.discover().iterator().next();
         server.execute(query);

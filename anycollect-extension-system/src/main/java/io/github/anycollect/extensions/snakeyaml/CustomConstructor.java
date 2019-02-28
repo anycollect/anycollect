@@ -10,6 +10,8 @@ import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
 import io.github.anycollect.jackson.AnyCollectModule;
+import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ final class CustomConstructor extends Constructor {
         MAPPER.registerModule(new AnyCollectModule());
         VALUES = new InjectableValues.Std();
         VALUES.addValue(Clock.class, Clock.getDefault());
+        VALUES.addValue(MeterRegistry.class, new NoopMeterRegistry());
         MAPPER.setInjectableValues(VALUES);
     }
 

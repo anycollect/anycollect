@@ -22,6 +22,7 @@ public class StaticQueryMatcherResolver implements QueryMatcherResolver {
         matcher = new RuleListQueryMatcher(config.rules);
     }
 
+    @Nonnull
     @Override
     public QueryMatcher current() {
         return matcher;

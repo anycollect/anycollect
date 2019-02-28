@@ -20,6 +20,7 @@ import io.github.anycollect.core.impl.scheduler.Scheduler;
 import io.github.anycollect.core.impl.scheduler.SchedulerImpl;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
+import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.noop.NoopMeterRegistry;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +45,9 @@ public final class PullManagerImpl implements PullManager {
     private final Clock clock;
 
     @ExtCreator
-    public PullManagerImpl(@Nonnull @ExtConfig final PullManagerConfig config) {
+    public PullManagerImpl(
+            @ExtDependency(qualifier = "registry", optional = true) @Nullable final MeterRegistry registry,
+            @ExtConfig @Nonnull final PullManagerConfig config) {
         LOG.debug("create pull manager with config {}", config);
         this.updatePeriodInSeconds = config.getUpdatePeriodInSeconds();
         this.defaultPullPeriodInSeconds = config.getDefaultPullPeriodInSeconds();
@@ -51,10 +55,9 @@ public final class PullManagerImpl implements PullManager {
                 .setNameFormat("anycollect-state-updater-[%d]")
                 .build();
         this.updater = new SchedulerImpl(new ScheduledThreadPoolExecutor(1, updaterThreads));
-        // TODO inject
-        MeterRegistry registry = new NoopMeterRegistry();
+        MeterRegistry meterRegistry = registry != null ? registry : new NoopMeterRegistry();
         SchedulerFactory schedulerFactory = new SchedulerFactoryImpl(
-                config.getConcurrencyRule(), config.getDefaultPoolSize(), registry);
+                config.getConcurrencyRule(), config.getDefaultPoolSize(), meterRegistry);
         this.puller = new SeparatePullScheduler(schedulerFactory, Clock.getDefault());
         this.healthChecks = config.getHealthChecks();
         ThreadFactory healthCheckThreads = new ThreadFactoryBuilder()
@@ -79,11 +82,11 @@ public final class PullManagerImpl implements PullManager {
     }
 
     @Override
-    public <T extends Target<Q>, Q extends Query> void start(@Nonnull final ServiceDiscovery<T> discovery,
-                                                             @Nonnull final QueryProvider<Q> provider,
+    public <T extends Target<Q>, Q extends Query> void start(@Nonnull final ServiceDiscovery<? extends T> discovery,
+                                                             @Nonnull final QueryProvider<? extends Q> provider,
                                                              @Nonnull final QueryMatcherResolver resolver,
                                                              @Nonnull final Dispatcher dispatcher,
-                                                             @Nonnull final Q healthCheck) {
+                                                             @Nullable final Q healthCheck) {
         DesiredStateProvider<T, Q> stateProvider = new StdDesiredStateProvider<>(
                 discovery,
                 provider,
@@ -95,16 +98,19 @@ public final class PullManagerImpl implements PullManager {
     @Override
     public <T extends Target<Q>, Q extends Query> void start(@Nonnull final DesiredStateProvider<T, Q> stateProvider,
                                                              @Nonnull final Dispatcher dispatcher,
-                                                             @Nonnull final Q healthCheck) {
+                                                             @Nullable final Q healthCheck) {
         ResultCallback<T, Q> callback = new CallbackToDispatcherAdapter<>(dispatcher);
         DesiredStateManager<T, Q> desiredStateManager = new DesiredStateManagerImpl<>(puller, callback);
-        HealthChecker<T, Q> checker = new HealthCheckerImpl<>(
-                puller,
-                dispatcher,
-                clock,
-                healthCheckScheduler,
-                healthChecks,
-                healthCheck);
+        HealthChecker<T, Q> checker = HealthChecker.noop();
+        if (healthCheck != null) {
+            checker = new HealthCheckerImpl<>(
+                    puller,
+                    dispatcher,
+                    clock,
+                    healthCheckScheduler,
+                    healthChecks,
+                    healthCheck);
+        }
         DesiredStateUpdateJob<T, Q> job = new DesiredStateUpdateJob<>(stateProvider, desiredStateManager, checker);
         updater.scheduleAtFixedRate(job, updatePeriodInSeconds, TimeUnit.SECONDS);
     }

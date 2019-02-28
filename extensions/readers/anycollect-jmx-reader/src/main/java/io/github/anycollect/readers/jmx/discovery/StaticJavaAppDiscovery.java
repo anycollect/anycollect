@@ -1,10 +1,12 @@
 package io.github.anycollect.readers.jmx.discovery;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
+import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.readers.jmx.config.JavaAppConfig;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.server.JmxConnectionFactory;
@@ -25,7 +27,7 @@ import java.util.Set;
  * Static Java App discovery
  */
 @Extension(name = StaticJavaAppDiscovery.NAME, point = JavaAppDiscovery.class)
-public class StaticJavaAppDiscovery implements JavaAppDiscovery {
+public final class StaticJavaAppDiscovery implements JavaAppDiscovery {
     public static final String NAME = "StaticJavaAppDiscovery";
     private static final Logger LOG = LoggerFactory.getLogger(StaticJavaAppDiscovery.class);
     private final Set<JavaApp> apps;
@@ -38,7 +40,10 @@ public class StaticJavaAppDiscovery implements JavaAppDiscovery {
         for (JavaAppConfig appConfig : config.appConfigs) {
             try {
                 JmxConnectionFactory connectionFactory = new JmxConnectionFactoryImpl(appConfig);
-                JavaApp app = JavaApp.create(appConfig.getInstanceId(), factory.create(connectionFactory));
+                JavaApp app = JavaApp.create(
+                        appConfig.getInstanceId(),
+                        factory.create(connectionFactory),
+                        config.registry);
                 apps.add(app);
             } catch (MalformedURLException e) {
                 LOG.warn("given url for {} is malformed: {}", appConfig.getInstanceId(), appConfig.getUrl(), e);
@@ -52,10 +57,13 @@ public class StaticJavaAppDiscovery implements JavaAppDiscovery {
     }
 
     public static class Config {
+        private final MeterRegistry registry;
         private final List<JavaAppConfig> appConfigs;
 
         @JsonCreator
-        public Config(@JsonProperty("instances") @Nonnull final List<JavaAppConfig> appConfigs) {
+        public Config(@JacksonInject @Nonnull final MeterRegistry registry,
+                      @JsonProperty("instances") @Nonnull final List<JavaAppConfig> appConfigs) {
+            this.registry = registry;
             this.appConfigs = appConfigs;
         }
     }

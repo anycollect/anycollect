@@ -1,10 +1,12 @@
 package io.github.anycollect.core.api.internal;
 
-import io.github.anycollect.core.api.common.Lifecycle;
-import io.github.anycollect.core.api.common.Plugin;
-import io.github.anycollect.extensions.annotations.ExtPoint;
+import javax.annotation.Nonnull;
 
-@ExtPoint
-public interface QueryMatcherResolver extends Plugin, Lifecycle {
+public interface QueryMatcherResolver {
+    static QueryMatcherResolver consistent(@Nonnull QueryMatcher matcher) {
+        return new ConsistentQueryMatcherResolver(matcher);
+    }
+
+    @Nonnull
     QueryMatcher current();
 }
