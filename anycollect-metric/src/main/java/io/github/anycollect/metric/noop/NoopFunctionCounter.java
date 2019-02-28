@@ -5,7 +5,7 @@ import io.github.anycollect.metric.MeterId;
 
 import javax.annotation.Nonnull;
 
-public class NoopFunctionCounter extends NoopAbstractMeter implements FunctionCounter {
+public final class NoopFunctionCounter extends NoopAbstractMeter implements FunctionCounter {
     public NoopFunctionCounter(@Nonnull final MeterId id) {
         super(id);
     }
