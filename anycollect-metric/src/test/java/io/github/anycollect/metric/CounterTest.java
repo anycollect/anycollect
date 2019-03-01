@@ -31,12 +31,6 @@ class CounterTest {
             public MeterId getId() {
                 return null;
             }
-
-            @Nonnull
-            @Override
-            public MetricFamily measure() {
-                return null;
-            }
         });
         counter.increment();
         verify(counter, times(1)).increment(1.0);

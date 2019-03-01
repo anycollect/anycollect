@@ -4,9 +4,11 @@ import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.ToDoubleFunction;
 
-public class DefaultFunctionCounter<T> extends AbstractMeter implements FunctionCounter {
+public class DefaultFunctionCounter<T> extends AbstractMeter implements FunctionCounter, Measurable {
     private final Clock clock;
     private final T obj;
     private final ToDoubleFunction<T> value;
@@ -23,10 +25,11 @@ public class DefaultFunctionCounter<T> extends AbstractMeter implements Function
 
     @Nonnull
     @Override
-    public MetricFamily measure() {
-        return MetricFamily.of(
+    public List<MetricFamily> measure() {
+        Measurement counter = Measurement.counter(value.applyAsDouble(obj), getId().getUnit());
+        return Collections.singletonList(MetricFamily.of(
                 getId(),
-                Measurement.counter(value.applyAsDouble(obj), getId().getUnit()),
-                clock.wallTime());
+                counter,
+                clock.wallTime()));
     }
 }

@@ -29,6 +29,12 @@
             <artifactId>anycollect-core-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- INTERNAL MONITORING -->
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+        </dependency>
     </dependencies>
 
 

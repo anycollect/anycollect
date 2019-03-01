@@ -5,7 +5,4 @@ import javax.annotation.Nonnull;
 public interface Meter {
     @Nonnull
     MeterId getId();
-
-    @Nonnull
-    MetricFamily measure();
 }

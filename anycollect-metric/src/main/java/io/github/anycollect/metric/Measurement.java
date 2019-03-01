@@ -19,6 +19,10 @@ public interface Measurement {
         return new ImmutableMeasurement(Stat.max(), Type.GAUGE, unit, value);
     }
 
+    static Measurement std(double value, String unit) {
+        return new ImmutableMeasurement(Stat.std(), Type.GAUGE, unit, value);
+    }
+
     static Measurement percentile(final double percentile, double value, String unit) {
         return new ImmutableMeasurement(Stat.percentile(percentile), Type.GAUGE, unit, value);
     }

@@ -4,9 +4,11 @@ import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.ToDoubleFunction;
 
-public class DefaultGauge<T> extends AbstractMeter implements Gauge {
+public class DefaultGauge<T> extends AbstractMeter implements Gauge, Measurable {
     private final Clock clock;
     private final T obj;
     private final ToDoubleFunction<T> value;
@@ -23,8 +25,9 @@ public class DefaultGauge<T> extends AbstractMeter implements Gauge {
 
     @Nonnull
     @Override
-    public MetricFamily measure() {
+    public List<MetricFamily> measure() {
         double value = this.value.applyAsDouble(obj);
-        return MetricFamily.of(getId(), Measurement.gauge(value, getId().getUnit()), clock.wallTime());
+        Measurement gauge = Measurement.gauge(value, getId().getUnit());
+        return Collections.singletonList(MetricFamily.of(getId(), gauge, clock.wallTime()));
     }
 }

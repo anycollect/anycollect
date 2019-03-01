@@ -18,6 +18,7 @@
 
         <!-- INTERNAL MONITORING -->
         <micrometer.version>1.1.2</micrometer.version>
+        <codahale-metrics.version>4.0.5</codahale-metrics.version>
 
         <!-- YAML, CONFIGURATION -->
         <jackson.version>2.9.8</jackson.version>
@@ -62,6 +63,11 @@
                 <artifactId>micrometer-core</artifactId>
                 <version>${micrometer.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${codahale-metrics.version}</version>
+            </dependency>
 
             <!-- YAML, CONFIGURATION -->
             <dependency>
@@ -79,7 +85,6 @@
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>

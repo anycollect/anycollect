@@ -1,21 +1,18 @@
 package io.github.anycollect.core.impl.scheduler;
 
-import io.github.anycollect.core.api.dispatcher.Dispatcher;
-import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
-import io.github.anycollect.micrometer.Config;
-import io.github.anycollect.micrometer.MicrometerMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 // TODO be more specific, refactor
 class MonitoredScheduledThreadPoolExecutorTest {
-    private MeterRegistry registry = new MicrometerMeterRegistry(mock(Dispatcher.class), Clock.getDefault(), (Config) key -> null);
+    private MeterRegistry registry = mock(MeterRegistry.class);
     private MonitoredScheduledThreadPoolExecutor executor =
             new MonitoredScheduledThreadPoolExecutor(1, registry, Tags.empty());
 
@@ -29,8 +26,7 @@ class MonitoredScheduledThreadPoolExecutorTest {
             }
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
-        Distribution summary = registry.distribution(MeterId.key("scheduler.discrepancy").unit("percentage").build());
-        assertThat(summary.measure().getMeasurements()).first().extracting(Measurement::getValue).isNotEqualTo(0.0);
+        verify(registry, times(1)).distribution(MeterId.key("scheduler.discrepancy").unit("percentage").build());
     }
 
     @Test
@@ -44,8 +40,7 @@ class MonitoredScheduledThreadPoolExecutorTest {
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         future.cancel(true);
         Thread.sleep(1000);
-        Counter failedJobs = registry.counter(MeterId.key("scheduler.failed.jobs").unit("job").build());
-        assertThat(failedJobs.measure().getMeasurements()).first().extracting(Measurement::getValue).isNotEqualTo(0.0);
+        verify(registry, times(1)).counter(MeterId.key("scheduler.failed.jobs").unit("job").build());
     }
 
     @Test
@@ -59,7 +54,6 @@ class MonitoredScheduledThreadPoolExecutorTest {
             }
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
-        Counter failedJobs = registry.counter(MeterId.key("scheduler.failed.jobs").unit("job").build());
-        assertThat(failedJobs.measure().getMeasurements()).first().extracting(Measurement::getValue).isNotEqualTo(0.0);
+        verify(registry, times(1)).counter(MeterId.key("scheduler.failed.jobs").unit("job").build());
     }
 }

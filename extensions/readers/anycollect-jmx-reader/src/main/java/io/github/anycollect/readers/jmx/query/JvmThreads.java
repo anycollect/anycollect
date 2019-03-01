@@ -74,11 +74,11 @@ public class JvmThreads extends JmxQuery {
         Object[] params = new Object[]{allThreadIds};
         CompositeData[] threadInfos;
         try {
-            threadInfos = ((CompositeData[]) connection.invoke(
+            threadInfos = (CompositeData[]) connection.invoke(
                     THREADING_OBJECT_NAME,
                     GET_THREAD_INFO_OP_NAME,
                     params,
-                    new String[]{long[].class.getName()}));
+                    new String[]{long[].class.getName()});
         } catch (InstanceNotFoundException | MBeanException | ReflectionException e) {
             LOG.debug("could not invoke method", e);
             throw new QueryException("could not invoke method", e);

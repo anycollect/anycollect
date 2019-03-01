@@ -89,7 +89,7 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
             if (lastTime != null) {
                 long period = future.getPeriodInNanos();
                 if (period != 0) {
-                    double discrepancy = ONE_HUNDRED_PERCENTS * (Math.abs(now - lastTime - period)) / period;
+                    int discrepancy = (int) (ONE_HUNDRED_PERCENTS * (Math.abs(now - lastTime - period)) / period);
                     discrepancySummary.record(discrepancy);
                 }
             }

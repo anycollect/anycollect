@@ -11,6 +11,6 @@ public final class NoopDistribution extends NoopAbstractMeter implements Distrib
     }
 
     @Override
-    public void record(final double amount) {
+    public void record(final long amount) {
     }
 }

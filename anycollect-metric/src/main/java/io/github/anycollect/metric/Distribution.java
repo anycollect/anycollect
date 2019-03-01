@@ -7,7 +7,7 @@ public interface Distribution extends Meter {
         return new DistributionBuilder(key);
     }
 
-    void record(double amount);
+    void record(long amount);
 
     final class DistributionBuilder extends BaseMeterBuilder<DistributionBuilder> {
         DistributionBuilder(@Nonnull final String value) {

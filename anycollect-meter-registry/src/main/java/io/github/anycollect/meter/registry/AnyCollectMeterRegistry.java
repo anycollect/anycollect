@@ -4,7 +4,6 @@ import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.*;
-import io.github.anycollect.metric.noop.NoopDistribution;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -18,7 +17,8 @@ import static java.util.stream.Collectors.toList;
 @Extension(name = AnyCollectMeterRegistry.NAME, point = MeterRegistry.class)
 public class AnyCollectMeterRegistry implements MeterRegistry {
     public static final String NAME = "MeterRegistry";
-    private final ConcurrentMap<MeterId, Meter> meters = new ConcurrentHashMap<>();
+    private static final double[] QUANTILES = new double[]{0.5, 0.75, 0.9, 0.95, 0.99, 0.999};
+    private final ConcurrentMap<MeterId, Measurable> meters = new ConcurrentHashMap<>();
     private final Clock clock = Clock.getDefault();
 
     @ExtCreator
@@ -49,13 +49,16 @@ public class AnyCollectMeterRegistry implements MeterRegistry {
     @Nonnull
     @Override
     public Distribution distribution(@Nonnull final MeterId id) {
-        return new NoopDistribution(id);
+        // TODO configure window and percentiles for each id
+        return (Distribution) meters.computeIfAbsent(id, meterId ->
+                new CodahaleSlidingTimeWindowDistributionSummary(id, 100, clock, QUANTILES)
+        );
     }
 
     @Override
     public List<MetricFamily> measure(@Nonnull final Predicate<MeterId> filter) {
         return meters.values().stream().filter(meter -> filter.test(meter.getId()))
-                .map(Meter::measure)
+                .flatMap(measurable -> measurable.measure().stream())
                 .collect(toList());
     }
 }

@@ -2,7 +2,6 @@ package io.github.anycollect.metric.noop;
 
 import io.github.anycollect.metric.Meter;
 import io.github.anycollect.metric.MeterId;
-import io.github.anycollect.metric.MetricFamily;
 import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
@@ -19,11 +18,5 @@ public class NoopAbstractMeter implements Meter {
     @Override
     public final MeterId getId() {
         return id;
-    }
-
-    @Nonnull
-    @Override
-    public final MetricFamily measure() {
-        return MetricFamily.empty(id, System.currentTimeMillis());
     }
 }
