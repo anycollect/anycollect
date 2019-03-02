@@ -29,9 +29,6 @@ public class RuleListQueryMatcher implements QueryMatcher {
                 }
             }
         }
-        if (minPeriod == -1) {
-            return defaultPeriod;
-        }
         return minPeriod;
     }
 }

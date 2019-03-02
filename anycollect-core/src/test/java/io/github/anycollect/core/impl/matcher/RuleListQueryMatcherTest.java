@@ -48,12 +48,10 @@ class RuleListQueryMatcherTest {
     }
 
     @Test
-    void mustReturnDefaultPeriodIfNoRuleFound() {
+    void mustReturnMinusOneIfNoRuleFound() {
         MatchRule rule1 = mock(MatchRule.class);
         when(rule1.match(target, query)).thenReturn(false);
         assertThat(new RuleListQueryMatcher(Collections.singletonList(rule1))
-                .getPeriodInSeconds(target, query, -1)).isEqualTo(-1);
-        assertThat(new RuleListQueryMatcher(Collections.singletonList(rule1))
-                .getPeriodInSeconds(target, query, 30)).isEqualTo(30);
+                .getPeriodInSeconds(target, query, 30)).isEqualTo(-1);
     }
 }
