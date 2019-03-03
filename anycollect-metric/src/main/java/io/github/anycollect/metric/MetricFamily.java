@@ -1,17 +1,31 @@
 package io.github.anycollect.metric;
 
+import io.github.anycollect.metric.prepared.PreparedMetricFamilyBuilder;
+
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
 public interface MetricFamily {
+    static PreparedMetricFamilyBuilder prepare() {
+        return new PreparedMetricFamilyBuilder();
+    }
+
     static MetricFamily of(@Nonnull String key,
                            @Nonnull Tags tags,
                            @Nonnull Tags meta,
                            @Nonnull Measurement measurement,
                            long timestamp) {
+        return of(key, tags, meta, Collections.singletonList(measurement), timestamp);
+    }
+
+    static MetricFamily of(@Nonnull String key,
+                           @Nonnull Tags tags,
+                           @Nonnull Tags meta,
+                           @Nonnull List<Measurement> measurements,
+                           long timestamp) {
         return new ImmutableMetricFamily(
-                key, timestamp, Collections.singletonList(measurement), tags, meta
+                key, timestamp, measurements, tags, meta
         );
     }
 
@@ -34,7 +48,7 @@ public interface MetricFamily {
     long getTimestamp();
 
     @Nonnull
-    List<Measurement> getMeasurements();
+    List<? extends Measurement> getMeasurements();
 
     @Nonnull
     Tags getTags();

@@ -17,9 +17,9 @@ public final class ConfigDependency implements Dependency {
                 throw new IllegalArgumentException("config must be passed");
             }
         } else {
-            if (!definition.getParameterType().equals(object.getClass())) {
-                throw new IllegalArgumentException("config must be of type "
-                        + definition.getParameterType() + " instead of " + object.getClass());
+            if (!definition.getParameterType().isAssignableFrom(object.getClass())) {
+                throw new IllegalArgumentException("config must be assignable from "
+                        + definition.getParameterType() + ", given: " + object.getClass());
             }
         }
         this.definition = definition;

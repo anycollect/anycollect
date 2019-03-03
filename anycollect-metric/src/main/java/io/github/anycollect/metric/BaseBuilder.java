@@ -43,6 +43,12 @@ public abstract class BaseBuilder<T extends BaseBuilder<T>> {
         return self();
     }
 
+    protected T key(@Nonnull final String... keyParts) {
+        Objects.requireNonNull(keyParts, "parts of key must not be null");
+        this.key = String.join(".", keyParts);
+        return self();
+    }
+
     protected T type(@Nonnull final Type type) {
         Objects.requireNonNull(type, "type must not be null");
         this.type = type;

@@ -7,7 +7,7 @@ import lombok.ToString;
 import javax.annotation.Nonnull;
 
 @Getter
-@ToString(of = "tags", includeFieldNames = false)
+@ToString(of = {"key", "unit", "tags"}, includeFieldNames = false)
 @EqualsAndHashCode(of = {"key", "unit", "tags"})
 public final class ImmutableMeterId implements MeterId {
     private final String key;

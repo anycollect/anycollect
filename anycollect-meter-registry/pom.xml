@@ -30,12 +30,16 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- YAML, CONFIGURATION -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
         <!-- INTERNAL MONITORING -->
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
         </dependency>
     </dependencies>
-
-
 </project>

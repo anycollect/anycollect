@@ -13,6 +13,16 @@ public interface MeterRegistry {
     Counter counter(@Nonnull MeterId id);
 
     @Nonnull
+    default Counter counter(@Nonnull String key, @Nonnull String unit) {
+        return counter(MeterId.key(key).unit(unit).build());
+    }
+
+    @Nonnull
+    default Counter counter(@Nonnull String key, @Nonnull String unit, @Nonnull Tags tags) {
+        return counter(MeterId.key(key).unit(unit).concatTags(tags).build());
+    }
+
+    @Nonnull
     <T> FunctionCounter counter(@Nonnull MeterId id, @Nonnull T obj, @Nonnull ToDoubleFunction<T> value);
 
     @Nonnull
