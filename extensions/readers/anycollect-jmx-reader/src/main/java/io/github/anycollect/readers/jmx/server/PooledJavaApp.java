@@ -30,15 +30,17 @@ public final class PooledJavaApp extends JavaApp {
         super(id, tags);
         Objects.requireNonNull(pool, "jmx connection pool must not be null");
         this.pool = pool;
-        Gauge.make("connections.active", pool, JmxConnectionPool::getNumActive)
+        Gauge.make("pool.jmx.connections.live", pool, JmxConnectionPool::getNumActive)
                 .concatTags(tags)
+                .tag("state", "active")
                 .unit("connections")
                 .register(registry);
-        Gauge.make("connections.idle", pool, JmxConnectionPool::getNumIdle)
+        Gauge.make("pool.jmx.connections.live", pool, JmxConnectionPool::getNumIdle)
                 .concatTags(tags)
+                .tag("state", "idle")
                 .unit("connections")
                 .register(registry);
-        FunctionCounter.make("connections.invalidated", pool, JmxConnectionPool::getTotalInvalidated)
+        FunctionCounter.make("pool.jmx.connections.invalidated", pool, JmxConnectionPool::getTotalInvalidated)
                 .concatTags(tags)
                 .unit("connections")
                 .register(registry);

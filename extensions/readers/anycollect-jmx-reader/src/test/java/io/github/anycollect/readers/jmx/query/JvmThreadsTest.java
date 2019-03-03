@@ -46,10 +46,10 @@ class JvmThreadsTest {
         server.registerMBean(thread, new ObjectName("java.lang:type=Threading"));
         List<MetricFamily> families = jvmThreads.executeOn(server, Tags.empty());
         assertThatFamilies(families)
-                .contains("jvm.threads.live.daemon")
+                .contains("jvm.threads.live", Tags.of("type", "daemon"))
                 .hasMeasurement(Stat.value(), Type.GAUGE, "threads", 1);
         assertThatFamilies(families)
-                .contains("jvm.threads.live.nondaemon")
+                .contains("jvm.threads.live", Tags.of("type", "nondaemon"))
                 .hasMeasurement(Stat.value(), Type.GAUGE, "threads", 2);
         assertThatFamilies(families)
                 .contains("jvm.threads.started")

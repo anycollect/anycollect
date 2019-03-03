@@ -17,6 +17,10 @@ public interface Tags extends Iterable<Tag> {
         return builder().tag(key, value).build();
     }
 
+    static ImmutableTags concat(@Nonnull Tags left, @Nonnull Tags right) {
+        return builder().concat(left).concat(right).build();
+    }
+
     boolean hasTagKey(String key);
 
     @Nonnull

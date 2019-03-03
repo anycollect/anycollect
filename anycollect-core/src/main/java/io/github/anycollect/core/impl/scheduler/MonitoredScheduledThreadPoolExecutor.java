@@ -2,10 +2,7 @@ package io.github.anycollect.core.impl.scheduler;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.github.anycollect.core.api.internal.Clock;
-import io.github.anycollect.metric.Counter;
-import io.github.anycollect.metric.Distribution;
-import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.Tags;
+import io.github.anycollect.metric.*;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -45,21 +42,26 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
         super(corePoolSize, threadFactory);
         this.clock = clock;
         discrepancySummary = Distribution.key("scheduler.discrepancy")
-                .unit("percentage")
+                .unit("percents")
                 .concatTags(tags)
                 .register(registry);
         processingTimeSummary = Distribution.key("scheduler.processing.time")
                 .nanos()
                 .concatTags(tags)
                 .register(registry);
-        failedJobsCounter = Counter.key("scheduler.failed.jobs")
-                .unit("job")
+        failedJobsCounter = Counter.key("scheduler.jobs.failed")
+                .unit("jobs")
                 .concatTags(tags)
                 .register(registry);
-        succeededJobsCounter = Counter.key("scheduler.succeeded.jobs")
-                .unit("job")
+        succeededJobsCounter = Counter.key("scheduler.jobs.succeeded")
+                .unit("jobs")
                 .concatTags(tags)
                 .register(registry);
+        Gauge.make("scheduler.queue.size", this, executor -> executor.getQueue().size())
+                .unit("jobs")
+                .concatTags(tags)
+                .register(registry);
+        Gauge.make("scheduler.threads.live", this, executor -> getPoolSize());
     }
 
     @Override

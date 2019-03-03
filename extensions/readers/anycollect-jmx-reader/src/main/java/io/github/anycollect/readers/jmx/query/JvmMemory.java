@@ -56,12 +56,13 @@ public class JvmMemory extends JmxQuery {
             CompositeData usage = (CompositeData) ((Attribute) attributes.get(1)).getValue();
             long used = (Long) usage.get(USED);
             String type = HEAP_TYPE.equals(((Attribute) attributes.get(2)).getValue()) ? "heap" : "nonheap";
-            String key = String.format("jvm.memory.%s.used", type);
             ImmutableTags tags = Tags.builder()
                     .concat(targetTags)
                     .tag("pool", name.replace(' ', '_'))
+                    .tag("type", type)
                     .build();
-            MetricFamily family = MetricFamily.of(key, tags, Tags.empty(), Measurement.gauge(used, "bytes"), timestamp);
+            MetricFamily family = MetricFamily.of("jvm.memory.used", tags, Tags.empty(),
+                    Measurement.gauge(used, "bytes"), timestamp);
             families.add(family);
         }
         return families;

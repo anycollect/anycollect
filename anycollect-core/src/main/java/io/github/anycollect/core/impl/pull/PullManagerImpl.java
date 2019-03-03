@@ -43,10 +43,11 @@ public final class PullManagerImpl implements PullManager {
     private final HealthChecksConfig healthChecks;
     private final Scheduler healthCheckScheduler;
     private final Clock clock;
+    private final MeterRegistry registry;
 
     @ExtCreator
     public PullManagerImpl(
-            @ExtDependency(qualifier = "registry", optional = true) @Nullable final MeterRegistry registry,
+            @ExtDependency(qualifier = "registry", optional = true) @Nullable final MeterRegistry optRegistry,
             @ExtConfig @Nonnull final PullManagerConfig config) {
         LOG.debug("create pull manager with config {}", config);
         this.updatePeriodInSeconds = config.getUpdatePeriodInSeconds();
@@ -55,9 +56,9 @@ public final class PullManagerImpl implements PullManager {
                 .setNameFormat("anycollect-state-updater-[%d]")
                 .build();
         this.updater = new SchedulerImpl(new ScheduledThreadPoolExecutor(1, updaterThreads));
-        MeterRegistry meterRegistry = registry != null ? registry : new NoopMeterRegistry();
+        this.registry = optRegistry != null ? optRegistry : new NoopMeterRegistry();
         SchedulerFactory schedulerFactory = new SchedulerFactoryImpl(
-                config.getConcurrencyRule(), config.getDefaultPoolSize(), meterRegistry);
+                config.getConcurrencyRule(), config.getDefaultPoolSize(), registry);
         this.puller = new SeparatePullScheduler(schedulerFactory, Clock.getDefault());
         this.healthChecks = config.getHealthChecks();
         ThreadFactory healthCheckThreads = new ThreadFactoryBuilder()
@@ -79,6 +80,7 @@ public final class PullManagerImpl implements PullManager {
         this.healthChecks = HealthChecksConfig.builder().build();
         this.healthCheckScheduler = healthCheckScheduler;
         this.clock = Clock.getDefault();
+        this.registry = new NoopMeterRegistry();
     }
 
     @Override
@@ -99,7 +101,7 @@ public final class PullManagerImpl implements PullManager {
     public <T extends Target<Q>, Q extends Query> void start(@Nonnull final DesiredStateProvider<T, Q> stateProvider,
                                                              @Nonnull final Dispatcher dispatcher,
                                                              @Nullable final Q healthCheck) {
-        ResultCallback<T, Q> callback = new CallbackToDispatcherAdapter<>(dispatcher);
+        ResultCallback<T, Q> callback = new CallbackToDispatcherAdapter<>(dispatcher, registry);
         DesiredStateManager<T, Q> desiredStateManager = new DesiredStateManagerImpl<>(puller, callback);
         HealthChecker<T, Q> checker = HealthChecker.noop();
         if (healthCheck != null) {

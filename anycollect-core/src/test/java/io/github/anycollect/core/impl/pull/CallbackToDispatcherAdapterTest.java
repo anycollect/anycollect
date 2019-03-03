@@ -34,6 +34,7 @@ class CallbackToDispatcherAdapterTest {
         @BeforeEach
         void success() {
             TestTarget target = mock(TestTarget.class);
+            when(target.getId()).thenReturn("target");
             TestQuery query = mock(TestQuery.class);
             adapter.call(Result.success(target, query, metrics, 10));
         }
@@ -51,6 +52,7 @@ class CallbackToDispatcherAdapterTest {
         @BeforeEach
         void success() {
             TestTarget target = mock(TestTarget.class);
+            when(target.getId()).thenReturn("target");
             TestQuery query = mock(TestQuery.class);
             adapter.call(Result.fail(target, query, new QueryException("test"), 10));
         }

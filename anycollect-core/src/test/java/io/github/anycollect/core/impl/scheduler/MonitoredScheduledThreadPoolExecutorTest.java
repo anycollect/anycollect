@@ -1,18 +1,17 @@
 package io.github.anycollect.core.impl.scheduler;
 
 import io.github.anycollect.metric.*;
+import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 // TODO be more specific, refactor
 class MonitoredScheduledThreadPoolExecutorTest {
-    private MeterRegistry registry = mock(MeterRegistry.class);
+    private MeterRegistry registry = spy(new NoopMeterRegistry());
     private MonitoredScheduledThreadPoolExecutor executor =
             new MonitoredScheduledThreadPoolExecutor(1, registry, Tags.empty());
 
@@ -26,7 +25,7 @@ class MonitoredScheduledThreadPoolExecutorTest {
             }
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
-        verify(registry, times(1)).distribution(MeterId.key("scheduler.discrepancy").unit("percentage").build());
+        verify(registry, times(1)).distribution(MeterId.key("scheduler.discrepancy").unit("percents").build());
     }
 
     @Test
@@ -40,7 +39,7 @@ class MonitoredScheduledThreadPoolExecutorTest {
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         future.cancel(true);
         Thread.sleep(1000);
-        verify(registry, times(1)).counter(MeterId.key("scheduler.failed.jobs").unit("job").build());
+        verify(registry, times(1)).counter(MeterId.key("scheduler.jobs.failed").unit("jobs").build());
     }
 
     @Test
@@ -54,6 +53,6 @@ class MonitoredScheduledThreadPoolExecutorTest {
             }
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
-        verify(registry, times(1)).counter(MeterId.key("scheduler.failed.jobs").unit("job").build());
+        verify(registry, times(1)).counter(MeterId.key("scheduler.jobs.failed").unit("jobs").build());
     }
 }

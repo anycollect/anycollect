@@ -44,8 +44,7 @@ public class JvmThreads extends JmxQuery {
         }
     }
 
-    private static final String LIVE_DAEMON_THREADS_KEY = "jvm.threads.live.daemon";
-    private static final String LIVE_NONDAEMON_THREADS_KEY = "jvm.threads.live.nondaemon";
+    private static final String LIVE_THREADS_KEY = "jvm.threads.live";
     private static final String THREADS_STARTED_KEY = "jvm.threads.started";
     private static final String THREADS_BY_STATE_KEY = "jvm.threads.states";
     private static final String THREADS_UNIT = "threads";
@@ -97,14 +96,14 @@ public class JvmThreads extends JmxQuery {
                 timestamp
         ));
         families.add(MetricFamily.of(
-                LIVE_DAEMON_THREADS_KEY,
-                targetTags,
+                LIVE_THREADS_KEY,
+                Tags.concat(targetTags, Tags.of("type", "daemon")),
                 Tags.empty(),
                 Measurement.gauge(daemonThreadCount, THREADS_UNIT),
                 timestamp));
         families.add(MetricFamily.of(
-                LIVE_NONDAEMON_THREADS_KEY,
-                targetTags,
+                LIVE_THREADS_KEY,
+                Tags.concat(targetTags, Tags.of("type", "nondaemon")),
                 Tags.empty(),
                 Measurement.gauge(threadCount - daemonThreadCount, THREADS_UNIT),
                 timestamp));
