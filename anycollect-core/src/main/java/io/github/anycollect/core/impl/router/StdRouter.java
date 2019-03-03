@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.router;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.github.anycollect.core.api.Processor;
 import io.github.anycollect.core.api.Reader;
 import io.github.anycollect.core.api.Router;
@@ -10,6 +11,7 @@ import io.github.anycollect.core.impl.router.adapters.ReaderAdapter;
 import io.github.anycollect.core.impl.router.adapters.WriterAdapter;
 import io.github.anycollect.core.impl.router.config.RouterConfig;
 import io.github.anycollect.core.impl.router.config.TopologyItem;
+import io.github.anycollect.core.impl.router.filters.FilterChain;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import static java.util.stream.Collectors.toList;
 
@@ -65,8 +68,10 @@ public class StdRouter implements Router, Lifecycle {
         for (TopologyItem topologyItem : config.topology()) {
             MetricProducer producer = producers.get(topologyItem.from());
             MetricConsumer consumer = consumers.get(topologyItem.to());
+            FilterChain filter = new FilterChain(topologyItem.filters());
+            FilteredMetricConsumer filteredConsumer = new FilteredMetricConsumer(filter, consumer);
             List<AsyncDispatcher> destinations = topology.computeIfAbsent(producer, prod -> new ArrayList<>());
-            destinations.add(make(consumer));
+            destinations.add(make(filteredConsumer));
         }
 
         this.channels = new ArrayList<>();
@@ -84,7 +89,10 @@ public class StdRouter implements Router, Lifecycle {
     }
 
     private SingleAsyncDispatcher make(final MetricConsumer consumer) {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        ThreadFactory factory = new ThreadFactoryBuilder()
+                .setNameFormat("anycollect-route(" + consumer.getAddress() + ")-[%d]")
+                .build();
+        ExecutorService executorService = Executors.newSingleThreadExecutor(factory);
         return new SingleAsyncDispatcher(executorService, consumer);
     }
 

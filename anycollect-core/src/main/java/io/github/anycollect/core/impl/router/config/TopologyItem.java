@@ -2,18 +2,23 @@ package io.github.anycollect.core.impl.router.config;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.github.anycollect.core.impl.router.filters.AcceptAllFilter;
+import io.github.anycollect.core.impl.router.filters.Filter;
 import org.immutables.value.Value;
 
-import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.List;
 
 @Value.Immutable
-@Value.Style(passAnnotations = Nonnull.class)
 @JsonSerialize(as = ImmutableTopologyItem.class)
 @JsonDeserialize(as = ImmutableTopologyItem.class)
 public interface TopologyItem {
-    @Nonnull
     String from();
 
-    @Nonnull
     String to();
+
+    @Value.Default
+    default List<Filter> filters() {
+        return Collections.singletonList(new AcceptAllFilter());
+    }
 }
