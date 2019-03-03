@@ -41,9 +41,10 @@ class JvmMemoryTest {
         List<MetricFamily> families = jvmMemory.executeOn(server, Tags.of("instance", "test"));
         assertThat(families).hasSize(1);
         assertThat(families.get(0))
-                .hasKey("jvm.memory.heap.used")
+                .hasKey("jvm.memory.used")
                 .hasMeasurement(Stat.value(), Type.GAUGE, "bytes", 2.0)
                 .hasTags("instance", "test",
-                        "pool", "Test");
+                        "pool", "Test",
+                        "type", "heap");
     }
 }
