@@ -21,4 +21,9 @@ public class Channel {
     public void disconnect() {
         consumer.stop();
     }
+
+    @Override
+    public String toString() {
+        return producer + "->" + consumer.toString();
+    }
 }

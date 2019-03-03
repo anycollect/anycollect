@@ -4,6 +4,6 @@ import io.github.anycollect.core.api.dispatcher.Dispatcher;
 
 import javax.annotation.Nonnull;
 
-public interface MetricProducer {
+public interface MetricProducer extends RouterNode {
     void start(@Nonnull Dispatcher dispatcher);
 }

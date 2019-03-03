@@ -3,10 +3,7 @@ package io.github.anycollect.core.impl.writers.socket;
 import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.api.Writer;
-import io.github.anycollect.extensions.annotations.ExtConfig;
-import io.github.anycollect.extensions.annotations.ExtCreator;
-import io.github.anycollect.extensions.annotations.ExtDependency;
-import io.github.anycollect.extensions.annotations.Extension;
+import io.github.anycollect.extensions.annotations.*;
 import io.github.anycollect.metric.MetricFamily;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +18,11 @@ public final class SocketWriter implements Writer, Lifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(SocketWriter.class);
     private final Serializer serializer;
     private final Sender sender;
+    private final String id;
 
     @ExtCreator
     public SocketWriter(@ExtDependency(qualifier = "format") @Nonnull final Serializer serializer,
+                        @InstanceId @Nonnull final String id,
                         @ExtConfig @Nonnull final SocketConfig config) {
         this.serializer = serializer;
         if (config.getProtocol() == Protocol.TCP) {
@@ -35,6 +34,7 @@ public final class SocketWriter implements Writer, Lifecycle {
             // TODO acceptable exception
             throw new RuntimeException("protocol " + config.getProtocol() + " is not supported");
         }
+        this.id = id;
     }
 
     // TODO multithreading access
@@ -56,5 +56,10 @@ public final class SocketWriter implements Writer, Lifecycle {
             LOG.debug("fail to send metric family: {}", family);
             sender.closed();
         }
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 }

@@ -1,12 +1,10 @@
 package io.github.anycollect.core.api;
 
-import io.github.anycollect.extensions.annotations.ExtPoint;
 import io.github.anycollect.metric.MetricFamily;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-@ExtPoint
-public interface Writer {
+public interface Writer extends Route {
     void write(@Nonnull List<MetricFamily> families);
 }
