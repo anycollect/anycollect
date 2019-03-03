@@ -2,7 +2,10 @@ package io.github.anycollect.extensions;
 
 import io.github.anycollect.extensions.annotations.*;
 import io.github.anycollect.extensions.definitions.*;
-import io.github.anycollect.extensions.exceptions.*;
+import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.extensions.exceptions.ExtensionDescriptorException;
+import io.github.anycollect.extensions.exceptions.UnresolvableConstructorException;
+import io.github.anycollect.extensions.exceptions.WrongExtensionMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,8 +74,22 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
         }
         List<AnnotatedParameter<ExtDependency>> dependencyParams =
                 findParameterWithAnnotation(constructor, ExtDependency.class);
+        List<AnnotatedParameter<InstanceId>> instanceIds = findParameterWithAnnotation(constructor, InstanceId.class);
         List<SingleDependencyDefinition> singleDependencyDefinitions = new ArrayList<>();
         List<MultiDependencyDefinition> multiDependencyDefinitions = new ArrayList<>();
+
+        for (AnnotatedParameter<InstanceId> instanceId : instanceIds) {
+            if (!instanceId.type.equals(String.class)) {
+                throw new UnresolvableConstructorException(extensionClass, constructor, instanceId.type);
+            }
+            singleDependencyDefinitions.add(new SingleDependencyDefinition(
+                            "__instanceId__",
+                            instanceId.type,
+                            false,
+                            instanceId.position
+                    )
+            );
+        }
         for (AnnotatedParameter<ExtDependency> param : dependencyParams) {
             if (Collection.class.isAssignableFrom(param.type)) {
                 if (!param.type.equals(List.class)) {

@@ -3,6 +3,7 @@ package io.github.anycollect.extensions.snakeyaml;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.extensions.definitions.ConfigDefinition;
 import io.github.anycollect.extensions.definitions.Definition;
@@ -39,6 +40,7 @@ final class CustomConstructor extends Constructor {
 
     static {
         MAPPER.registerModule(new AnyCollectModule());
+        MAPPER.registerModule(new GuavaModule());
         VALUES = new InjectableValues.Std();
         VALUES.addValue(Clock.class, Clock.getDefault());
         VALUES.addValue(MeterRegistry.class, new NoopMeterRegistry());
@@ -78,7 +80,8 @@ final class CustomConstructor extends Constructor {
             Object config = getNullableConfig(definition, instanceName);
             Map<String, Instance> singleDependencies = getSingleDependencies();
             Map<String, List<Instance>> multiDependencies = getMultiDependencies();
-            Instance instance = definition.createInstance(instanceName, config, singleDependencies, multiDependencies);
+            Instance instance = definition.createInstance(
+                    instanceName, config, singleDependencies, multiDependencies);
             Object resolved = instance.resolve();
             // TODO on condition in entry point?
             VALUES.addValue(instance.getDefinition().getExtensionPointClass(), resolved);

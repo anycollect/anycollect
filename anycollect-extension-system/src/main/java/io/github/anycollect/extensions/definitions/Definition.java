@@ -81,6 +81,10 @@ public final class Definition {
         }
         for (String dependencyName : singleDeps.keySet()) {
             SingleDependencyDefinition definition = singleDeps.get(dependencyName);
+            if (dependencyName.equals("__instanceId__")) {
+                dependencies.add(new SimpleDependency(instanceName, definition.getPosition()));
+                continue;
+            }
             Instance instance = singleDependencies.get(dependencyName);
             Dependency dependency = definition.create(instance);
             dependencies.add(dependency);

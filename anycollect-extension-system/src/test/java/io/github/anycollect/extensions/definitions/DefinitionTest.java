@@ -75,7 +75,7 @@ class DefinitionTest {
                 .withSingleDependency(new SingleDependencyDefinition("delegate", ExtensionPoint.class, false, 0))
                 .build();
         ConfigurationException ex = Assertions.assertThrows(ConfigurationException.class,
-                () -> definition.createInstance("test", null, Collections.emptyMap(), Collections.emptyMap()));
+                () -> definition.createInstance("test"));
 
         assertThat(ex).hasMessageContaining("delegate");
     }
@@ -88,7 +88,7 @@ class DefinitionTest {
                 .withExtension(ExtensionPoint.class, ConstrictorUtils.createFor(Extension.class, ExtensionPoint.class))
                 .withSingleDependency(new SingleDependencyDefinition("delegate", ExtensionPoint.class, true, 0))
                 .build();
-        Assertions.assertDoesNotThrow(() -> definition.createInstance("test", null, Collections.emptyMap(), Collections.emptyMap()));
+        Assertions.assertDoesNotThrow(() -> definition.createInstance("test"));
     }
 
     @Test
@@ -229,7 +229,6 @@ class DefinitionTest {
         );
         assertThat(ex).hasMessageContaining("public");
     }
-
 
     private static Definition create() {
         return Definition.builder()
