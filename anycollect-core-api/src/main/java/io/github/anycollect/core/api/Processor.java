@@ -9,7 +9,5 @@ import java.util.List;
 public interface Processor {
     void start(@Nonnull Dispatcher dispatcher);
 
-    void submit(@Nonnull MetricFamily source);
-
     void submit(@Nonnull List<MetricFamily> sources);
 }
