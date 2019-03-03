@@ -324,7 +324,7 @@
                 <executions>
                     <execution>
                         <id>pmd-validate</id>
-                        <phase>validate</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>

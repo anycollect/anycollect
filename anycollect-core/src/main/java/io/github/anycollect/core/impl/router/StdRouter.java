@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadFactory;
 import static java.util.stream.Collectors.toList;
 
 @Extension(name = StdRouter.NAME, point = Router.class)
-public class StdRouter implements Router, Lifecycle {
+public final class StdRouter implements Router, Lifecycle {
     public static final String NAME = "Router";
     private static final Logger LOG = LoggerFactory.getLogger(StdRouter.class);
     private final List<Channel> channels;
@@ -71,7 +71,7 @@ public class StdRouter implements Router, Lifecycle {
             FilterChain filter = new FilterChain(topologyItem.filters());
             FilteredMetricConsumer filteredConsumer = new FilteredMetricConsumer(filter, consumer);
             List<AsyncDispatcher> destinations = topology.computeIfAbsent(producer, prod -> new ArrayList<>());
-            destinations.add(make(filteredConsumer));
+            destinations.add(makeDispatcher(filteredConsumer));
         }
 
         this.channels = new ArrayList<>();
@@ -88,7 +88,7 @@ public class StdRouter implements Router, Lifecycle {
         LOG.info("topology: {}", topologyString);
     }
 
-    private SingleAsyncDispatcher make(final MetricConsumer consumer) {
+    private static SingleAsyncDispatcher makeDispatcher(final MetricConsumer consumer) {
         ThreadFactory factory = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-route(" + consumer.getAddress() + ")-[%d]")
                 .build();

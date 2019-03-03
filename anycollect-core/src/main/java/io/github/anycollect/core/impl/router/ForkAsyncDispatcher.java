@@ -5,7 +5,7 @@ import io.github.anycollect.metric.MetricFamily;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class ForkAsyncDispatcher implements AsyncDispatcher {
+public final class ForkAsyncDispatcher implements AsyncDispatcher {
     private final List<? extends AsyncDispatcher> dispatchers;
 
     public ForkAsyncDispatcher(@Nonnull final List<? extends AsyncDispatcher> dispatchers) {

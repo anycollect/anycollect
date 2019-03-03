@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public class Channel {
+public final class Channel {
     private final MetricProducer producer;
     private final AsyncDispatcher consumer;
 

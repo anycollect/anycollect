@@ -9,7 +9,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class FilteredMetricConsumer implements MetricConsumer {
+public final class FilteredMetricConsumer implements MetricConsumer {
     private final Filter filter;
     private final MetricConsumer delegate;
 

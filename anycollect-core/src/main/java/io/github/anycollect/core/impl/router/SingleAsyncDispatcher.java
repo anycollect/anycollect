@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 @ThreadSafe
-public class SingleAsyncDispatcher implements AsyncDispatcher {
+public final class SingleAsyncDispatcher implements AsyncDispatcher {
     private final ExecutorService executor;
     private final MetricConsumer consumer;
     private volatile boolean stopped = false;

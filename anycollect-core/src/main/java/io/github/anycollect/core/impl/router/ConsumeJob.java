@@ -5,7 +5,7 @@ import io.github.anycollect.metric.MetricFamily;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class ConsumeJob implements Runnable {
+public final class ConsumeJob implements Runnable {
     private final MetricConsumer consumer;
     private final List<MetricFamily> families;
 
