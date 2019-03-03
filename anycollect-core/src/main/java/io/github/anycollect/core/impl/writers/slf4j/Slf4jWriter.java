@@ -2,6 +2,7 @@ package io.github.anycollect.core.impl.writers.slf4j;
 
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.api.Writer;
+import io.github.anycollect.core.impl.serializers.AnyCollectSerializer;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
@@ -24,13 +25,7 @@ public class Slf4jWriter implements Writer {
         if (serializer != null) {
             this.serializer = serializer;
         } else {
-            this.serializer = new Serializer() {
-                @Nonnull
-                @Override
-                public String serialize(@Nonnull final MetricFamily family) {
-                    return family.toString();
-                }
-            };
+            this.serializer = new AnyCollectSerializer();
         }
     }
 
