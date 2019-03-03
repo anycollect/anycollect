@@ -148,9 +148,9 @@
         <!--</module>-->
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
-        <module name="MagicNumber">
-            <property name="ignoreNumbers" value="1000, 100, 10, 1, 0, 2, 3, -1, 0.5, 0.75, 0.99, 0.999"/>
-        </module>
+        <!--<module name="MagicNumber">-->
+            <!--<property name="ignoreNumbers" value="1000, 100, 10, 1, 0, 2, 3, -1, 0.5, 0.75, 0.99, 0.999"/>-->
+        <!--</module>-->
         <module name="MissingSwitchDefault"/>
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
