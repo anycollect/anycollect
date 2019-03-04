@@ -1,14 +1,14 @@
 package io.github.anycollect.metric;
 
-import io.github.anycollect.metric.prepared.PreparedMetricFamilyBuilder;
+import io.github.anycollect.metric.prepared.PreparedMetricBuilder;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
 public interface Metric {
-    static PreparedMetricFamilyBuilder prepare() {
-        return new PreparedMetricFamilyBuilder();
+    static PreparedMetricBuilder prepare() {
+        return new PreparedMetricBuilder();
     }
 
     static Metric of(@Nonnull String key,

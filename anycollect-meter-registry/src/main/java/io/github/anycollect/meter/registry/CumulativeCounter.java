@@ -2,7 +2,7 @@ package io.github.anycollect.meter.registry;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
-import io.github.anycollect.metric.prepared.PreparedMetricFamily;
+import io.github.anycollect.metric.prepared.PreparedMetric;
 import lombok.Builder;
 
 import javax.annotation.Nonnull;
@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.DoubleAdder;
 public class CumulativeCounter extends AbstractMeter implements Counter, Measurable {
     private final Clock clock;
     private final DoubleAdder adder = new DoubleAdder();
-    private final PreparedMetricFamily preparedCounter;
+    private final PreparedMetric preparedCounter;
 
     @Builder
     public CumulativeCounter(@Nonnull final MeterId id,

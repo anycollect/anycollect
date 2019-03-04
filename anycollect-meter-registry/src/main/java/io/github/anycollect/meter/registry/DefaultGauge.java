@@ -2,7 +2,7 @@ package io.github.anycollect.meter.registry;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
-import io.github.anycollect.metric.prepared.PreparedMetricFamily;
+import io.github.anycollect.metric.prepared.PreparedMetric;
 import lombok.Builder;
 
 import javax.annotation.Nonnull;
@@ -14,7 +14,7 @@ public class DefaultGauge<T> extends AbstractMeter implements Gauge, Measurable 
     private final Clock clock;
     private final T obj;
     private final ToDoubleFunction<T> value;
-    private final PreparedMetricFamily preparedGauge;
+    private final PreparedMetric preparedGauge;
 
     @Builder
     public DefaultGauge(@Nonnull final MeterId id,

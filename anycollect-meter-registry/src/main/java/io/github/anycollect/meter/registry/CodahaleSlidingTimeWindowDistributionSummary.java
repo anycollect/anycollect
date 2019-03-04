@@ -5,8 +5,8 @@ import com.codahale.metrics.SlidingTimeWindowReservoir;
 import com.codahale.metrics.Snapshot;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
-import io.github.anycollect.metric.prepared.PreparedMetricFamily;
-import io.github.anycollect.metric.prepared.PreparedMetricFamilyBuilder;
+import io.github.anycollect.metric.prepared.PreparedMetric;
+import io.github.anycollect.metric.prepared.PreparedMetricBuilder;
 import lombok.Builder;
 
 import javax.annotation.Nonnull;
@@ -18,7 +18,7 @@ public class CodahaleSlidingTimeWindowDistributionSummary extends AbstractMeter 
     private final Clock clock;
     private final Histogram histogram;
     private final double[] quantiles;
-    private final PreparedMetricFamily preparedHistogram;
+    private final PreparedMetric preparedHistogram;
 
     @Builder
     public CodahaleSlidingTimeWindowDistributionSummary(@Nonnull final MeterId id,
@@ -33,7 +33,7 @@ public class CodahaleSlidingTimeWindowDistributionSummary extends AbstractMeter 
         this.quantiles = quantiles;
         SlidingTimeWindowReservoir reservoir = new SlidingTimeWindowReservoir(window, TimeUnit.SECONDS);
         histogram = new Histogram(reservoir);
-        PreparedMetricFamilyBuilder builder = Metric.prepare()
+        PreparedMetricBuilder builder = Metric.prepare()
                 .key(prefix, id.getKey())
                 .concatTags(tags)
                 .concatTags(id.getTags())

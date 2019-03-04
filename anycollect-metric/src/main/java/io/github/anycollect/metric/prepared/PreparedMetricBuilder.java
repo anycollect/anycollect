@@ -8,31 +8,31 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class PreparedMetricFamilyBuilder extends BaseBuilder<PreparedMetricFamilyBuilder> {
+public final class PreparedMetricBuilder extends BaseBuilder<PreparedMetricBuilder> {
     private final List<PreparedMeasurement> preparedMeasurements = new ArrayList<>();
 
     @Override
-    protected PreparedMetricFamilyBuilder self() {
+    protected PreparedMetricBuilder self() {
         return this;
     }
 
-    public PreparedMetricFamilyBuilder key(@Nonnull final String key) {
+    public PreparedMetricBuilder key(@Nonnull final String key) {
         return super.key(key);
     }
 
     @Override
-    public PreparedMetricFamilyBuilder key(@Nonnull final String... keyParts) {
+    public PreparedMetricBuilder key(@Nonnull final String... keyParts) {
         return super.key(keyParts);
     }
 
-    public PreparedMetricFamilyBuilder measurement(@Nonnull final Stat stat,
-                                                   @Nonnull final Type type,
-                                                   @Nonnull final String unit) {
+    public PreparedMetricBuilder measurement(@Nonnull final Stat stat,
+                                             @Nonnull final Type type,
+                                             @Nonnull final String unit) {
         preparedMeasurements.add(new ImmutablePreparedMeasurement(new MeasurementFrame(stat, type, unit)));
         return this;
     }
 
-    public PreparedMetricFamily build() {
+    public PreparedMetric build() {
         MetricFrame data = new MetricFrame(getKey(),
                 getTagsBuilder().build(),
                 getMetaBuilder().build());

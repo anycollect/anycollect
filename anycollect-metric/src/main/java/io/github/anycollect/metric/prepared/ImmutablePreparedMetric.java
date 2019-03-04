@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-final class ImmutablePreparedMetric implements PreparedMetricFamily {
+final class ImmutablePreparedMetric implements PreparedMetric {
     private final MetricFrame data;
     private final List<PreparedMeasurement> preparedMeasurements;
 

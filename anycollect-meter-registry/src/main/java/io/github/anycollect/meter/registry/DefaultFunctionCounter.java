@@ -2,7 +2,7 @@ package io.github.anycollect.meter.registry;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
-import io.github.anycollect.metric.prepared.PreparedMetricFamily;
+import io.github.anycollect.metric.prepared.PreparedMetric;
 import lombok.Builder;
 
 import javax.annotation.Nonnull;
@@ -14,7 +14,7 @@ public class DefaultFunctionCounter<T> extends AbstractMeter implements Function
     private final Clock clock;
     private final T obj;
     private final ToDoubleFunction<T> value;
-    private final PreparedMetricFamily preparedCounter;
+    private final PreparedMetric preparedCounter;
 
     @Builder
     public DefaultFunctionCounter(@Nonnull final MeterId id,
