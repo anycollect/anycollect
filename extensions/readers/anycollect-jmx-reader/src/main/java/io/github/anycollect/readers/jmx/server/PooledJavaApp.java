@@ -47,7 +47,7 @@ public final class PooledJavaApp extends JavaApp {
     }
 
     @Nonnull
-    public List<MetricFamily> execute(@Nonnull final JmxQuery query) throws QueryException, ConnectionException {
+    public List<Metric> execute(@Nonnull final JmxQuery query) throws QueryException, ConnectionException {
         JmxConnection jmxConnection = null;
         try {
             jmxConnection = pool.borrowConnection();

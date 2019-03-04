@@ -4,7 +4,7 @@ import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.Measurement;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
@@ -22,7 +22,7 @@ public final class AnyCollectSerializer implements Serializer {
 
     @Nonnull
     @Override
-    public String serialize(@Nonnull final MetricFamily family) {
+    public String serialize(@Nonnull final Metric family) {
         String key = family.getKey();
         Tags tags = family.getTags();
         Tags meta = family.getMeta();

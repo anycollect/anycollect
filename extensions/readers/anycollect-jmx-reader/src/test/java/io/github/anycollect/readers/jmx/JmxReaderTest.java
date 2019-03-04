@@ -10,7 +10,7 @@ import io.github.anycollect.extensions.InstanceLoader;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
 import io.github.anycollect.readers.jmx.discovery.CurrentApp;
@@ -79,9 +79,9 @@ class JmxReaderTest {
         void mbeanHasBeenQueried() {
             jmx.start(dispatcher);
             await().until(() -> dispatcher.first != null);
-            List<MetricFamily> families = dispatcher.first;
+            List<Metric> families = dispatcher.first;
             assertThat(families).hasSize(1);
-            MetricFamily family = families.get(0);
+            Metric family = families.get(0);
             assertThat(family)
                     .hasTags("instance", "test",
                             "key1", "value1",
@@ -100,14 +100,14 @@ class JmxReaderTest {
     }
 
     private static class CumulativeDispatcher implements Dispatcher {
-        private volatile List<MetricFamily> first = null;
+        private volatile List<Metric> first = null;
 
         @Override
-        public void dispatch(@Nonnull MetricFamily family) {
+        public void dispatch(@Nonnull Metric family) {
         }
 
         @Override
-        public void dispatch(@Nonnull List<MetricFamily> families) {
+        public void dispatch(@Nonnull List<Metric> families) {
             if (first == null) {
                 first = families;
             }

@@ -1,7 +1,7 @@
 package io.github.anycollect.core.api.target;
 
 import io.github.anycollect.core.api.query.SelfQuery;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
@@ -13,7 +13,7 @@ public final class SelfTarget extends AbstractTarget<SelfQuery> {
     }
 
     @Override
-    public List<MetricFamily> execute(@Nonnull final SelfQuery query) {
+    public List<Metric> execute(@Nonnull final SelfQuery query) {
         return query.executeOn(this);
     }
 }

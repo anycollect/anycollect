@@ -8,7 +8,7 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.Counter;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
     public void run() {
         long start = clock.wallTime();
         try {
-            List<MetricFamily> metrics = target.execute(query);
+            List<Metric> metrics = target.execute(query);
             succeeded.increment();
             dispatcher.dispatch(metrics);
             LOG.debug("success: {}.execute({}) taken {}ms", target, query, clock.wallTime() - start);

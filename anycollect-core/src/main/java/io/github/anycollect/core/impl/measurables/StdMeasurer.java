@@ -36,7 +36,7 @@ public final class StdMeasurer implements Measurer<Measurable> {
 
     @Nonnull
     @Override
-    public MetricFamily measure(@Nonnull final Measurable measurable, final long timestamp) throws QueryException {
+    public Metric measure(@Nonnull final Measurable measurable, final long timestamp) throws QueryException {
         Objects.requireNonNull(measurable, "measurable must not be null");
         List<Measurement> measurements = new ArrayList<>();
         for (MeasurementDefinition measurementDefinition : measurementDefinitions) {
@@ -51,7 +51,7 @@ public final class StdMeasurer implements Measurer<Measurable> {
             }
             builder.tag(tagKey, tagValue);
         }
-        return new ImmutableMetricFamily(config.getKey(), timestamp, measurements, builder.build(), config.getMeta());
+        return new ImmutableMetric(config.getKey(), timestamp, measurements, builder.build(), config.getMeta());
     }
 
     private Measurement resolve(@Nonnull final Measurable obj,

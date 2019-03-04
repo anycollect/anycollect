@@ -28,7 +28,7 @@ public class DefaultGauge<T> extends AbstractMeter implements Gauge, Measurable 
         this.clock = clock;
         this.obj = obj;
         this.value = value;
-        this.preparedGauge = MetricFamily.prepare()
+        this.preparedGauge = Metric.prepare()
                 .key(prefix, id.getKey())
                 .concatTags(tags)
                 .concatTags(id.getTags())
@@ -40,7 +40,7 @@ public class DefaultGauge<T> extends AbstractMeter implements Gauge, Measurable 
 
     @Nonnull
     @Override
-    public List<MetricFamily> measure() {
+    public List<Metric> measure() {
         double value = this.value.applyAsDouble(obj);
         return Collections.singletonList(preparedGauge.compile(clock.wallTime(), value));
     }

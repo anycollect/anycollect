@@ -3,7 +3,7 @@ package io.github.anycollect.core.impl.router.adapters;
 import io.github.anycollect.core.api.Writer;
 import io.github.anycollect.core.impl.router.AbstractRouterNode;
 import io.github.anycollect.core.impl.router.MetricConsumer;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -17,7 +17,7 @@ public final class WriterAdapter extends AbstractRouterNode implements MetricCon
     }
 
     @Override
-    public void consume(@Nonnull final List<MetricFamily> families) {
+    public void consume(@Nonnull final List<Metric> families) {
         this.writer.write(families);
     }
 }

@@ -28,7 +28,7 @@ public class DefaultFunctionCounter<T> extends AbstractMeter implements Function
         this.clock = clock;
         this.obj = obj;
         this.value = value;
-        this.preparedCounter = MetricFamily.prepare()
+        this.preparedCounter = Metric.prepare()
                 .key(prefix, id.getKey())
                 .concatTags(tags)
                 .concatTags(id.getTags())
@@ -40,7 +40,7 @@ public class DefaultFunctionCounter<T> extends AbstractMeter implements Function
 
     @Nonnull
     @Override
-    public List<MetricFamily> measure() {
+    public List<Metric> measure() {
         return Collections.singletonList(preparedCounter.compile(clock.wallTime(), value.applyAsDouble(obj)));
     }
 }

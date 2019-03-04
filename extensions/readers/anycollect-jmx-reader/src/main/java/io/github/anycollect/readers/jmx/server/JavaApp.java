@@ -4,7 +4,7 @@ import io.github.anycollect.core.api.target.AbstractTarget;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
@@ -26,5 +26,5 @@ public abstract class JavaApp extends AbstractTarget<JmxQuery> {
     }
 
     @Nonnull
-    public abstract List<MetricFamily> execute(@Nonnull JmxQuery query) throws QueryException, ConnectionException;
+    public abstract List<Metric> execute(@Nonnull JmxQuery query) throws QueryException, ConnectionException;
 }

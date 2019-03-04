@@ -4,7 +4,7 @@ import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.Measurement;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
 
@@ -21,7 +21,7 @@ public final class TagGraphiteSerializer implements Serializer {
 
     @Nonnull
     @Override
-    public String serialize(@Nonnull final MetricFamily family) {
+    public String serialize(@Nonnull final Metric family) {
         Tags tags = family.getTags();
         String key = family.getKey();
         long timestamp = TimeUnit.MILLISECONDS.toSeconds(family.getTimestamp());

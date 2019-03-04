@@ -4,7 +4,7 @@ import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.api.Writer;
 import io.github.anycollect.extensions.annotations.*;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +39,13 @@ public final class SocketWriter implements Writer, Lifecycle {
 
     // TODO multithreading access
     @Override
-    public synchronized void write(@Nonnull final List<MetricFamily> families) {
-        for (MetricFamily family : families) {
+    public synchronized void write(@Nonnull final List<Metric> families) {
+        for (Metric family : families) {
             write(family);
         }
     }
 
-    private void write(@Nonnull final MetricFamily family) {
+    private void write(@Nonnull final Metric family) {
         String data = serializer.serialize(family);
         try {
             sender.connected();

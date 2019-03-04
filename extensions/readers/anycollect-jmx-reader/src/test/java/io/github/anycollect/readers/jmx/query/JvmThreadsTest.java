@@ -1,7 +1,7 @@
 package io.github.anycollect.readers.jmx.query;
 
 import io.github.anycollect.core.api.internal.Clock;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.metric.Type;
@@ -44,7 +44,7 @@ class JvmThreadsTest {
         ThreadInfo[] infos = new ThreadInfo[]{info};
         when(thread.getThreadInfo(ids)).thenReturn(infos);
         server.registerMBean(thread, new ObjectName("java.lang:type=Threading"));
-        List<MetricFamily> families = jvmThreads.executeOn(server, Tags.empty());
+        List<Metric> families = jvmThreads.executeOn(server, Tags.empty());
         assertThatFamilies(families)
                 .contains("jvm.threads.live", Tags.of("type", "daemon"))
                 .hasMeasurement(Stat.value(), Type.GAUGE, "threads", 1);

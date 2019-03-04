@@ -33,7 +33,7 @@ public class CodahaleSlidingTimeWindowDistributionSummary extends AbstractMeter 
         this.quantiles = quantiles;
         SlidingTimeWindowReservoir reservoir = new SlidingTimeWindowReservoir(window, TimeUnit.SECONDS);
         histogram = new Histogram(reservoir);
-        PreparedMetricFamilyBuilder builder = MetricFamily.prepare()
+        PreparedMetricFamilyBuilder builder = Metric.prepare()
                 .key(prefix, id.getKey())
                 .concatTags(tags)
                 .concatTags(id.getTags())
@@ -55,7 +55,7 @@ public class CodahaleSlidingTimeWindowDistributionSummary extends AbstractMeter 
 
     @Nonnull
     @Override
-    public List<MetricFamily> measure() {
+    public List<Metric> measure() {
         Snapshot snapshot = histogram.getSnapshot();
         double[] values = new double[3 + quantiles.length];
         values[0] = snapshot.getMax();

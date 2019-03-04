@@ -82,7 +82,7 @@ public final class ServiceAvailabilityCheck<T extends Target<Q>, Q extends Query
                 down++;
             }
         }
-        List<MetricFamily> families = new ArrayList<>();
+        List<Metric> families = new ArrayList<>();
         long timestamp = clock.wallTime();
         families.add(make("instances.desired", desired, timestamp));
         families.add(make("instances.up", up, timestamp));
@@ -91,8 +91,8 @@ public final class ServiceAvailabilityCheck<T extends Target<Q>, Q extends Query
         dispatcher.dispatch(families);
     }
 
-    private MetricFamily make(final String key, final int value, final long timestamp) {
-        return MetricFamily.of(key, Tags.of("service", service), Tags.empty(), instances(value), timestamp);
+    private Metric make(final String key, final int value, final long timestamp) {
+        return Metric.of(key, Tags.of("service", service), Tags.empty(), instances(value), timestamp);
     }
 
     private static Measurement instances(final int value) {

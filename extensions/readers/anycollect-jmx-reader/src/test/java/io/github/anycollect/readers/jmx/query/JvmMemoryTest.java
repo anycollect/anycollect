@@ -1,7 +1,7 @@
 package io.github.anycollect.readers.jmx.query;
 
 import io.github.anycollect.core.api.internal.Clock;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.metric.Type;
@@ -38,7 +38,7 @@ class JvmMemoryTest {
         when(memoryPool.getType()).thenReturn(MemoryType.HEAP);
         when(memoryPool.getUsage()).thenReturn(heap);
         server.registerMBean(memoryPool, new ObjectName("java.lang:type=MemoryPool,name=Test"));
-        List<MetricFamily> families = jvmMemory.executeOn(server, Tags.of("instance", "test"));
+        List<Metric> families = jvmMemory.executeOn(server, Tags.of("instance", "test"));
         assertThat(families).hasSize(1);
         assertThat(families.get(0))
                 .hasKey("jvm.memory.used")

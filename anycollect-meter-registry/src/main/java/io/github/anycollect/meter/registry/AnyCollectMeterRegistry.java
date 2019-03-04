@@ -88,7 +88,7 @@ public class AnyCollectMeterRegistry implements MeterRegistry {
     }
 
     @Override
-    public List<MetricFamily> measure(@Nonnull final Predicate<MeterId> filter) {
+    public List<Metric> measure(@Nonnull final Predicate<MeterId> filter) {
         return meters.values().stream().filter(meter -> filter.test(meter.getId()))
                 .flatMap(measurable -> measurable.measure().stream())
                 .collect(toList());

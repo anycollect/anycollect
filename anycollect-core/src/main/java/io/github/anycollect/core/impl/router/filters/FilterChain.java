@@ -1,6 +1,6 @@
 package io.github.anycollect.core.impl.router.filters;
 
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -13,8 +13,8 @@ public final class FilterChain implements Filter {
     }
 
     @Override
-    public MetricFamily map(@Nonnull final MetricFamily metric) {
-        MetricFamily result = metric;
+    public Metric map(@Nonnull final Metric metric) {
+        Metric result = metric;
         for (Filter filter : chain) {
             result = filter.map(metric);
         }
@@ -22,7 +22,7 @@ public final class FilterChain implements Filter {
     }
 
     @Override
-    public FilterReply accept(@Nonnull final MetricFamily metric) {
+    public FilterReply accept(@Nonnull final Metric metric) {
         for (Filter filter : chain) {
             if (filter.accept(metric) == FilterReply.ACCEPT) {
                 return FilterReply.ACCEPT;

@@ -1,17 +1,17 @@
 package io.github.anycollect.assertj;
 
 import io.github.anycollect.metric.Measurement;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
 import org.assertj.core.api.AbstractAssert;
 
-public final class MetricFamilyAssert extends AbstractAssert<MetricFamilyAssert, MetricFamily> {
-    public MetricFamilyAssert(final MetricFamily actual) {
+public final class MetricFamilyAssert extends AbstractAssert<MetricFamilyAssert, Metric> {
+    public MetricFamilyAssert(final Metric actual) {
         super(actual, MetricFamilyAssert.class);
     }
 
-    public static MetricFamilyAssert assertThat(final MetricFamily actual) {
+    public static MetricFamilyAssert assertThat(final Metric actual) {
         return new MetricFamilyAssert(actual);
     }
 

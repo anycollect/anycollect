@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ImmutableMetricFamilyTest {
     @Test
     void toStringTest() {
-        ImmutableMetricFamily family = new ImmutableMetricFamily(
+        ImmutableMetric family = new ImmutableMetric(
                 "key",
                 1,
                 Collections.singletonList(new ImmutableMeasurement(
@@ -26,7 +26,7 @@ class ImmutableMetricFamilyTest {
 
     @Test
     void toStringWithEmptyTagsTest() {
-        ImmutableMetricFamily family = new ImmutableMetricFamily(
+        ImmutableMetric family = new ImmutableMetric(
                 "key",
                 1,
                 Collections.singletonList(new ImmutableMeasurement(

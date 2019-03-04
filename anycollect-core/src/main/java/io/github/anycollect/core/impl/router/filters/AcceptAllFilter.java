@@ -1,12 +1,12 @@
 package io.github.anycollect.core.impl.router.filters;
 
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 
 public final class AcceptAllFilter implements Filter {
     @Override
-    public FilterReply accept(@Nonnull final MetricFamily metric) {
+    public FilterReply accept(@Nonnull final Metric metric) {
         return FilterReply.ACCEPT;
     }
 }

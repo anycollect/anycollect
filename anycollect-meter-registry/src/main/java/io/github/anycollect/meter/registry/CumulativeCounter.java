@@ -23,7 +23,7 @@ public class CumulativeCounter extends AbstractMeter implements Counter, Measura
                              @Nonnull final Clock clock) {
         super(id);
         this.clock = clock;
-        this.preparedCounter = MetricFamily.prepare()
+        this.preparedCounter = Metric.prepare()
                 .key(prefix, id.getKey())
                 .concatTags(tags)
                 .concatTags(id.getTags())
@@ -40,7 +40,7 @@ public class CumulativeCounter extends AbstractMeter implements Counter, Measura
 
     @Nonnull
     @Override
-    public List<MetricFamily> measure() {
+    public List<Metric> measure() {
         return Collections.singletonList(preparedCounter.compile(clock.wallTime(), adder.doubleValue()));
     }
 }

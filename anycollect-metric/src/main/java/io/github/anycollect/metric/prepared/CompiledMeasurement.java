@@ -7,10 +7,10 @@ import io.github.anycollect.metric.Type;
 import javax.annotation.Nonnull;
 
 final class CompiledMeasurement implements Measurement {
-    private final MeasurementData data;
+    private final MeasurementFrame data;
     private final double value;
 
-    CompiledMeasurement(@Nonnull final MeasurementData data, final double value) {
+    CompiledMeasurement(@Nonnull final MeasurementFrame data, final double value) {
         this.data = data;
         this.value = value;
     }

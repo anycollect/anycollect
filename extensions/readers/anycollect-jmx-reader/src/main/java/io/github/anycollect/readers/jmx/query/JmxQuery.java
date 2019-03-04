@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.github.anycollect.core.api.query.AbstractQuery;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 import lombok.EqualsAndHashCode;
 
@@ -28,8 +28,8 @@ public abstract class JmxQuery extends AbstractQuery {
     }
 
     @Nonnull
-    public abstract List<MetricFamily> executeOn(@Nonnull MBeanServerConnection connection,
-                                                 @Nonnull Tags targetTags)
+    public abstract List<Metric> executeOn(@Nonnull MBeanServerConnection connection,
+                                           @Nonnull Tags targetTags)
             throws QueryException, ConnectionException;
 
     protected Set<ObjectName> queryNames(@Nonnull final MBeanServerConnection connection,

@@ -1,19 +1,19 @@
 package io.github.anycollect.core.impl.router.filters;
 
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import java.util.function.Predicate;
 
 public final class DenyFilter implements Filter {
-    private final Predicate<MetricFamily> predicate;
+    private final Predicate<Metric> predicate;
 
-    public DenyFilter(@Nonnull final Predicate<MetricFamily> predicate) {
+    public DenyFilter(@Nonnull final Predicate<Metric> predicate) {
         this.predicate = predicate;
     }
 
     @Override
-    public FilterReply accept(@Nonnull final MetricFamily metric) {
+    public FilterReply accept(@Nonnull final Metric metric) {
         return predicate.test(metric) ? FilterReply.DENY : FilterReply.NEUTRAL;
     }
 }

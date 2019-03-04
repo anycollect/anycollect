@@ -9,7 +9,7 @@ import io.github.anycollect.core.api.measurable.Measurer;
 import io.github.anycollect.core.api.measurable.Measurers;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 import lombok.EqualsAndHashCode;
 import org.slf4j.Logger;
@@ -72,11 +72,11 @@ public final class StdJmxQuery extends JmxQuery {
 
     @Nonnull
     @Override
-    public List<MetricFamily> executeOn(@Nonnull final MBeanServerConnection connection,
-                                        @Nonnull final Tags targetTags)
+    public List<Metric> executeOn(@Nonnull final MBeanServerConnection connection,
+                                  @Nonnull final Tags targetTags)
             throws QueryException, ConnectionException {
         Set<ObjectName> objectNames = queryNames(connection, objectPattern);
-        List<MetricFamily> metricFamilies = new ArrayList<>();
+        List<Metric> metricFamilies = new ArrayList<>();
         for (ObjectName objectName : objectNames) {
             if (restriction.allows(objectName)) {
                 AttributeList attributeList;

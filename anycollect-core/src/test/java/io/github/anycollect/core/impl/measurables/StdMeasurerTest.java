@@ -3,7 +3,7 @@ package io.github.anycollect.core.impl.measurables;
 import io.github.anycollect.core.api.measurable.FamilyConfig;
 import io.github.anycollect.core.api.measurable.Measurable;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.metric.Type;
@@ -60,7 +60,7 @@ class StdMeasurerTest {
     class WhenMeasure {
         private StdMeasurer measurer;
         private Measurable measurable;
-        private MetricFamily metricFamily;
+        private Metric metric;
         private String unitFromPath = "ms";
 
         @BeforeEach
@@ -79,7 +79,7 @@ class StdMeasurerTest {
             when(measurable.getValue("Min")).thenReturn(1.0);
             when(measurable.getValue("Max")).thenReturn(3.0);
             when(measurable.getUnit("MaxUnit")).thenReturn(unitFromPath);
-            metricFamily = measurer.measure(measurable, 1);
+            metric = measurer.measure(measurable, 1);
         }
 
         @Test
@@ -101,7 +101,7 @@ class StdMeasurerTest {
             @Test
             @DisplayName("has measurement with correct unit extracted from path")
             void hasMeasurementWithCorrectUnit() {
-                assertThat(metricFamily).hasMeasurement(Stat.MAX, Type.GAUGE, unitFromPath, 3.0);
+                assertThat(metric).hasMeasurement(Stat.MAX, Type.GAUGE, unitFromPath, 3.0);
             }
         }
 
@@ -111,7 +111,7 @@ class StdMeasurerTest {
             @Test
             @DisplayName("use base unit")
             void hasMeasurementWithBaseUnit() {
-                assertThat(metricFamily).hasMeasurement(Stat.MIN, Type.GAUGE, baseUnit, 1.0);
+                assertThat(metric).hasMeasurement(Stat.MIN, Type.GAUGE, baseUnit, 1.0);
             }
         }
 
@@ -121,7 +121,7 @@ class StdMeasurerTest {
             @Test
             @DisplayName("metric family has all configured tags with correct values")
             void metricFamilyHasConfiguredTags() {
-                assertThat(metricFamily.getTags()).hasTags(
+                assertThat(metric.getTags()).hasTags(
                         "tag1", "value1",
                         "tag2", "value2",
                         "tag3", "value3"

@@ -6,39 +6,39 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
-public interface MetricFamily {
+public interface Metric {
     static PreparedMetricFamilyBuilder prepare() {
         return new PreparedMetricFamilyBuilder();
     }
 
-    static MetricFamily of(@Nonnull String key,
-                           @Nonnull Tags tags,
-                           @Nonnull Tags meta,
-                           @Nonnull Measurement measurement,
-                           long timestamp) {
+    static Metric of(@Nonnull String key,
+                     @Nonnull Tags tags,
+                     @Nonnull Tags meta,
+                     @Nonnull Measurement measurement,
+                     long timestamp) {
         return of(key, tags, meta, Collections.singletonList(measurement), timestamp);
     }
 
-    static MetricFamily of(@Nonnull String key,
-                           @Nonnull Tags tags,
-                           @Nonnull Tags meta,
-                           @Nonnull List<Measurement> measurements,
-                           long timestamp) {
-        return new ImmutableMetricFamily(
+    static Metric of(@Nonnull String key,
+                     @Nonnull Tags tags,
+                     @Nonnull Tags meta,
+                     @Nonnull List<Measurement> measurements,
+                     long timestamp) {
+        return new ImmutableMetric(
                 key, timestamp, measurements, tags, meta
         );
     }
 
-    static MetricFamily empty(@Nonnull MeterId id, long timestamp) {
+    static Metric empty(@Nonnull MeterId id, long timestamp) {
         return of(id, Collections.emptyList(), timestamp);
     }
 
-    static MetricFamily of(@Nonnull MeterId id, Measurement measurement, long timestamp) {
+    static Metric of(@Nonnull MeterId id, Measurement measurement, long timestamp) {
         return of(id, Collections.singletonList(measurement), timestamp);
     }
 
-    static MetricFamily of(@Nonnull MeterId id, List<Measurement> measurements, long timestamp) {
-        return new ImmutableMetricFamily(id.getKey(), timestamp,
+    static Metric of(@Nonnull MeterId id, List<Measurement> measurements, long timestamp) {
+        return new ImmutableMetric(id.getKey(), timestamp,
                 measurements, id.getTags(), id.getMetaTags());
     }
 

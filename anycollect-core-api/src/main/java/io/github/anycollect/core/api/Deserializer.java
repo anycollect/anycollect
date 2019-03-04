@@ -1,10 +1,10 @@
 package io.github.anycollect.core.api;
 
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 
 public interface Deserializer {
     @Nonnull
-    MetricFamily deserialize(@Nonnull String source);
+    Metric deserialize(@Nonnull String source);
 }

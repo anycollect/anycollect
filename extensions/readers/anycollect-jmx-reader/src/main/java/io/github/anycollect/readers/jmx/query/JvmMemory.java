@@ -5,7 +5,7 @@ import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.metric.ImmutableTags;
 import io.github.anycollect.metric.Measurement;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
@@ -41,9 +41,9 @@ public class JvmMemory extends JmxQuery {
 
     @Nonnull
     @Override
-    public List<MetricFamily> executeOn(@Nonnull final MBeanServerConnection connection,
-                                        @Nonnull final Tags targetTags) throws ConnectionException {
-        List<MetricFamily> families = new ArrayList<>();
+    public List<Metric> executeOn(@Nonnull final MBeanServerConnection connection,
+                                  @Nonnull final Tags targetTags) throws ConnectionException {
+        List<Metric> families = new ArrayList<>();
         for (ObjectName objectName : queryNames(connection, MEMORY_POOL_OBJECT_PATTERN)) {
             AttributeList attributes;
             try {
@@ -61,7 +61,7 @@ public class JvmMemory extends JmxQuery {
                     .tag("pool", name.replace(' ', '_'))
                     .tag("type", type)
                     .build();
-            MetricFamily family = MetricFamily.of("jvm.memory.used", tags, Tags.empty(),
+            Metric family = Metric.of("jvm.memory.used", tags, Tags.empty(),
                     Measurement.gauge(used, "bytes"), timestamp);
             families.add(family);
         }

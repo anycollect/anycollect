@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-final class MeasurementData {
+final class MeasurementFrame {
     private final Stat stat;
     private final Type type;
     private final String unit;

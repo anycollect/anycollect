@@ -1,7 +1,7 @@
 package io.github.anycollect.core.api;
 
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -9,5 +9,5 @@ import java.util.List;
 public interface Processor extends Route {
     void start(@Nonnull Dispatcher dispatcher);
 
-    void submit(@Nonnull List<MetricFamily> sources);
+    void submit(@Nonnull List<Metric> sources);
 }

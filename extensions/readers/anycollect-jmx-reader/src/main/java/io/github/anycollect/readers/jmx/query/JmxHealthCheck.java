@@ -16,8 +16,8 @@ public class JmxHealthCheck extends JmxQuery {
 
     @Nonnull
     @Override
-    public List<MetricFamily> executeOn(@Nonnull final MBeanServerConnection connection,
-                                        @Nonnull final Tags targetTags) throws ConnectionException {
+    public List<Metric> executeOn(@Nonnull final MBeanServerConnection connection,
+                                  @Nonnull final Tags targetTags) throws ConnectionException {
         try {
             connection.getDefaultDomain();
         } catch (IOException e) {

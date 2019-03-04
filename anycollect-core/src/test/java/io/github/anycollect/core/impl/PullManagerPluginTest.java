@@ -12,7 +12,7 @@ import io.github.anycollect.extensions.InstanceLoader;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,8 +65,8 @@ class PullManagerPluginTest {
         FirstDispatch dispatcher = new FirstDispatch();
         puller.start(provider, dispatcher, healthQuery);
         await().until(() -> dispatcher.families != null);
-        List<MetricFamily> families = dispatcher.families;
-        assertThat(families.stream().map(MetricFamily::getKey))
+        List<Metric> families = dispatcher.families;
+        assertThat(families.stream().map(Metric::getKey))
                 .containsExactlyInAnyOrder(
                         "instances.up",
                         "instances.down",
@@ -75,15 +75,15 @@ class PullManagerPluginTest {
     }
 
     private static final class FirstDispatch implements Dispatcher {
-        private volatile List<MetricFamily> families = null;
+        private volatile List<Metric> families = null;
 
         @Override
-        public void dispatch(@Nonnull MetricFamily family) {
+        public void dispatch(@Nonnull Metric family) {
 
         }
 
         @Override
-        public void dispatch(@Nonnull List<MetricFamily> families) {
+        public void dispatch(@Nonnull List<Metric> families) {
             if (this.families == null) {
                 this.families = families;
             }

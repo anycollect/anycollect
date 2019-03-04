@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.router.filters;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 
@@ -17,9 +17,9 @@ import javax.annotation.Nonnull;
         @JsonSubTypes.Type(value = AcceptAllFilter.class, name = "accept")
 })
 public interface Filter {
-    default MetricFamily map(@Nonnull MetricFamily metric) {
+    default Metric map(@Nonnull Metric metric) {
         return metric;
     }
 
-    FilterReply accept(@Nonnull MetricFamily metric);
+    FilterReply accept(@Nonnull Metric metric);
 }

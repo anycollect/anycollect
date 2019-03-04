@@ -1,6 +1,6 @@
 package io.github.anycollect.core.api.dispatcher;
 
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -8,11 +8,11 @@ import java.util.List;
 public interface Dispatcher {
     Dispatcher NOOP = new Dispatcher() {
         @Override
-        public void dispatch(@Nonnull final MetricFamily family) {
+        public void dispatch(@Nonnull final Metric family) {
         }
 
         @Override
-        public void dispatch(@Nonnull final List<MetricFamily> families) {
+        public void dispatch(@Nonnull final List<Metric> families) {
         }
     };
 
@@ -20,7 +20,7 @@ public interface Dispatcher {
         return NOOP;
     }
 
-    void dispatch(@Nonnull MetricFamily family);
+    void dispatch(@Nonnull Metric family);
 
-    void dispatch(@Nonnull List<MetricFamily> families);
+    void dispatch(@Nonnull List<Metric> families);
 }

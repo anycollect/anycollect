@@ -28,14 +28,14 @@ public final class PreparedMetricFamilyBuilder extends BaseBuilder<PreparedMetri
     public PreparedMetricFamilyBuilder measurement(@Nonnull final Stat stat,
                                                    @Nonnull final Type type,
                                                    @Nonnull final String unit) {
-        preparedMeasurements.add(new ImmutablePreparedMeasurement(new MeasurementData(stat, type, unit)));
+        preparedMeasurements.add(new ImmutablePreparedMeasurement(new MeasurementFrame(stat, type, unit)));
         return this;
     }
 
     public PreparedMetricFamily build() {
-        MetricFamilyData data = new MetricFamilyData(getKey(),
+        MetricFrame data = new MetricFrame(getKey(),
                 getTagsBuilder().build(),
                 getMetaBuilder().build());
-        return new ImmutablePreparedMetricFamily(data, preparedMeasurements);
+        return new ImmutablePreparedMetric(data, preparedMeasurements);
     }
 }

@@ -6,8 +6,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-final class MetricFamilyData {
-    private String key;
-    private Tags tags;
-    private Tags meta;
+final class MetricFrame {
+    private final String key;
+    private final Tags tags;
+    private final Tags meta;
 }

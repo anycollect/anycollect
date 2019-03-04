@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.router;
 
 import io.github.anycollect.core.impl.router.filters.Filter;
 import io.github.anycollect.core.impl.router.filters.FilterReply;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -20,8 +20,8 @@ public final class FilteredMetricConsumer implements MetricConsumer {
     }
 
     @Override
-    public void consume(@Nonnull final List<MetricFamily> families) {
-        List<MetricFamily> filtered = families.stream()
+    public void consume(@Nonnull final List<Metric> families) {
+        List<Metric> filtered = families.stream()
                 .filter(metric -> filter.accept(metric) != FilterReply.DENY)
                 .map(filter::map)
                 .collect(toList());

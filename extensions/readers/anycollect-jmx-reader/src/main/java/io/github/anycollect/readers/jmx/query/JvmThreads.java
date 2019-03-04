@@ -8,7 +8,7 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.ImmutableTags;
 import io.github.anycollect.metric.Measurement;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +58,8 @@ public class JvmThreads extends JmxQuery {
 
     @Nonnull
     @Override
-    public List<MetricFamily> executeOn(@Nonnull final MBeanServerConnection connection,
-                                        @Nonnull final Tags targetTags) throws QueryException, ConnectionException {
+    public List<Metric> executeOn(@Nonnull final MBeanServerConnection connection,
+                                  @Nonnull final Tags targetTags) throws QueryException, ConnectionException {
         AttributeList attributes;
         try {
             attributes = connection.getAttributes(THREADING_OBJECT_NAME, ATTRIBUTE_NAMES);
@@ -87,21 +87,21 @@ public class JvmThreads extends JmxQuery {
 
         long timestamp = clock.wallTime();
 
-        List<MetricFamily> families = new ArrayList<>();
-        families.add(MetricFamily.of(
+        List<Metric> families = new ArrayList<>();
+        families.add(Metric.of(
                 THREADS_STARTED_KEY,
                 targetTags,
                 Tags.empty(),
                 Measurement.counter(totalStartedThreadCount, THREADS_UNIT),
                 timestamp
         ));
-        families.add(MetricFamily.of(
+        families.add(Metric.of(
                 LIVE_THREADS_KEY,
                 Tags.concat(targetTags, Tags.of("type", "daemon")),
                 Tags.empty(),
                 Measurement.gauge(daemonThreadCount, THREADS_UNIT),
                 timestamp));
-        families.add(MetricFamily.of(
+        families.add(Metric.of(
                 LIVE_THREADS_KEY,
                 Tags.concat(targetTags, Tags.of("type", "nondaemon")),
                 Tags.empty(),
@@ -117,7 +117,7 @@ public class JvmThreads extends JmxQuery {
                     .concat(targetTags)
                     .tag("state", state)
                     .build();
-            families.add(MetricFamily.of(
+            families.add(Metric.of(
                     THREADS_BY_STATE_KEY,
                     tags,
                     Tags.empty(),

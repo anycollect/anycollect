@@ -38,7 +38,7 @@ public final class NoopMeterRegistry implements MeterRegistry {
     }
 
     @Override
-    public List<MetricFamily> measure(@Nonnull final Predicate<MeterId> filter) {
+    public List<Metric> measure(@Nonnull final Predicate<MeterId> filter) {
         return Collections.emptyList();
     }
 }

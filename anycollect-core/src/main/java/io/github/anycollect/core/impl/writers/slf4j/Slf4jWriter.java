@@ -7,7 +7,7 @@ import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.annotations.InstanceId;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +34,8 @@ public class Slf4jWriter implements Writer {
     }
 
     @Override
-    public void write(@Nonnull final List<MetricFamily> families) {
-        for (MetricFamily family : families) {
+    public void write(@Nonnull final List<Metric> families) {
+        for (Metric family : families) {
             LOG.info("{}", serializer.serialize(family));
         }
     }

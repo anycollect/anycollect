@@ -1,9 +1,9 @@
 package io.github.anycollect.metric.prepared;
 
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 public interface PreparedMetricFamily {
-    MetricFamily compile(long timestamp, double value);
+    Metric compile(long timestamp, double value);
 
-    MetricFamily compile(long timestamp, double... values);
+    Metric compile(long timestamp, double... values);
 }

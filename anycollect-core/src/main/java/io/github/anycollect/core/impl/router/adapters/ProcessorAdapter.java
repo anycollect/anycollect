@@ -4,7 +4,7 @@ import io.github.anycollect.core.api.Processor;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.impl.router.AbstractRouterNode;
 import io.github.anycollect.core.impl.router.MetricProcessor;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -18,7 +18,7 @@ public final class ProcessorAdapter extends AbstractRouterNode implements Metric
     }
 
     @Override
-    public void consume(@Nonnull final List<MetricFamily> families) {
+    public void consume(@Nonnull final List<Metric> families) {
         processor.submit(families);
     }
 

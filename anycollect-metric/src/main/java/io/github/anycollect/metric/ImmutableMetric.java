@@ -10,18 +10,18 @@ import java.util.List;
 import static java.util.stream.Collectors.joining;
 
 @Getter
-public final class ImmutableMetricFamily implements MetricFamily {
+public final class ImmutableMetric implements Metric {
     private final String key;
     private final long timestamp;
     private final List<Measurement> measurements;
     private final Tags tags;
     private final Tags meta;
 
-    public ImmutableMetricFamily(@Nonnull final String key,
-                                 final long timestamp,
-                                 @Nonnull final List<Measurement> measurements,
-                                 @Nonnull final Tags tags,
-                                 @Nonnull final Tags meta) {
+    public ImmutableMetric(@Nonnull final String key,
+                           final long timestamp,
+                           @Nonnull final List<Measurement> measurements,
+                           @Nonnull final Tags tags,
+                           @Nonnull final Tags meta) {
         this.key = key;
         this.timestamp = timestamp;
         this.measurements = Collections.unmodifiableList(new ArrayList<>(measurements));

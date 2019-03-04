@@ -28,5 +28,5 @@ public interface MeterRegistry {
     @Nonnull
     Distribution distribution(@Nonnull MeterId id);
 
-    List<MetricFamily> measure(@Nonnull Predicate<MeterId> filter);
+    List<Metric> measure(@Nonnull Predicate<MeterId> filter);
 }

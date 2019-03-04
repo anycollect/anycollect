@@ -9,7 +9,7 @@ import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
 import io.github.anycollect.core.impl.pull.PullScheduler;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
-import io.github.anycollect.metric.MetricFamily;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
 import org.assertj.core.util.Lists;
@@ -28,10 +28,10 @@ import static org.mockito.Mockito.*;
 class ServiceAvailabilityCheckTest {
     @Test
     void healthCheckMetricsIsIncrementedCorrectly() throws Exception {
-        List<MetricFamily> families = makeCheck(false);
-        MetricFamily up = getFamilyByKey(families, "up");
-        MetricFamily down = getFamilyByKey(families, "down");
-        MetricFamily timeout = getFamilyByKey(families, "timeout");
+        List<Metric> families = makeCheck(false);
+        Metric up = getFamilyByKey(families, "up");
+        Metric down = getFamilyByKey(families, "down");
+        Metric timeout = getFamilyByKey(families, "timeout");
         assertThat(up).hasMeasurement(Stat.value(), Type.GAUGE, "instances", 1.0);
         assertThat(down).hasMeasurement(Stat.value(), Type.GAUGE, "instances", 1.0);
         assertThat(timeout).hasMeasurement(Stat.value(), Type.GAUGE, "instances", 0.0);
@@ -39,16 +39,16 @@ class ServiceAvailabilityCheckTest {
 
     @Test
     void healthCheckMetricsIsIncrementedCorrectlyWhenTimeout() throws Exception {
-        List<MetricFamily> families = makeCheck(true);
-        MetricFamily up = getFamilyByKey(families, "up");
-        MetricFamily down = getFamilyByKey(families, "down");
-        MetricFamily timeout = getFamilyByKey(families, "timeout");
+        List<Metric> families = makeCheck(true);
+        Metric up = getFamilyByKey(families, "up");
+        Metric down = getFamilyByKey(families, "down");
+        Metric timeout = getFamilyByKey(families, "timeout");
         assertThat(up).hasMeasurement(Stat.value(), Type.GAUGE, "instances", 0.0);
         assertThat(down).hasMeasurement(Stat.value(), Type.GAUGE, "instances", 0.0);
         assertThat(timeout).hasMeasurement(Stat.value(), Type.GAUGE, "instances", 2.0);
     }
 
-    private static List<MetricFamily> makeCheck(boolean timeout) throws Exception {
+    private static List<Metric> makeCheck(boolean timeout) throws Exception {
         Dispatcher dispatcher = mock(Dispatcher.class);
         TestTarget target1 = mock(TestTarget.class);
         TestTarget target2 = mock(TestTarget.class);
@@ -68,13 +68,13 @@ class ServiceAvailabilityCheckTest {
                 .build();
         check.run();
         @SuppressWarnings("unchecked")
-        ArgumentCaptor<List<MetricFamily>> captor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Metric>> captor = ArgumentCaptor.forClass(List.class);
         verify(dispatcher, times(1)).dispatch(captor.capture());
         captor.getValue();
         return captor.getValue();
     }
 
-    private static MetricFamily getFamilyByKey(List<MetricFamily> families, String key) {
+    private static Metric getFamilyByKey(List<Metric> families, String key) {
         return families.stream().filter(family -> family.getKey().contains(key)).findFirst().get();
     }
 
