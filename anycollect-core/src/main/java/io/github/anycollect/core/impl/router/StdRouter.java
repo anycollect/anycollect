@@ -38,20 +38,20 @@ public final class StdRouter implements Router, Lifecycle {
                      @ExtDependency(qualifier = "writers") @Nonnull final List<Writer> writers,
                      @ExtConfig @Nonnull final RouterConfig config) {
         Routes routes = Routes.create(readers, processors, writers);
-        Map<MetricProducer, List<AsyncDispatcher>> topology = new HashMap<>();
+        Map<MetricProducer, List<RouteDispatcher>> topology = new HashMap<>();
         for (TopologyItem topologyItem : config.topology()) {
             MetricProducer producer = routes.getProducer(topologyItem.from());
             MetricConsumer consumer = routes.getConsumer(topologyItem.to());
             FilterChain filter = new FilterChain(topologyItem.filters());
             FilteredMetricConsumer filteredConsumer = new FilteredMetricConsumer(filter, consumer);
-            List<AsyncDispatcher> destinations = topology.computeIfAbsent(producer, prod -> new ArrayList<>());
+            List<RouteDispatcher> destinations = topology.computeIfAbsent(producer, prod -> new ArrayList<>());
             destinations.add(makeDispatcher(filteredConsumer));
         }
 
         this.channels = new ArrayList<>();
-        for (Map.Entry<MetricProducer, List<AsyncDispatcher>> entry : topology.entrySet()) {
+        for (Map.Entry<MetricProducer, List<RouteDispatcher>> entry : topology.entrySet()) {
             MetricProducer producer = entry.getKey();
-            ForkAsyncDispatcher dispatcher = new ForkAsyncDispatcher(entry.getValue());
+            RouteDispatcherFanout dispatcher = new RouteDispatcherFanout(entry.getValue());
             Channel channel = new Channel(producer, dispatcher);
             this.channels.add(channel);
         }
@@ -62,12 +62,12 @@ public final class StdRouter implements Router, Lifecycle {
         LOG.info("topology: {}", topologyString);
     }
 
-    private static SingleAsyncDispatcher makeDispatcher(final MetricConsumer consumer) {
+    private static BackgroundRouteDispatcher makeDispatcher(final MetricConsumer consumer) {
         ThreadFactory factory = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-route(" + consumer.getAddress() + ")-[%d]")
                 .build();
         ExecutorService executorService = Executors.newSingleThreadExecutor(factory);
-        return new SingleAsyncDispatcher(executorService, consumer);
+        return new BackgroundRouteDispatcher(executorService, consumer);
     }
 
     @Override

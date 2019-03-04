@@ -6,10 +6,10 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public final class Channel {
     private final MetricProducer producer;
-    private final AsyncDispatcher consumer;
+    private final RouteDispatcher consumer;
 
     public Channel(@Nonnull final MetricProducer producer,
-                   @Nonnull final AsyncDispatcher consumer) {
+                   @Nonnull final RouteDispatcher consumer) {
         this.producer = producer;
         this.consumer = consumer;
     }

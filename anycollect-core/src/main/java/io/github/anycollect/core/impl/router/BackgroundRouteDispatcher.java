@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 @ThreadSafe
-public final class SingleAsyncDispatcher implements AsyncDispatcher {
+public final class BackgroundRouteDispatcher implements RouteDispatcher {
     private final ExecutorService executor;
     private final MetricConsumer consumer;
     private volatile boolean stopped = false;
 
-    public SingleAsyncDispatcher(@Nonnull final ExecutorService executor,
-                                 @Nonnull final MetricConsumer consumer) {
+    public BackgroundRouteDispatcher(@Nonnull final ExecutorService executor,
+                                     @Nonnull final MetricConsumer consumer) {
         this.executor = executor;
         this.consumer = consumer;
     }
@@ -27,9 +27,8 @@ public final class SingleAsyncDispatcher implements AsyncDispatcher {
 
     @Override
     public void dispatch(@Nonnull final List<MetricFamily> families) {
-        ConsumeJob job = new ConsumeJob(consumer, families);
         if (!stopped) {
-            executor.submit(job);
+            executor.submit(() -> consumer.consume(families));
         }
     }
 
