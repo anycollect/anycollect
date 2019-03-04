@@ -7,10 +7,11 @@ import lombok.ToString;
 import javax.annotation.Nonnull;
 import java.util.Set;
 
+@Deprecated
 @Getter
 @ToString(of = "tags", includeFieldNames = false)
 @EqualsAndHashCode(of = {"key", "unit", "stat", "type", "tags"})
-public final class ImmutableMetricId implements MetricId {
+public final class ImmutablePointId implements PointId {
     private final String key;
     private final String unit;
     private final Stat stat;
@@ -22,7 +23,7 @@ public final class ImmutableMetricId implements MetricId {
         return new Builder(key);
     }
 
-    private ImmutableMetricId(final Builder builder) {
+    private ImmutablePointId(final Builder builder) {
         this.key = builder.getKey();
         this.unit = builder.getUnit();
         this.stat = builder.getStat();
@@ -58,8 +59,8 @@ public final class ImmutableMetricId implements MetricId {
             return super.stat(stat);
         }
 
-        public ImmutableMetricId build() {
-            return new ImmutableMetricId(this);
+        public ImmutablePointId build() {
+            return new ImmutablePointId(this);
         }
     }
 }

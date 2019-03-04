@@ -6,20 +6,20 @@ import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import io.github.anycollect.metric.MetricId;
+import io.github.anycollect.metric.PointId;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.metric.Type;
 
 import java.io.IOException;
 
-public final class MetricIdDeserializer extends StdDeserializer<MetricId> {
+public final class MetricIdDeserializer extends StdDeserializer<PointId> {
     public MetricIdDeserializer() {
-        super(MetricId.class);
+        super(PointId.class);
     }
 
     @Override
-    public MetricId deserialize(final JsonParser parser, final DeserializationContext ctx) throws IOException {
+    public PointId deserialize(final JsonParser parser, final DeserializationContext ctx) throws IOException {
         ObjectCodec codec = parser.getCodec();
         JsonNode node = codec.readTree(parser);
         String key = node.get("what").asText();
@@ -28,7 +28,7 @@ public final class MetricIdDeserializer extends StdDeserializer<MetricId> {
         Type type = node.get("mtype").traverse(codec).readValueAs(Type.class);
         Tags tags = serializeTags(node.get("tags"), codec, ctx);
         Tags meta = serializeTags(node.get("meta"), codec, ctx);
-        return MetricId.key(key)
+        return PointId.key(key)
                 .unit(unit)
                 .stat(stat)
                 .type(type)

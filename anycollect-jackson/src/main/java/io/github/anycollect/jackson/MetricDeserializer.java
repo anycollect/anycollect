@@ -4,24 +4,24 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import io.github.anycollect.metric.ImmutableMetric;
-import io.github.anycollect.metric.Metric;
-import io.github.anycollect.metric.MetricId;
+import io.github.anycollect.metric.ImmutablePoint;
+import io.github.anycollect.metric.Point;
+import io.github.anycollect.metric.PointId;
 
 import java.io.IOException;
 
-public final class MetricDeserializer extends StdDeserializer<Metric> {
+public final class MetricDeserializer extends StdDeserializer<Point> {
     public MetricDeserializer() {
-        super(Metric.class);
+        super(Point.class);
     }
 
     @Override
-    public Metric deserialize(final JsonParser parser, final DeserializationContext ctx) throws IOException {
+    public Point deserialize(final JsonParser parser, final DeserializationContext ctx) throws IOException {
         JsonNode root = parser.getCodec().readTree(parser);
 
-        MetricId id = ctx.readValue(root.get("id").traverse(parser.getCodec()), MetricId.class);
+        PointId id = ctx.readValue(root.get("id").traverse(parser.getCodec()), PointId.class);
         double value = root.get("value").doubleValue();
         long timestamp = root.get("timestamp").longValue();
-        return new ImmutableMetric(id, value, timestamp);
+        return new ImmutablePoint(id, value, timestamp);
     }
 }

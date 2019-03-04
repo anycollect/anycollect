@@ -9,14 +9,14 @@ class MetricTest {
     @Test
     void idMustNotBeNull() {
         NullPointerException npe = Assertions.assertThrows(NullPointerException.class,
-                () -> Metric.of(null, 1, 1));
+                () -> Point.of(null, 1, 1));
         assertThat(npe).hasMessage("id must not be null");
     }
 
     @Test
     void baseTest() {
-        Metric metric = Metric.of(MetricId.key("metric").stat(Stat.value()).unit("metrics").type(Type.GAUGE).build(), 1, 2);
-        assertThat(metric.getTimestamp()).isEqualTo(2);
-        assertThat(metric.getValue()).isEqualTo(1);
+        Point point = Point.of(PointId.key("metric").stat(Stat.value()).unit("metrics").type(Type.GAUGE).build(), 1, 2);
+        assertThat(point.getTimestamp()).isEqualTo(2);
+        assertThat(point.getValue()).isEqualTo(1);
     }
 }

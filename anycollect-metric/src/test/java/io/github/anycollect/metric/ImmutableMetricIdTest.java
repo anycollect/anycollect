@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Metric ID tests")
 class ImmutableMetricIdTest {
-    private ImmutableMetricId.Builder base = MetricId
+    private ImmutablePointId.Builder base = PointId
             .key("test")
             .stat(Stat.value())
             .unit("tests")
@@ -18,7 +18,7 @@ class ImmutableMetricIdTest {
     @Test
     @DisplayName("test getting required tags")
     void baseTest() {
-        ImmutableMetricId id = base.build();
+        ImmutablePointId id = base.build();
         assertThat(id.getKey()).isEqualTo("test");
         assertThat(id.getUnit()).isEqualTo("tests");
         assertThat(id.getType()).isSameAs(Type.GAUGE);
@@ -27,8 +27,8 @@ class ImmutableMetricIdTest {
     @Test
     @DisplayName("IDs with the same tags must be equal")
     void idsWithTheSameTagsMustBeEqual() {
-        ImmutableMetricId id1 = base.tag("key1", "value1").build();
-        ImmutableMetricId id2 = base.tag("key1", "value1").build();
+        ImmutablePointId id1 = base.tag("key1", "value1").build();
+        ImmutablePointId id2 = base.tag("key1", "value1").build();
         assertThat(id1).isEqualTo(id2);
         assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
     }
@@ -36,24 +36,24 @@ class ImmutableMetricIdTest {
     @Test
     @DisplayName("IDs with different tag values must be not equal")
     void idsWithDifferentTagValueMustBeNotEqual() {
-        ImmutableMetricId id1 = base.tag("key1", "value1").build();
-        ImmutableMetricId id2 = base.tag("key1", "value2").build();
+        ImmutablePointId id1 = base.tag("key1", "value1").build();
+        ImmutablePointId id2 = base.tag("key1", "value2").build();
         assertThat(id1).isNotEqualTo(id2);
     }
 
     @Test
     @DisplayName("IDs with different tags must be not equal")
     void idsWithDifferentTagsMustBeNotEqual() {
-        ImmutableMetricId id1 = base.tag("key1", "value1").build();
-        ImmutableMetricId id2 = base.tag("key2", "value1").build();
+        ImmutablePointId id1 = base.tag("key1", "value1").build();
+        ImmutablePointId id2 = base.tag("key2", "value1").build();
         assertThat(id1).isNotEqualTo(id2);
     }
 
     @Test
     @DisplayName("IDs with the same tags and different meta tags must be equal")
     void idsWithTheSameTagsAndDifferentMetaTagsMustBeEqual() {
-        ImmutableMetricId id1 = base.tag("key1", "value2").meta("metaKey1", "metaValue1").build();
-        ImmutableMetricId id2 = base.tag("key1", "value2").meta("metaKey2", "metaValue2").build();
+        ImmutablePointId id1 = base.tag("key1", "value2").meta("metaKey1", "metaValue1").build();
+        ImmutablePointId id2 = base.tag("key1", "value2").meta("metaKey2", "metaValue2").build();
         assertThat(id1).isEqualTo(id2);
         assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
     }
@@ -61,7 +61,7 @@ class ImmutableMetricIdTest {
     @Test
     @DisplayName("getting tag value that is not present in id must lead to exception")
     void gettingValueOfNotExistingTagIsIllegal() {
-        ImmutableMetricId id = base.tag("key1", "value1").build();
+        ImmutablePointId id = base.tag("key1", "value1").build();
         IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class, () -> id.getTagValue("key2"));
         assertThat(ex).hasMessageContaining("key2");
         Assertions.assertTrue(id.hasTagKey("key1"));
@@ -71,7 +71,7 @@ class ImmutableMetricIdTest {
     @Test
     @DisplayName("getting meta tag value that is not present in id must lead to exception")
     void gettingValueOfNotExistingMetaTagIsIllegal() {
-        ImmutableMetricId id = base.meta("key1", "value1").build();
+        ImmutablePointId id = base.meta("key1", "value1").build();
         IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class, () -> id.getMetaTagValue("key2"));
         assertThat(ex).hasMessageContaining("key2");
         Assertions.assertTrue(id.hasMetaTagKey("key1"));
@@ -81,7 +81,7 @@ class ImmutableMetricIdTest {
     @Test
     @DisplayName("ID must consist of all (and only) tags specified")
     void idMustConsistsOfTagsSpecified() {
-        ImmutableMetricId id = base.tag("key1", "value1")
+        ImmutablePointId id = base.tag("key1", "value1")
                 .tag("key2", "value2")
                 .meta("metaKey1", "metaValue1")
                 .build();
@@ -125,7 +125,7 @@ class ImmutableMetricIdTest {
         Tags meta = Tags.builder()
                 .tag("agent", "anycollect")
                 .build();
-        ImmutableMetricId id = base
+        ImmutablePointId id = base
                 .concatTags(commonTags)
                 .concatMeta(meta)
                 .build();

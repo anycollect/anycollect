@@ -3,7 +3,7 @@ package io.github.anycollect.extensions.common.expression.std;
 import io.github.anycollect.extensions.common.expression.Args;
 import io.github.anycollect.extensions.common.expression.EvaluationException;
 import io.github.anycollect.extensions.common.expression.Expression;
-import io.github.anycollect.metric.MetricId;
+import io.github.anycollect.metric.PointId;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +46,7 @@ class StdMetricIdBuilderTest {
     @Test
     void argsMustBePassedToEveryExpression() throws EvaluationException {
         Args args = Args.builder().build();
-        MetricId id = builder.create(args);
+        PointId id = builder.create(args);
         verify(keyValueExp, times(1)).process(args);
         verify(statValueExp, times(1)).process(args);
         verify(unitValueExp, times(1)).process(args);

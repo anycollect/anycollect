@@ -4,8 +4,8 @@ import io.github.anycollect.extensions.common.expression.Args;
 import io.github.anycollect.extensions.common.expression.EvaluationException;
 import io.github.anycollect.extensions.common.expression.Expression;
 import io.github.anycollect.extensions.common.expression.MetricIdBuilder;
-import io.github.anycollect.metric.ImmutableMetricId;
-import io.github.anycollect.metric.MetricId;
+import io.github.anycollect.metric.ImmutablePointId;
+import io.github.anycollect.metric.PointId;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
 
@@ -31,8 +31,8 @@ public final class StdMetricIdBuilder implements MetricIdBuilder {
     }
 
     @Override
-    public MetricId create(final Args context) throws EvaluationException {
-        ImmutableMetricId.Builder builder = MetricId
+    public PointId create(final Args context) throws EvaluationException {
+        ImmutablePointId.Builder builder = PointId
                 .key(key.process(context))
                 .unit(unit.process(context))
                 .stat(Stat.parse(stat.process(context)))

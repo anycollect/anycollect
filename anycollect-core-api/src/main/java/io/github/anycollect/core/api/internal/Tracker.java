@@ -1,11 +1,11 @@
 package io.github.anycollect.core.api.internal;
 
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Point;
 
 import javax.annotation.Nonnull;
 
 public interface Tracker {
-    void dropWrite(@Nonnull Metric metric);
+    void dropWrite(@Nonnull Point point);
 
-    void acceptWrite(@Nonnull Metric metric);
+    void acceptWrite(@Nonnull Point point);
 }

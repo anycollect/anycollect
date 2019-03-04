@@ -2,9 +2,10 @@ package io.github.anycollect.metric;
 
 import javax.annotation.Nonnull;
 
-public interface MetricId extends Id {
-    static ImmutableMetricId.Builder key(@Nonnull String key) {
-        return new ImmutableMetricId.Builder(key);
+@Deprecated
+public interface PointId extends Id {
+    static ImmutablePointId.Builder key(@Nonnull String key) {
+        return new ImmutablePointId.Builder(key);
     }
 
     @Nonnull
