@@ -8,7 +8,7 @@ import io.github.anycollect.metric.MetricFamily;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class WriterAdapter extends AbstractRouterNode implements MetricConsumer {
+public final class WriterAdapter extends AbstractRouterNode implements MetricConsumer {
     private final Writer writer;
 
     public WriterAdapter(@Nonnull final Writer writer) {

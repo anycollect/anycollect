@@ -7,7 +7,7 @@ import io.github.anycollect.core.impl.router.MetricProducer;
 
 import javax.annotation.Nonnull;
 
-public class ReaderAdapter extends AbstractRouterNode implements MetricProducer {
+public final class ReaderAdapter extends AbstractRouterNode implements MetricProducer {
     private final Reader reader;
 
     public ReaderAdapter(@Nonnull final Reader reader) {

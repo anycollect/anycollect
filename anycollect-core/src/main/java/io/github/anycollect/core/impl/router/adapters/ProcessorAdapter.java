@@ -9,7 +9,7 @@ import io.github.anycollect.metric.MetricFamily;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class ProcessorAdapter extends AbstractRouterNode implements MetricProcessor {
+public final class ProcessorAdapter extends AbstractRouterNode implements MetricProcessor {
     private final Processor processor;
 
     public ProcessorAdapter(@Nonnull final Processor processor) {

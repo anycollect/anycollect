@@ -6,9 +6,7 @@ import io.github.anycollect.core.api.Reader;
 import io.github.anycollect.core.api.Router;
 import io.github.anycollect.core.api.Writer;
 import io.github.anycollect.core.api.common.Lifecycle;
-import io.github.anycollect.core.impl.router.adapters.ProcessorAdapter;
-import io.github.anycollect.core.impl.router.adapters.ReaderAdapter;
-import io.github.anycollect.core.impl.router.adapters.WriterAdapter;
+import io.github.anycollect.core.impl.router.adapters.Routes;
 import io.github.anycollect.core.impl.router.config.RouterConfig;
 import io.github.anycollect.core.impl.router.config.TopologyItem;
 import io.github.anycollect.core.impl.router.filters.FilterChain;
@@ -28,8 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import static java.util.stream.Collectors.toList;
-
 @Extension(name = StdRouter.NAME, point = Router.class)
 public final class StdRouter implements Router, Lifecycle {
     public static final String NAME = "Router";
@@ -41,33 +37,11 @@ public final class StdRouter implements Router, Lifecycle {
                      @ExtDependency(qualifier = "processors") @Nonnull final List<Processor> processors,
                      @ExtDependency(qualifier = "writers") @Nonnull final List<Writer> writers,
                      @ExtConfig @Nonnull final RouterConfig config) {
-        List<MetricProducer> mappedProducers = readers.stream()
-                .map(ReaderAdapter::new)
-                .collect(toList());
-        List<MetricProcessor> mappedProcessors = processors.stream()
-                .map(ProcessorAdapter::new)
-                .collect(toList());
-        List<MetricConsumer> mappedConsumers = writers.stream()
-                .map(WriterAdapter::new)
-                .collect(toList());
-
-        Map<String, MetricProducer> producers = new HashMap<>();
-        Map<String, MetricConsumer> consumers = new HashMap<>();
-        for (MetricProducer mappedProducer : mappedProducers) {
-            producers.put(mappedProducer.getAddress(), mappedProducer);
-        }
-        for (MetricConsumer mappedConsumer : mappedConsumers) {
-            consumers.put(mappedConsumer.getAddress(), mappedConsumer);
-        }
-        for (MetricProcessor mappedProcessor : mappedProcessors) {
-            consumers.put(mappedProcessor.getAddress(), mappedProcessor);
-            producers.put(mappedProcessor.getAddress(), mappedProcessor);
-        }
-
+        Routes routes = Routes.create(readers, processors, writers);
         Map<MetricProducer, List<AsyncDispatcher>> topology = new HashMap<>();
         for (TopologyItem topologyItem : config.topology()) {
-            MetricProducer producer = producers.get(topologyItem.from());
-            MetricConsumer consumer = consumers.get(topologyItem.to());
+            MetricProducer producer = routes.getProducer(topologyItem.from());
+            MetricConsumer consumer = routes.getConsumer(topologyItem.to());
             FilterChain filter = new FilterChain(topologyItem.filters());
             FilteredMetricConsumer filteredConsumer = new FilteredMetricConsumer(filter, consumer);
             List<AsyncDispatcher> destinations = topology.computeIfAbsent(producer, prod -> new ArrayList<>());
