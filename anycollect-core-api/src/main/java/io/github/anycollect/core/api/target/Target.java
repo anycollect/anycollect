@@ -1,6 +1,5 @@
 package io.github.anycollect.core.api.target;
 
-import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
@@ -24,16 +23,5 @@ public interface Target<Q extends Query> {
     @Nonnull
     Tags getTags();
 
-    /**
-     * Override {@link Target#execute(Query, Dispatcher)} because that method can be implemented much more efficient
-     */
-    @Deprecated
     List<MetricFamily> execute(@Nonnull Q query) throws QueryException, ConnectionException;
-
-    default void execute(@Nonnull Q query, @Nonnull Dispatcher dispatcher) throws QueryException, ConnectionException {
-        List<MetricFamily> metrics = execute(query);
-        for (MetricFamily metric : metrics) {
-            dispatcher.dispatch(metric);
-        }
-    }
 }

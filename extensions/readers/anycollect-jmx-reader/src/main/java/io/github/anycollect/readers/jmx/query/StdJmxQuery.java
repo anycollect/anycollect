@@ -77,7 +77,6 @@ public final class StdJmxQuery extends JmxQuery {
             throws QueryException, ConnectionException {
         Set<ObjectName> objectNames = queryNames(connection, objectPattern);
         List<MetricFamily> metricFamilies = new ArrayList<>();
-        long timestamp = clock.wallTime();
         for (ObjectName objectName : objectNames) {
             if (restriction.allows(objectName)) {
                 AttributeList attributeList;
@@ -86,6 +85,7 @@ public final class StdJmxQuery extends JmxQuery {
                 } catch (InstanceNotFoundException | ReflectionException | IOException e) {
                     throw new ConnectionException("could not get attributes", e);
                 }
+                long timestamp = clock.wallTime();
                 // TODO maybe cache, do benchmark?
                 MBean mbean = new MBean(objectName, attributeList, targetTags);
                 for (Measurer<MBean> measurer : measurers) {

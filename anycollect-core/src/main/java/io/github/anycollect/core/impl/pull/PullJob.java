@@ -8,12 +8,14 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.Counter;
 import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.Objects;
 
 public final class PullJob<T extends Target<Q>, Q extends Query> implements Runnable {
@@ -51,7 +53,7 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
                 .unit("jobs")
                 .tag("target", target.getId())
                 .register(registry);
-        this.succeeded = Counter.key("pull.jobs.failed")
+        this.succeeded = Counter.key("pull.jobs.succeeded")
                 .unit("jobs")
                 .tag("target", target.getId())
                 .register(registry);
@@ -61,11 +63,12 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
     public void run() {
         long start = clock.wallTime();
         try {
-            target.execute(query, dispatcher);
-            failed.increment();
+            List<MetricFamily> metrics = target.execute(query);
+            succeeded.increment();
+            dispatcher.dispatch(metrics);
             LOG.debug("success: {}.execute({}) taken {}ms", target, query, clock.wallTime() - start);
         } catch (QueryException | ConnectionException | RuntimeException e) {
-            succeeded.increment();
+            failed.increment();
             LOG.debug("failed: {}.execute({}) taken {}ms and failed", target, query, clock.wallTime() - start, e);
         }
     }

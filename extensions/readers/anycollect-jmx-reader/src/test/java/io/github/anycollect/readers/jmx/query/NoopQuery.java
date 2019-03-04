@@ -1,8 +1,8 @@
 package io.github.anycollect.readers.jmx.query;
 
-import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
@@ -17,7 +17,7 @@ public class NoopQuery extends JmxQuery {
 
     @Nonnull
     @Override
-    public List<MetricFamily> executeOn(@Nonnull MBeanServerConnection connection, @Nonnull final Tags tags) throws QueryException, ConnectionException {
+    public List<MetricFamily> executeOn(@Nonnull MBeanServerConnection connection, @Nonnull Tags targetTags) throws QueryException, ConnectionException {
         return Collections.emptyList();
     }
 }

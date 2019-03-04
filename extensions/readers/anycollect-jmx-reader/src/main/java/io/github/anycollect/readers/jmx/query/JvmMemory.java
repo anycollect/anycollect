@@ -45,13 +45,13 @@ public class JvmMemory extends JmxQuery {
                                         @Nonnull final Tags targetTags) throws ConnectionException {
         List<MetricFamily> families = new ArrayList<>();
         for (ObjectName objectName : queryNames(connection, MEMORY_POOL_OBJECT_PATTERN)) {
-            long timestamp = clock.wallTime();
             AttributeList attributes;
             try {
                 attributes = connection.getAttributes(objectName, ATTRIBUTES);
             } catch (InstanceNotFoundException | ReflectionException | IOException e) {
                 throw new ConnectionException("could not get attributes", e);
             }
+            long timestamp = clock.wallTime();
             String name = (String) ((Attribute) attributes.get(0)).getValue();
             CompositeData usage = (CompositeData) ((Attribute) attributes.get(1)).getValue();
             long used = (Long) usage.get(USED);

@@ -25,6 +25,6 @@ class PullJobTest {
     @Test
     void targetHasBeenExecuted() throws ConnectionException, QueryException {
         job.run();
-        verify(target, times(1)).execute(query, dispatcher);
+        verify(target, times(1)).execute(query);
     }
 }
