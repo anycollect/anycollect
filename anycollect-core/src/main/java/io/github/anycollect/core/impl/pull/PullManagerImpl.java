@@ -59,7 +59,7 @@ public final class PullManagerImpl implements PullManager {
         this.registry = optRegistry != null ? optRegistry : new NoopMeterRegistry();
         SchedulerFactory schedulerFactory = new SchedulerFactoryImpl(
                 config.getConcurrencyRule(), config.getDefaultPoolSize(), registry);
-        this.puller = new SeparatePullScheduler(schedulerFactory, Clock.getDefault());
+        this.puller = new SeparatePullScheduler(schedulerFactory, this.registry, Clock.getDefault());
         this.healthChecks = config.getHealthChecks();
         ThreadFactory healthCheckThreads = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-health-check-[%d]")
@@ -101,8 +101,7 @@ public final class PullManagerImpl implements PullManager {
     public <T extends Target<Q>, Q extends Query> void start(@Nonnull final DesiredStateProvider<T, Q> stateProvider,
                                                              @Nonnull final Dispatcher dispatcher,
                                                              @Nullable final Q healthCheck) {
-        ResultCallback<T, Q> callback = new CallbackToDispatcherAdapter<>(dispatcher, registry);
-        DesiredStateManager<T, Q> desiredStateManager = new DesiredStateManagerImpl<>(puller, callback);
+        DesiredStateManager<T, Q> desiredStateManager = new DesiredStateManagerImpl<>(puller, dispatcher);
         HealthChecker<T, Q> checker = HealthChecker.noop();
         if (healthCheck != null) {
             checker = new HealthCheckerImpl<>(

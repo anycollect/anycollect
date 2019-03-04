@@ -1,10 +1,10 @@
 package io.github.anycollect.core.impl.pull.separate;
 
+import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
-import io.github.anycollect.core.impl.pull.ResultCallback;
 import io.github.anycollect.core.impl.pull.availability.HealthCheck;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,8 @@ class SeparatePullSchedulerTest {
         @BeforeEach
         void setUp() {
             target = mock(TestTarget.class);
-            puller.schedulePull(target, mock(TestQuery.class), ResultCallback.noop(), 1);
+            when(target.getId()).thenReturn("id");
+            puller.schedulePull(target, mock(TestQuery.class), Dispatcher.noop(), 1);
         }
 
         @Test
@@ -72,8 +73,9 @@ class SeparatePullSchedulerTest {
 
         @BeforeEach
         void createPullScheduler() {
-            puller.schedulePull(target, mock(TestQuery.class), ResultCallback.noop(), 1);
-            puller.schedulePull(target, mock(TestQuery.class), ResultCallback.noop(), 2);
+            when(target.getId()).thenReturn("id");
+            puller.schedulePull(target, mock(TestQuery.class), Dispatcher.noop(), 1);
+            puller.schedulePull(target, mock(TestQuery.class), Dispatcher.noop(), 2);
         }
 
         @Test

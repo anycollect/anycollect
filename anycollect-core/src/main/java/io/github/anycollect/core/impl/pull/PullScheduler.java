@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.pull;
 
+import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.pull.availability.Health;
@@ -15,14 +16,14 @@ public interface PullScheduler {
      *
      * @param target          - the target to pull metrics from
      * @param query           - the query
-     * @param callback        - callback to send results to
+     * @param dispatcher      - dispatcher to send results to
      * @param periodInSeconds - the period in seconds between successive executions
      * @param <T>             - the type target
      * @param <Q>             - the type query
      * @return the cancellation to cancel scheduled job
      */
     <T extends Target<Q>, Q extends Query> Cancellation schedulePull(
-            T target, Q query, ResultCallback<T, Q> callback, int periodInSeconds);
+            T target, Q query, Dispatcher dispatcher, int periodInSeconds);
 
     <T extends Target<Q>, Q extends Query> Future<Health> check(HealthCheck<T, Q> check);
 

@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.pull;
 
+import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.ImmutableState;
 import io.github.anycollect.core.api.internal.State;
 import io.github.anycollect.core.impl.TestQuery;
@@ -14,13 +15,13 @@ import static org.mockito.Mockito.*;
 
 class DesiredStateManagerImplTest {
     private PullScheduler pullScheduler = mock(PullScheduler.class);
-    private ResultCallback<TestTarget, TestQuery> callback = ResultCallback.noop();
+    private Dispatcher dispatcher = Dispatcher.noop();
     private DesiredStateManagerImpl<TestTarget, TestQuery> manager;
 
     @Test
     @DisplayName("is instantiated")
     void isInstantiatedWithNew() {
-        manager = new DesiredStateManagerImpl<>(pullScheduler, callback);
+        manager = new DesiredStateManagerImpl<>(pullScheduler, dispatcher);
     }
 
     @Nested
@@ -35,7 +36,7 @@ class DesiredStateManagerImplTest {
 
         @BeforeEach
         void createManager() {
-            manager = new DesiredStateManagerImpl<>(pullScheduler, callback);
+            manager = new DesiredStateManagerImpl<>(pullScheduler, dispatcher);
             state = ImmutableState.<TestTarget, TestQuery>builder()
                     .put(target1, query11, 1)
                     .put(target1, query12, 2)
@@ -48,8 +49,8 @@ class DesiredStateManagerImplTest {
         @Test
         @DisplayName("pull jobs have been scheduled")
         void pullJobsHaveBeenScheduled() {
-            verify(pullScheduler, times(1)).schedulePull(target1, query11, callback, 1);
-            verify(pullScheduler, times(1)).schedulePull(target1, query12, callback, 2);
+            verify(pullScheduler, times(1)).schedulePull(target1, query11, dispatcher, 1);
+            verify(pullScheduler, times(1)).schedulePull(target1, query12, dispatcher, 2);
         }
 
         @Nested
@@ -78,8 +79,8 @@ class DesiredStateManagerImplTest {
             @Test
             @DisplayName("new target must be scheduled")
             void newOneMustBeScheduled() {
-                verify(pullScheduler, times(1)).schedulePull(target2, query21, callback, 3);
-                verify(pullScheduler, times(1)).schedulePull(target2, query22, callback, 4);
+                verify(pullScheduler, times(1)).schedulePull(target2, query21, dispatcher, 3);
+                verify(pullScheduler, times(1)).schedulePull(target2, query22, dispatcher, 4);
             }
         }
 
@@ -115,8 +116,8 @@ class DesiredStateManagerImplTest {
             @Test
             @DisplayName("additional queries must be added")
             void additionalQueriesMustBeAdded() {
-                verify(pullScheduler, times(1)).schedulePull(target1, query13, callback, 5);
-                verify(pullScheduler, times(1)).schedulePull(target1, query14, callback, 6);
+                verify(pullScheduler, times(1)).schedulePull(target1, query13, dispatcher, 5);
+                verify(pullScheduler, times(1)).schedulePull(target1, query14, dispatcher, 6);
             }
         }
 
@@ -149,15 +150,15 @@ class DesiredStateManagerImplTest {
             void previousQueriesMustNotBeRescheduled() {
                 verify(query11Cancellation, times(0)).cancel();
                 verify(query12Cancellation, times(0)).cancel();
-                verify(pullScheduler, times(1)).schedulePull(target1, query11, callback, 1);
-                verify(pullScheduler, times(1)).schedulePull(target1, query12, callback, 2);
+                verify(pullScheduler, times(1)).schedulePull(target1, query11, dispatcher, 1);
+                verify(pullScheduler, times(1)).schedulePull(target1, query12, dispatcher, 2);
             }
 
             @Test
             @DisplayName("additional queries must be added")
             void additionalQueriesMustBeAdded() {
-                verify(pullScheduler, times(1)).schedulePull(target1, query15, callback, 7);
-                verify(pullScheduler, times(1)).schedulePull(target1, query16, callback, 8);
+                verify(pullScheduler, times(1)).schedulePull(target1, query15, dispatcher, 7);
+                verify(pullScheduler, times(1)).schedulePull(target1, query16, dispatcher, 8);
             }
         }
 
@@ -191,8 +192,8 @@ class DesiredStateManagerImplTest {
             @Test
             @DisplayName("queries with new period must be added")
             void queriesWithNewPeriodMustBeAdded() {
-                verify(pullScheduler, times(1)).schedulePull(target1, query11, callback, 9);
-                verify(pullScheduler, times(1)).schedulePull(target1, query12, callback, 10);
+                verify(pullScheduler, times(1)).schedulePull(target1, query11, dispatcher, 9);
+                verify(pullScheduler, times(1)).schedulePull(target1, query12, dispatcher, 10);
             }
         }
 

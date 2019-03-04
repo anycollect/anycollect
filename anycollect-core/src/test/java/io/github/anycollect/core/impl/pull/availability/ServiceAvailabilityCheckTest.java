@@ -8,7 +8,6 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
 import io.github.anycollect.core.impl.pull.PullScheduler;
-import io.github.anycollect.core.impl.pull.ResultCallback;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
 import io.github.anycollect.metric.MetricFamily;
 import io.github.anycollect.metric.Stat;
@@ -87,7 +86,7 @@ class ServiceAvailabilityCheckTest {
         }
 
         @Override
-        public <T extends Target<Q>, Q extends Query> Cancellation schedulePull(T target, Q query, ResultCallback<T, Q> callback, int periodInSeconds) {
+        public <T extends Target<Q>, Q extends Query> Cancellation schedulePull(T target, Q query, Dispatcher dispatcher, int periodInSeconds) {
             return null;
         }
 

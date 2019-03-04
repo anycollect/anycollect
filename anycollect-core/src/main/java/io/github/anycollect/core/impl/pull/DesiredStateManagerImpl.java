@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.pull;
 
+import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.PeriodicQuery;
 import io.github.anycollect.core.api.internal.State;
 import io.github.anycollect.core.api.query.Query;
@@ -22,17 +23,16 @@ import static java.util.stream.Collectors.toSet;
 public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query> implements DesiredStateManager<T, Q> {
     private static final Logger LOG = LoggerFactory.getLogger(DesiredStateManagerImpl.class);
     private final PullScheduler puller;
-    private final ResultCallback<T, Q> callback;
+    private final Dispatcher dispatcher;
     @GuardedBy("lock")
     private final Map<JobId<T, Q>, Cancellation> cancellations = new HashMap<>();
     @GuardedBy("lock")
     private State<T, Q> currentState;
     private final Lock lock = new ReentrantLock();
 
-    public DesiredStateManagerImpl(@Nonnull final PullScheduler puller,
-                                   @Nonnull final ResultCallback<T, Q> callback) {
+    public DesiredStateManagerImpl(@Nonnull final PullScheduler puller, @Nonnull final Dispatcher dispatcher) {
         this.puller = puller;
-        this.callback = callback;
+        this.dispatcher = dispatcher;
         this.currentState = State.empty();
     }
 
@@ -67,7 +67,7 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
                     if (!previousQueries.contains(periodicQuery)) {
                         Q query = periodicQuery.getQuery();
                         int period = periodicQuery.getPeriodInSeconds();
-                        Cancellation cancellation = puller.schedulePull(target, query, callback, period);
+                        Cancellation cancellation = puller.schedulePull(target, query, dispatcher, period);
                         JobId<T, Q> id = new JobId<>(target, query, period);
                         cancellations.put(id, cancellation);
                         newQueries++;
