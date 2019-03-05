@@ -2,20 +2,23 @@ package io.github.anycollect.metric.prepared;
 
 import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.frame.MetricFrame;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 final class ImmutablePreparedMetric implements PreparedMetric {
     private final MetricFrame data;
     private final List<PreparedMeasurement> preparedMeasurements;
 
-    ImmutablePreparedMetric(@Nonnull final MetricFrame data,
-                            @Nonnull final List<PreparedMeasurement> preparedMeasurements) {
+    ImmutablePreparedMetric(@Nonnull final MetricFrame data) {
         this.data = data;
-        this.preparedMeasurements = new ArrayList<>(preparedMeasurements);
+        this.preparedMeasurements = data.getMeasurements().stream()
+                .map(ImmutablePreparedMeasurement::new)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.github.anycollect.metric.prepared;
 import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
+import io.github.anycollect.metric.frame.MetricFrame;
 
 import javax.annotation.Nonnull;
 import java.util.List;
