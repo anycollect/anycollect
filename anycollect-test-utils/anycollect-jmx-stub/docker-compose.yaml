@@ -1,0 +1,27 @@
+consul:
+  image: consul
+  restart: always
+  ports:
+    - 8500:8500
+stub-1:
+  image: anycollect/jmx-stub
+  restart: always
+  links:
+  - consul
+  environment:
+  - JMX_HOST
+  - JMX_PORT=9012
+  - SERVICE_ID=stub-1
+  ports:
+  - 9012:9012
+stub-2:
+  image: anycollect/jmx-stub
+  restart: always
+  links:
+  - consul
+  environment:
+  - JMX_HOST
+  - JMX_PORT=9013
+  - SERVICE_ID=stub-2
+  ports:
+  - 9013:9013

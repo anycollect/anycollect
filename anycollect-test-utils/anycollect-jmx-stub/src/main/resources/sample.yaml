@@ -1,0 +1,17 @@
+domain: test
+mbeans:
+  - keys:
+      name: [SampleHistogram1, SampleHistogram2, SampleHistogram3]
+      k1: [v10, v11, v12, v13, v14, v15, v16, v17, v18, v19]
+      k2: [v20, v21, v22, v23, v24, v25, v26, v27, v28, v29]
+    type: HISTOGRAM
+  - keys:
+      name: [SampleCounter1, SampleCounter2, SampleCounter3]
+      k1: [v10, v11, v12, v13, v14, v15, v16, v17, v18, v19]
+      k2: [v20, v21, v22, v23, v24, v25, v26, v27, v28, v29]
+    type: COUNTER
+  - keys:
+      name: [SampleGauge1, SampleGauge2, SampleGauge3]
+      k1: [v10, v11, v12, v13, v14, v15, v16, v17, v18, v19]
+      k2: [v20, v21, v22, v23, v24, v25, v26, v27, v28, v29]
+    type: GAUGE
