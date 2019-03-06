@@ -29,6 +29,7 @@
         <module>anycollect-jackson</module>
         <module>anycollect-test-utils</module>
         <module>anycollect-meter-registry</module>
+        <module>extensions/kv/anycollect-consul-kv</module>
     </modules>
 
     <build>

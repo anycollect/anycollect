@@ -25,3 +25,14 @@ stub-2:
   - SERVICE_ID=stub-2
   ports:
   - 9013:9013
+stub-3:
+  image: anycollect/jmx-stub
+  restart: always
+  links:
+  - consul
+  environment:
+  - JMX_HOST
+  - JMX_PORT=9014
+  - SERVICE_ID=stub-3
+  ports:
+  - 9014:9014

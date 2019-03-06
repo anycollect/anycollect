@@ -34,8 +34,7 @@ class JmxConnectionFactoryImplTest {
         JavaAppConfig config = new JavaAppConfig(
                 "instance-1",
                 "service:jmx:sample://",
-                null,
-                false
+                null
         );
         JmxConnectionFactoryImpl factory = new JmxConnectionFactoryImpl(connectorFactory, config);
         JmxConnection jmxConnection = factory.createJmxConnection();
@@ -51,8 +50,7 @@ class JmxConnectionFactoryImplTest {
         JavaAppConfig config = new JavaAppConfig(
                 "instance-1",
                 "service:jmx:sample://",
-                null,
-                false
+                null
         );
         JmxConnectionFactoryImpl factory = new JmxConnectionFactoryImpl(connectorFactory, config);
         IOException cause = new IOException();

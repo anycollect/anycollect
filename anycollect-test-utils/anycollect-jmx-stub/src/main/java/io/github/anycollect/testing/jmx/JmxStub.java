@@ -27,6 +27,10 @@ public final class JmxStub {
     }
 
     public static void main(final String... args) throws Exception {
+        String host = System.getProperty("java.rmi.server.hostname");
+        String port = System.getProperty("com.sun.management.jmxremote.rmi.port");
+        System.out.println("jmx host: " + host + ", port: " + port);
+
         String serviceId = args[0];
         Consul client = Consul.builder()
                 .withHostAndPort(HostAndPort.fromParts("consul", 8500))
@@ -48,15 +52,14 @@ public final class JmxStub {
                     }
                 })
                 .orElse(JmxConfig.empty());
-
         ImmutableJmxRegistration jmxRegistration = JmxRegistration.builder()
-                .serviceId(serviceId)
-                .host(System.getProperty("java.rmi.server.hostname"))
-                .port(System.getProperty("com.sun.management.jmxremote.rmi.port"))
+                .id(serviceId)
+                .host(host)
+                .port(port)
                 .build();
 
         kvs.putValue(
-                "/anycollect/" + serviceId,
+                "/anycollect/jmx/" + serviceId,
                 OBJECT_MAPPER.writeValueAsString(jmxRegistration)
         );
 
@@ -98,7 +101,7 @@ public final class JmxStub {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("graceful shutdown");
             agentClient.deregister(serviceId);
-            kvs.deleteKey("/anycollect/" + serviceId);
+            kvs.deleteKey("/anycollect/jmx/" + serviceId);
             thread.interrupt();
             System.out.println("service has been successfully deregistered from consul");
         }));

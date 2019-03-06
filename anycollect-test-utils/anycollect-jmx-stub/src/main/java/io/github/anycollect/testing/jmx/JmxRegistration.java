@@ -12,7 +12,7 @@ public interface JmxRegistration {
         return ImmutableJmxRegistration.builder();
     }
 
-    String serviceId();
+    String id();
 
     String host();
 

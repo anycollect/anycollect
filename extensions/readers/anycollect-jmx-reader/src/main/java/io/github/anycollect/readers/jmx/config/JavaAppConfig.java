@@ -6,28 +6,39 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-@Getter
 @ToString
 @EqualsAndHashCode
 public final class JavaAppConfig {
+    private static final String URL_FRONT = "service:jmx:rmi:///jndi/rmi://";
+    private static final String URL_BACK = "/jmxrmi";
+    @Getter
     private final String instanceId;
+    @Getter
     private final String url;
+    private final String host;
+    private final int port;
     private final Credentials credentials;
-    private final boolean ssl;
+
+    public JavaAppConfig(@Nullable final String instanceId,
+                         @Nullable final String url,
+                         @Nullable final Credentials credentials) {
+        this(instanceId, url, null, null, credentials);
+    }
 
     @JsonCreator
-    public JavaAppConfig(@JsonProperty("id") @Nonnull final String instanceId,
-                         @JsonProperty("url") @Nonnull final String url,
-                         @JsonProperty("credentials") @Nullable final Credentials credentials,
-                         @JsonProperty(value = "ssl", defaultValue = "true") final boolean ssl) {
+    public JavaAppConfig(@JsonProperty("id") @Nullable final String instanceId,
+                         @JsonProperty("url") @Nullable final String url,
+                         @JsonProperty("host") @Nullable final String host,
+                         @JsonProperty("port") @Nullable final Integer port,
+                         @JsonProperty("credentials") @Nullable final Credentials credentials) {
         this.instanceId = instanceId;
-        this.url = url;
         this.credentials = credentials;
-        this.ssl = ssl;
+        this.host = host;
+        this.port = port != null ? port : -1;
+        this.url = url != null ? url : URL_FRONT + this.host + ":" + this.port + URL_BACK;
     }
 
     public Optional<Credentials> getCredentials() {
