@@ -3,6 +3,17 @@ consul:
   restart: always
   ports:
     - 8500:8500
+stub-0:
+  image: anycollect/jmx-stub
+  restart: always
+  links:
+  - consul
+  environment:
+  - JMX_HOST
+  - JMX_PORT=9100
+  - SERVICE_ID=stub-0
+  ports:
+  - 9100:9100
 stub-1:
   image: anycollect/jmx-stub
   restart: always
@@ -10,10 +21,10 @@ stub-1:
   - consul
   environment:
   - JMX_HOST
-  - JMX_PORT=9012
+  - JMX_PORT=9101
   - SERVICE_ID=stub-1
   ports:
-  - 9012:9012
+  - 9101:9101
 stub-2:
   image: anycollect/jmx-stub
   restart: always
@@ -21,10 +32,10 @@ stub-2:
   - consul
   environment:
   - JMX_HOST
-  - JMX_PORT=9013
+  - JMX_PORT=9111
   - SERVICE_ID=stub-2
   ports:
-  - 9013:9013
+  - 9111:9111
 stub-3:
   image: anycollect/jmx-stub
   restart: always
@@ -32,7 +43,73 @@ stub-3:
   - consul
   environment:
   - JMX_HOST
-  - JMX_PORT=9014
+  - JMX_PORT=9103
   - SERVICE_ID=stub-3
   ports:
-  - 9014:9014
+  - 9103:9103
+stub-4:
+  image: anycollect/jmx-stub
+  restart: always
+  links:
+  - consul
+  environment:
+  - JMX_HOST
+  - JMX_PORT=9104
+  - SERVICE_ID=stub-4
+  ports:
+  - 9104:9104
+stub-5:
+  image: anycollect/jmx-stub
+  restart: always
+  links:
+  - consul
+  environment:
+  - JMX_HOST
+  - JMX_PORT=9105
+  - SERVICE_ID=stub-5
+  ports:
+  - 9105:9105
+stub-6:
+  image: anycollect/jmx-stub
+  restart: always
+  links:
+  - consul
+  environment:
+  - JMX_HOST
+  - JMX_PORT=9106
+  - SERVICE_ID=stub-6
+  ports:
+  - 9106:9106
+stub-7:
+  image: anycollect/jmx-stub
+  restart: always
+  links:
+  - consul
+  environment:
+  - JMX_HOST
+  - JMX_PORT=9107
+  - SERVICE_ID=stub-7
+  ports:
+  - 9107:9107
+stub-8:
+  image: anycollect/jmx-stub
+  restart: always
+  links:
+  - consul
+  environment:
+  - JMX_HOST
+  - JMX_PORT=9108
+  - SERVICE_ID=stub-8
+  ports:
+  - 9108:9108
+stub-9:
+  image: anycollect/jmx-stub
+  restart: always
+  links:
+  - consul
+  environment:
+  - JMX_HOST
+  - JMX_PORT=9109
+  - SERVICE_ID=stub-9
+  ports:
+  - 9109:9109

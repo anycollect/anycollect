@@ -1,14 +1,15 @@
 package io.github.anycollect.testing.jmx;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.net.HostAndPort;
 import com.orbitz.consul.AgentClient;
 import com.orbitz.consul.Consul;
 import com.orbitz.consul.KeyValueClient;
+import com.orbitz.consul.cache.KVCache;
 import com.orbitz.consul.model.agent.ImmutableRegistration;
 import com.orbitz.consul.model.agent.Registration;
+import com.orbitz.consul.model.kv.Value;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -17,7 +18,8 @@ import java.lang.management.ManagementFactory;
 import java.util.*;
 
 public final class JmxStub {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private volatile JmxConfig appliedConfig;
 
     static {
         OBJECT_MAPPER.registerModule(new GuavaModule());
@@ -43,15 +45,20 @@ public final class JmxStub {
         agentClient.register(service);
 
         KeyValueClient kvs = client.keyValueClient();
-        JmxConfig config = kvs.getValueAsString("jmx-stub/conf")
-                .map(str -> {
-                    try {
-                        return OBJECT_MAPPER.readValue(str, JmxConfig.class);
-                    } catch (IOException e) {
-                        return null;
-                    }
-                })
-                .orElse(JmxConfig.empty());
+        KVCache kvCache = KVCache.newCache(kvs, "jmx-stub/conf");
+        JmxStub jmxStub = new JmxStub();
+        kvCache.addListener(map -> {
+            Value value = map.get("jmx-stub/conf");
+            JmxConfig conf = value.getValueAsString().map(str -> {
+                try {
+                    return OBJECT_MAPPER.readValue(str, JmxConfig.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }).orElse(JmxConfig.empty());
+            jmxStub.configure(conf);
+        });
         ImmutableJmxRegistration jmxRegistration = JmxRegistration.builder()
                 .id(serviceId)
                 .host(host)
@@ -63,23 +70,6 @@ public final class JmxStub {
                 OBJECT_MAPPER.writeValueAsString(jmxRegistration)
         );
 
-        String domain = config.domain();
-        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-        for (MBeanDefinition mBeanDefinition : config.mbeans()) {
-            List<ObjectName> objectNames = resolve(domain, mBeanDefinition);
-            for (ObjectName objectName : objectNames) {
-                System.out.println("register " + objectName);
-                if (mBeanDefinition.type() == MBeanType.HISTOGRAM) {
-                    server.registerMBean(new Histogram(), objectName);
-                }
-                if (mBeanDefinition.type() == MBeanType.COUNTER) {
-                    server.registerMBean(new Counter(), objectName);
-                }
-                if (mBeanDefinition.type() == MBeanType.GAUGE) {
-                    server.registerMBean(new Gauge(), objectName);
-                }
-            }
-        }
         Thread thread = new Thread(() -> {
             while (true) {
                 try {
@@ -105,6 +95,43 @@ public final class JmxStub {
             thread.interrupt();
             System.out.println("service has been successfully deregistered from consul");
         }));
+    }
+
+    private void configure(final JmxConfig config) {
+        System.out.println("configure: " + config);
+        if (config.equals(appliedConfig)) {
+            System.out.println("no changes");
+            return;
+        }
+        String domain = config.domain();
+        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+        try {
+            for (MBeanDefinition mBeanDefinition : appliedConfig.mbeans()) {
+                List<ObjectName> objectNames = resolve(domain, mBeanDefinition);
+                for (ObjectName objectName : objectNames) {
+                    System.out.println("unregister " + objectName);
+                    server.unregisterMBean(objectName);
+                }
+            }
+            for (MBeanDefinition mBeanDefinition : config.mbeans()) {
+                List<ObjectName> objectNames = resolve(domain, mBeanDefinition);
+                for (ObjectName objectName : objectNames) {
+                    System.out.println("register " + objectName);
+                    if (mBeanDefinition.type() == MBeanType.HISTOGRAM) {
+                        server.registerMBean(new Histogram(), objectName);
+                    }
+                    if (mBeanDefinition.type() == MBeanType.COUNTER) {
+                        server.registerMBean(new Counter(), objectName);
+                    }
+                    if (mBeanDefinition.type() == MBeanType.GAUGE) {
+                        server.registerMBean(new Gauge(), objectName);
+                    }
+                }
+            }
+            appliedConfig = config;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static List<ObjectName> resolve(final String domain, final MBeanDefinition mBeanDefinition)
