@@ -12,6 +12,8 @@ stub-0:
   - JMX_HOST
   - JMX_PORT=9100
   - SERVICE_ID=stub-0
+  - CONSUL_HOST=consul
+  - CONSUL_PORT=8500
   ports:
   - 9100:9100
 stub-1:
@@ -23,6 +25,8 @@ stub-1:
   - JMX_HOST
   - JMX_PORT=9101
   - SERVICE_ID=stub-1
+  - CONSUL_HOST=consul
+  - CONSUL_PORT=8500
   ports:
   - 9101:9101
 stub-2:
@@ -34,6 +38,8 @@ stub-2:
   - JMX_HOST
   - JMX_PORT=9111
   - SERVICE_ID=stub-2
+  - CONSUL_HOST=consul
+  - CONSUL_PORT=8500
   ports:
   - 9111:9111
 stub-3:
@@ -45,6 +51,8 @@ stub-3:
   - JMX_HOST
   - JMX_PORT=9103
   - SERVICE_ID=stub-3
+  - CONSUL_HOST=consul
+  - CONSUL_PORT=8500
   ports:
   - 9103:9103
 stub-4:
@@ -56,6 +64,8 @@ stub-4:
   - JMX_HOST
   - JMX_PORT=9104
   - SERVICE_ID=stub-4
+  - CONSUL_HOST=consul
+  - CONSUL_PORT=8500
   ports:
   - 9104:9104
 stub-5:
@@ -67,6 +77,8 @@ stub-5:
   - JMX_HOST
   - JMX_PORT=9105
   - SERVICE_ID=stub-5
+  - CONSUL_HOST=consul
+  - CONSUL_PORT=8500
   ports:
   - 9105:9105
 stub-6:
@@ -78,6 +90,8 @@ stub-6:
   - JMX_HOST
   - JMX_PORT=9106
   - SERVICE_ID=stub-6
+  - CONSUL_HOST=consul
+  - CONSUL_PORT=8500
   ports:
   - 9106:9106
 stub-7:
@@ -89,6 +103,8 @@ stub-7:
   - JMX_HOST
   - JMX_PORT=9107
   - SERVICE_ID=stub-7
+  - CONSUL_HOST=consul
+  - CONSUL_PORT=8500
   ports:
   - 9107:9107
 stub-8:
@@ -100,6 +116,8 @@ stub-8:
   - JMX_HOST
   - JMX_PORT=9108
   - SERVICE_ID=stub-8
+  - CONSUL_HOST=consul
+  - CONSUL_PORT=8500
   ports:
   - 9108:9108
 stub-9:
@@ -111,5 +129,7 @@ stub-9:
   - JMX_HOST
   - JMX_PORT=9109
   - SERVICE_ID=stub-9
+  - CONSUL_HOST=consul
+  - CONSUL_PORT=8500
   ports:
   - 9109:9109

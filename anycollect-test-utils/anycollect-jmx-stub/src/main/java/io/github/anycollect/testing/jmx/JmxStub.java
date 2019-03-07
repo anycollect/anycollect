@@ -1,6 +1,7 @@
 package io.github.anycollect.testing.jmx;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.net.HostAndPort;
 import com.orbitz.consul.AgentClient;
@@ -18,24 +19,28 @@ import java.lang.management.ManagementFactory;
 import java.util.*;
 
 public final class JmxStub {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper YAML_OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
     private volatile JmxConfig appliedConfig;
 
     static {
-        OBJECT_MAPPER.registerModule(new GuavaModule());
+        JSON_OBJECT_MAPPER.registerModule(new GuavaModule());
+        YAML_OBJECT_MAPPER.registerModule(new GuavaModule());
     }
 
     private JmxStub() {
+        this.appliedConfig = JmxConfig.empty();
     }
 
     public static void main(final String... args) throws Exception {
         String host = System.getProperty("java.rmi.server.hostname");
         String port = System.getProperty("com.sun.management.jmxremote.rmi.port");
         System.out.println("jmx host: " + host + ", port: " + port);
-
         String serviceId = args[0];
+        String consulHost = args[1];
+        int consulPort = Integer.parseInt(args[2]);
         Consul client = Consul.builder()
-                .withHostAndPort(HostAndPort.fromParts("consul", 8500))
+                .withHostAndPort(HostAndPort.fromParts(consulHost, consulPort))
                 .build();
         Registration service = ImmutableRegistration.builder()
                 .id(serviceId)
@@ -48,10 +53,10 @@ public final class JmxStub {
         KVCache kvCache = KVCache.newCache(kvs, "jmx-stub/conf");
         JmxStub jmxStub = new JmxStub();
         kvCache.addListener(map -> {
-            Value value = map.get("jmx-stub/conf");
+            Value value = map.get("");
             JmxConfig conf = value.getValueAsString().map(str -> {
                 try {
-                    return OBJECT_MAPPER.readValue(str, JmxConfig.class);
+                    return YAML_OBJECT_MAPPER.readValue(str, JmxConfig.class);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return null;
@@ -59,6 +64,7 @@ public final class JmxStub {
             }).orElse(JmxConfig.empty());
             jmxStub.configure(conf);
         });
+        kvCache.start();
         ImmutableJmxRegistration jmxRegistration = JmxRegistration.builder()
                 .id(serviceId)
                 .host(host)
@@ -67,7 +73,7 @@ public final class JmxStub {
 
         kvs.putValue(
                 "/anycollect/jmx/" + serviceId,
-                OBJECT_MAPPER.writeValueAsString(jmxRegistration)
+                JSON_OBJECT_MAPPER.writeValueAsString(jmxRegistration)
         );
 
         Thread thread = new Thread(() -> {
@@ -91,6 +97,7 @@ public final class JmxStub {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("graceful shutdown");
             agentClient.deregister(serviceId);
+            kvCache.stop();
             kvs.deleteKey("/anycollect/jmx/" + serviceId);
             thread.interrupt();
             System.out.println("service has been successfully deregistered from consul");
