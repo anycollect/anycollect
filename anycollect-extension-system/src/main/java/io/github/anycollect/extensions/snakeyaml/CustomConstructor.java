@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.github.anycollect.core.api.internal.Clock;
+import io.github.anycollect.extensions.VarSubstitutor;
 import io.github.anycollect.extensions.definitions.ConfigDefinition;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
@@ -35,6 +36,7 @@ final class CustomConstructor extends Constructor {
     private static final String CONFIG = "config";
     private final Map<String, Definition> extensionRegistry;
     private final Map<String, Instance> instanceRegistry;
+    private final VarSubstitutor environment;
     private static final InjectableValues.Std VALUES;
     private String extensionName;
 
@@ -48,14 +50,20 @@ final class CustomConstructor extends Constructor {
     }
 
     CustomConstructor(final Collection<Definition> extensions) {
+        this(extensions, VarSubstitutor.EMPTY);
+    }
+
+    CustomConstructor(final Collection<Definition> extensions, final VarSubstitutor environment) {
         this.extensionRegistry = new HashMap<>();
         for (Definition extension : extensions) {
             this.extensionRegistry.put(extension.getName(), extension);
         }
         this.instanceRegistry = new LinkedHashMap<>();
+        this.environment = environment;
         yamlConstructors.put(new Tag("!load"), new PluginInstanceDefinitionConstruct());
         yamlConstructors.put(new Tag("!ref"), new PluginRefConstruct());
         yamlConstructors.put(new Tag("!refs"), new PluginRefsConstruct());
+        yamlConstructors.put(new Tag("!var"), new VarSubstituteConstruct());
     }
 
     Collection<Instance> getInstances() {
@@ -168,6 +176,21 @@ final class CustomConstructor extends Constructor {
                         config.getParameterType().getName(), instanceName, rawConfig, e);
                 throw new ConfigurationException("unexpected error during parsing configuration", e);
             }
+        }
+    }
+
+    class VarSubstituteConstruct extends AbstractConstruct {
+        @Override
+        public Object construct(final Node node) {
+            LOG.debug("start resolving environment variable: {}", node);
+            if (!(node instanceof ScalarNode)) {
+                throw new ConfigurationException("Non-scalar use of tag !var tag is illegal: " + node);
+            }
+            ScalarNode scalarNode = (ScalarNode) node;
+            String varName = scalarNode.getValue();
+            Object var = environment.substitute(varName);
+            LOG.debug("environment variable {} resolved to: {}", varName, var);
+            return var;
         }
     }
 
