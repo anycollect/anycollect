@@ -12,6 +12,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
+
 @ToString
 @EqualsAndHashCode
 public final class Definition {
@@ -69,6 +71,19 @@ public final class Definition {
                                    final Object config,
                                    final Map<String, Instance> singleDependencies,
                                    final Map<String, List<Instance>> multiDependencies) {
+        return createInstance(instanceName, config, singleDependencies, multiDependencies,
+                Context.EMPTY, InjectMode.MANUAL, Scope.LOCAL, Priority.DEFAULT, "default");
+    }
+
+    public Instance createInstance(final String instanceName,
+                                   final Object config,
+                                   final Map<String, Instance> singleDependencies,
+                                   final Map<String, List<Instance>> multiDependencies,
+                                   final Context context,
+                                   final InjectMode injectMode,
+                                   final Scope scope,
+                                   final Priority priority,
+                                   final String scopeId) {
         List<Dependency> dependencies = new ArrayList<>();
         if (configDefinition != null) {
             if (configDefinition.isSingle()) {
@@ -86,6 +101,9 @@ public final class Definition {
                 continue;
             }
             Instance instance = singleDependencies.get(dependencyName);
+            if (instance == null) {
+                instance = context.getInstance(definition.getParameterType(), scopeId);
+            }
             Dependency dependency = definition.create(instance);
             dependencies.add(dependency);
         }
@@ -100,7 +118,7 @@ public final class Definition {
         }
         try {
             Object resolved = instantiator.instantiate(dependencies);
-            return new Instance(this, instanceName, dependencies, resolved);
+            return new Instance(this, instanceName, dependencies, resolved, injectMode, priority, scope, scopeId);
         } catch (IllegalAccessException | InstantiationException e) {
             throw new IllegalStateException("could not instantiate extension from " + instantiator
                     + " using " + dependencies, e);

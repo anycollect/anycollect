@@ -6,9 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.extensions.VarSubstitutor;
-import io.github.anycollect.extensions.definitions.ConfigDefinition;
-import io.github.anycollect.extensions.definitions.Definition;
-import io.github.anycollect.extensions.definitions.Instance;
+import io.github.anycollect.extensions.definitions.*;
 import io.github.anycollect.extensions.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
 import io.github.anycollect.jackson.AnyCollectModule;
@@ -33,9 +31,14 @@ final class CustomConstructor extends Constructor {
     private static final String DEPENDENCIES = "dependencies";
     private static final String EXTENSION = "extension";
     private static final String INSTANCE = "instance";
+    private static final String INJECT_MODE = "injectMode";
+    private static final String SCOPE = "scope";
+    private static final String PRIORITY = "priority";
     private static final String CONFIG = "config";
     private final Map<String, Definition> extensionRegistry;
     private final Map<String, Instance> instanceRegistry;
+    private final ExtendableContext context;
+    private final String scopeId;
     private final VarSubstitutor environment;
     private static final InjectableValues.Std VALUES;
     private String extensionName;
@@ -50,15 +53,20 @@ final class CustomConstructor extends Constructor {
     }
 
     CustomConstructor(final Collection<Definition> extensions) {
-        this(extensions, VarSubstitutor.EMPTY);
+        this(new ContextImpl(), "default", extensions, VarSubstitutor.EMPTY);
     }
 
-    CustomConstructor(final Collection<Definition> extensions, final VarSubstitutor environment) {
+    CustomConstructor(final ExtendableContext context,
+                      final String scopeId,
+                      final Collection<Definition> extensions,
+                      final VarSubstitutor environment) {
         this.extensionRegistry = new HashMap<>();
         for (Definition extension : extensions) {
             this.extensionRegistry.put(extension.getName(), extension);
         }
         this.instanceRegistry = new LinkedHashMap<>();
+        this.context = context;
+        this.scopeId = scopeId;
         this.environment = environment;
         yamlConstructors.put(new Tag("!load"), new PluginInstanceDefinitionConstruct());
         yamlConstructors.put(new Tag("!ref"), new PluginRefConstruct());
@@ -89,7 +97,9 @@ final class CustomConstructor extends Constructor {
             Map<String, Instance> singleDependencies = getSingleDependencies();
             Map<String, List<Instance>> multiDependencies = getMultiDependencies();
             Instance instance = definition.createInstance(
-                    instanceName, config, singleDependencies, multiDependencies);
+                    instanceName, config, singleDependencies, multiDependencies,
+                    context, getInjectMode(), getScope(), getPriority(), scopeId);
+            context.addInstance(instance);
             Object resolved = instance.resolve();
             // TODO on condition in entry point?
             VALUES.addValue(instance.getDefinition().getExtensionPointClass(), resolved);
@@ -115,6 +125,24 @@ final class CustomConstructor extends Constructor {
                 throw new MissingRequiredPropertyException(EXTENSION);
             }
             return extensionName;
+        }
+
+        private InjectMode getInjectMode() {
+            return values.containsKey(INJECT_MODE)
+                    ? InjectMode.valueOf(((String) values.get(INJECT_MODE)).toUpperCase())
+                    : InjectMode.MANUAL;
+        }
+
+        private Scope getScope() {
+            return values.containsKey(SCOPE)
+                    ? Scope.valueOf(((String) values.get(SCOPE)).toUpperCase())
+                    : Scope.LOCAL;
+        }
+
+        private Priority getPriority() {
+            return values.containsKey(PRIORITY)
+                    ? Priority.valueOf(((String) values.get(PRIORITY)).toUpperCase())
+                    : Priority.DEFAULT;
         }
 
         private Map<String, Instance> getSingleDependencies() {
@@ -241,8 +269,12 @@ final class CustomConstructor extends Constructor {
 
     private Instance getInstance(final String instanceName) {
         if (!instanceRegistry.containsKey(instanceName)) {
-            LOG.error("could not find definition for {}, define this extension before use", instanceName);
-            throw new ConfigurationException("could not find definition for " + instanceName);
+            Instance instance = context.getInstance(instanceName, scopeId);
+            if (instance == null) {
+                LOG.error("could not find definition for {}, define this extension before use", instanceName);
+                throw new ConfigurationException("could not find definition for " + instanceName);
+            }
+            return instance;
         }
         return instanceRegistry.get(instanceName);
     }
