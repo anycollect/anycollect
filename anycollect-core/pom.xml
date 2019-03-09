@@ -69,10 +69,5 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>io.github.anycollect</groupId>
-            <artifactId>anycollect-micrometer-registry</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
