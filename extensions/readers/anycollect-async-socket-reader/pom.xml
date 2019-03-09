@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>anycollect-parent</artifactId>
+        <groupId>io.github.anycollect</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../../anycollect-parent/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>anycollect-async-socket-reader</artifactId>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-core-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- YAML, CONFIGURATION -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+
+        <!-- NETWORK -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
+    </dependencies>
+</project>
