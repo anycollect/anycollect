@@ -1,0 +1,3 @@
+manifest:
+  extensions:
+  - class: io.github.anycollect.deserializers.dummy.DummyDeserializer
