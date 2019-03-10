@@ -31,6 +31,7 @@
         <module>anycollect-meter-registry</module>
         <module>extensions/kv/anycollect-consul-kv</module>
         <module>extensions/readers/anycollect-async-socket-reader</module>
+        <module>distros/anycollect-dist</module>
     </modules>
 
     <build>
