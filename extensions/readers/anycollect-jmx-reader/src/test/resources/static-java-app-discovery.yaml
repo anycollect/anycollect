@@ -9,4 +9,3 @@ extensions:
       credentials:
         username: cassandra
         password: cassandra
-      ssl: false

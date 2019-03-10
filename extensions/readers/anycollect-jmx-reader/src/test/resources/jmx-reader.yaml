@@ -12,6 +12,7 @@ extensions:
 - !load
   extension: Measurers
   instance: measurers
+  injectMode: auto
   config:
     families:
     - name: test-histogram

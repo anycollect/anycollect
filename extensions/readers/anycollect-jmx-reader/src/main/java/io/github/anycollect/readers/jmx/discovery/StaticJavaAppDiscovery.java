@@ -35,7 +35,7 @@ public final class StaticJavaAppDiscovery implements JavaAppDiscovery {
         apps = new HashSet<>();
         for (JavaAppConfig appConfig : config.appConfigs) {
             try {
-                factory.create(appConfig);
+                apps.add(factory.create(appConfig));
             } catch (TargetCreationException e) {
                 LOG.warn("could not create java target from definition: {}", appConfig, e);
             }
