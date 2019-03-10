@@ -39,8 +39,8 @@ public final class SocketWriter implements Writer, Lifecycle {
 
     // TODO multithreading access
     @Override
-    public synchronized void write(@Nonnull final List<Metric> families) {
-        for (Metric family : families) {
+    public synchronized void write(@Nonnull final List<Metric> metrics) {
+        for (Metric family : metrics) {
             write(family);
         }
     }

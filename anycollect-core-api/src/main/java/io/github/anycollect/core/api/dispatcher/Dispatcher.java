@@ -8,11 +8,11 @@ import java.util.List;
 public interface Dispatcher {
     Dispatcher NOOP = new Dispatcher() {
         @Override
-        public void dispatch(@Nonnull final Metric family) {
+        public void dispatch(@Nonnull final Metric metric) {
         }
 
         @Override
-        public void dispatch(@Nonnull final List<Metric> families) {
+        public void dispatch(@Nonnull final List<Metric> metrics) {
         }
     };
 
@@ -20,7 +20,7 @@ public interface Dispatcher {
         return NOOP;
     }
 
-    void dispatch(@Nonnull Metric family);
+    void dispatch(@Nonnull Metric metric);
 
-    void dispatch(@Nonnull List<Metric> families);
+    void dispatch(@Nonnull List<Metric> metrics);
 }

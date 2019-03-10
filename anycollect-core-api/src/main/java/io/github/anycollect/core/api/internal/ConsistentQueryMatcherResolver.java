@@ -2,7 +2,7 @@ package io.github.anycollect.core.api.internal;
 
 import javax.annotation.Nonnull;
 
-public class ConsistentQueryMatcherResolver implements QueryMatcherResolver {
+public final class ConsistentQueryMatcherResolver implements QueryMatcherResolver {
     private final QueryMatcher matcher;
 
     public ConsistentQueryMatcherResolver(@Nonnull final QueryMatcher matcher) {
@@ -11,7 +11,7 @@ public class ConsistentQueryMatcherResolver implements QueryMatcherResolver {
 
     @Nonnull
     @Override
-    public final QueryMatcher current() {
+    public QueryMatcher current() {
         return matcher;
     }
 }

@@ -22,11 +22,11 @@ public final class AnyCollectSerializer implements Serializer {
 
     @Nonnull
     @Override
-    public String serialize(@Nonnull final Metric family) {
-        String key = family.getKey();
-        Tags tags = family.getTags();
-        Tags meta = family.getMeta();
-        List<? extends Measurement> measurements = family.getMeasurements();
+    public String serialize(@Nonnull final Metric metric) {
+        String key = metric.getKey();
+        Tags tags = metric.getTags();
+        Tags meta = metric.getMeta();
+        List<? extends Measurement> measurements = metric.getMeasurements();
         return key + "; "
                 + (!tags.isEmpty() ? tags + "; " : "{}; ")
                 + (!meta.isEmpty() ? meta + "; " : "{}; ")

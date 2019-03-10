@@ -31,7 +31,7 @@ public final class ImmutableState<T extends Target<Q>, Q extends Query> implemen
     public static final class Builder<T extends Target<Q>, Q extends Query> {
         private final Map<T, Set<PeriodicQuery<Q>>> state = new HashMap<>();
 
-        public Builder<T, Q> put(@Nonnull final T target, @Nonnull final Q query, @Nonnull final int period) {
+        public Builder<T, Q> put(@Nonnull final T target, @Nonnull final Q query, final int period) {
             Set<PeriodicQuery<Q>> queries = state.computeIfAbsent(target, t -> new HashSet<>());
             queries.add(new ImmutablePeriodicQuery<>(query, period));
             return this;

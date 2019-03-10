@@ -6,5 +6,5 @@ import javax.annotation.Nonnull;
 
 public interface Serializer {
     @Nonnull
-    String serialize(@Nonnull Metric family);
+    String serialize(@Nonnull Metric source);
 }

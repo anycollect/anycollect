@@ -20,8 +20,8 @@ public final class DummyDeserializer implements Deserializer {
 
     @Nonnull
     @Override
-    public Metric deserialize(@Nonnull final String source) {
-        String[] parts = source.split(" ");
+    public Metric deserialize(@Nonnull final String string) {
+        String[] parts = string.split(" ");
         String path = parts[0];
         double value = Double.parseDouble(parts[1]);
         long timestamp = TimeUnit.SECONDS.toMillis(Long.parseLong(parts[2]));

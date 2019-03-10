@@ -6,5 +6,5 @@ import javax.annotation.Nonnull;
 
 public interface Deserializer {
     @Nonnull
-    Metric deserialize(@Nonnull String source);
+    Metric deserialize(@Nonnull String string);
 }

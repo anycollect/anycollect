@@ -4,10 +4,6 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface KeyValue {
-    <T> void subscribe(@Nonnull String key,
-                       @Nonnull Class<T> valueType,
-                       @Nonnull ValueSubscriber<T> subscriber);
-
     <T> List<T> getValues(@Nonnull String key,
                           @Nonnull Class<T> valueType);
 }

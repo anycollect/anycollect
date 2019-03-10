@@ -21,14 +21,14 @@ public final class BackgroundRouteDispatcher implements RouteDispatcher {
     }
 
     @Override
-    public void dispatch(@Nonnull final Metric family) {
-        dispatch(Collections.singletonList(family));
+    public void dispatch(@Nonnull final Metric metric) {
+        dispatch(Collections.singletonList(metric));
     }
 
     @Override
-    public void dispatch(@Nonnull final List<Metric> families) {
+    public void dispatch(@Nonnull final List<Metric> metrics) {
         if (!stopped) {
-            executor.submit(() -> consumer.consume(families));
+            executor.submit(() -> consumer.consume(metrics));
         }
     }
 

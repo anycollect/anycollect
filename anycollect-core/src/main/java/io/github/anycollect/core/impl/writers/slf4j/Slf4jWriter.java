@@ -34,8 +34,8 @@ public class Slf4jWriter implements Writer {
     }
 
     @Override
-    public void write(@Nonnull final List<Metric> families) {
-        for (Metric family : families) {
+    public void write(@Nonnull final List<Metric> metrics) {
+        for (Metric family : metrics) {
             LOG.info("{}", serializer.serialize(family));
         }
     }

@@ -8,7 +8,6 @@ import com.orbitz.consul.Consul;
 import com.orbitz.consul.KeyValueClient;
 import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.kv.KeyValue;
-import io.github.anycollect.core.api.kv.ValueSubscriber;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
@@ -33,17 +32,11 @@ public final class ConsulKeyValue implements KeyValue, Lifecycle {
     public ConsulKeyValue(@ExtConfig final ConsulConfig config) {
         this.objectMapper = new ObjectMapper(new YAMLFactory());
         this.objectMapper.registerModule(new GuavaModule());
+        // TODO move to init phase. It may throw an exception if consul is unavailable, it should be handled
         this.consul = Consul.builder()
                 .withHostAndPort(HostAndPort.fromParts(config.host(), config.port()))
                 .build();
         this.keyValueClient = this.consul.keyValueClient();
-    }
-
-    @Override
-    public <T> void subscribe(@Nonnull final String key,
-                              @Nonnull final Class<T> valueType,
-                              @Nonnull final ValueSubscriber<T> subscriber) {
-        // TODO
     }
 
     @Override

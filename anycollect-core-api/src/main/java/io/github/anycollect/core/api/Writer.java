@@ -6,5 +6,5 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface Writer extends Route {
-    void write(@Nonnull List<Metric> families);
+    void write(@Nonnull List<Metric> metrics);
 }

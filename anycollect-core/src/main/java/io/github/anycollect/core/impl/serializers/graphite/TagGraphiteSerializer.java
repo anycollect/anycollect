@@ -21,12 +21,12 @@ public final class TagGraphiteSerializer implements Serializer {
 
     @Nonnull
     @Override
-    public String serialize(@Nonnull final Metric family) {
-        Tags tags = family.getTags();
-        String key = family.getKey();
-        long timestamp = TimeUnit.MILLISECONDS.toSeconds(family.getTimestamp());
+    public String serialize(@Nonnull final Metric metric) {
+        Tags tags = metric.getTags();
+        String key = metric.getKey();
+        long timestamp = TimeUnit.MILLISECONDS.toSeconds(metric.getTimestamp());
         StringBuilder data = new StringBuilder();
-        for (Measurement measurement : family.getMeasurements()) {
+        for (Measurement measurement : metric.getMeasurements()) {
             if (Double.isNaN(measurement.getValue())) {
                 continue;
             }

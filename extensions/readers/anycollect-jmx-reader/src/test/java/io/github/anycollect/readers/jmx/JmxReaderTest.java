@@ -103,13 +103,13 @@ class JmxReaderTest {
         private volatile List<Metric> first = null;
 
         @Override
-        public void dispatch(@Nonnull Metric family) {
+        public void dispatch(@Nonnull Metric metric) {
         }
 
         @Override
-        public void dispatch(@Nonnull List<Metric> families) {
+        public void dispatch(@Nonnull List<Metric> metrics) {
             if (first == null) {
-                first = families;
+                first = metrics;
             }
         }
     }

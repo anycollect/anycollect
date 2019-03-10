@@ -13,16 +13,16 @@ public final class RouteDispatcherFanout implements RouteDispatcher {
     }
 
     @Override
-    public void dispatch(@Nonnull final Metric family) {
+    public void dispatch(@Nonnull final Metric metric) {
         for (RouteDispatcher dispatcher : dispatchers) {
-            dispatcher.dispatch(family);
+            dispatcher.dispatch(metric);
         }
     }
 
     @Override
-    public void dispatch(@Nonnull final List<Metric> families) {
+    public void dispatch(@Nonnull final List<Metric> metrics) {
         for (RouteDispatcher dispatcher : dispatchers) {
-            dispatcher.dispatch(families);
+            dispatcher.dispatch(metrics);
         }
     }
 
