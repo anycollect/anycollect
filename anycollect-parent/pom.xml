@@ -307,19 +307,19 @@
                     </dependency>
                 </dependencies>
                 <executions>
-                    <execution>
-                        <id>checkstyle-validate</id>
-                        <phase>validate</phase>
-                        <configuration>
-                            <configLocation>anycollect/checkstyle.xml</configLocation>
-                            <encoding>${encoding}</encoding>
-                            <consoleOutput>true</consoleOutput>
-                            <failsOnError>true</failsOnError>
-                        </configuration>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
+                    <!--<execution>-->
+                        <!--<id>checkstyle-validate</id>-->
+                        <!--<phase>validate</phase>-->
+                        <!--<configuration>-->
+                            <!--<configLocation>anycollect/checkstyle.xml</configLocation>-->
+                            <!--<encoding>${encoding}</encoding>-->
+                            <!--<consoleOutput>true</consoleOutput>-->
+                            <!--<failsOnError>true</failsOnError>-->
+                        <!--</configuration>-->
+                        <!--<goals>-->
+                            <!--<goal>check</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
                 </executions>
             </plugin>
             <plugin>
