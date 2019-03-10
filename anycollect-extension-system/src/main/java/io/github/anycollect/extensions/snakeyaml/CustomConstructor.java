@@ -101,8 +101,10 @@ final class CustomConstructor extends Constructor {
                     context, getInjectMode(), getScope(), getPriority(), scopeId);
             context.addInstance(instance);
             Object resolved = instance.resolve();
-            // TODO on condition in entry point?
-            VALUES.addValue(instance.getDefinition().getExtensionPointClass(), resolved);
+            // TODO
+            if (context.getInstance(instance.getDefinition().getExtensionPointClass(), scopeId) == instance) {
+                VALUES.addValue(instance.getDefinition().getExtensionPointClass(), resolved);
+            }
             LOG.debug("instance has been successfully loaded: {}", instance);
             instanceRegistry.put(instance.getInstanceName(), instance);
             return instance;

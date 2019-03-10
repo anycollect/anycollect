@@ -13,4 +13,8 @@ public enum Priority {
     boolean isHigherThan(@Nonnull final Priority that) {
         return this.priority > that.priority;
     }
+
+    boolean isLowerThan(@Nonnull final Priority that) {
+        return this.priority < that.priority;
+    }
 }
