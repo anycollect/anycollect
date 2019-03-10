@@ -1,4 +1,4 @@
-package io.github.anycollect.readers.socket;
+package io.github.anycollect.readers.socket.netty;
 
 import io.github.anycollect.core.api.Deserializer;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;

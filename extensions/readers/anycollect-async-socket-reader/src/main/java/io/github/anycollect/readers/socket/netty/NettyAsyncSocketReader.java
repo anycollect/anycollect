@@ -1,4 +1,4 @@
-package io.github.anycollect.readers.socket;
+package io.github.anycollect.readers.socket.netty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
