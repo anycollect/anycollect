@@ -19,6 +19,7 @@ import java.util.List;
 public class Slf4jWriter implements Writer {
     public static final String NAME = "Slf4jWriter";
     private static final Logger LOG = LoggerFactory.getLogger(Slf4jWriter.class);
+    @Nonnull
     private final Serializer serializer;
     private final String id;
 
@@ -34,7 +35,7 @@ public class Slf4jWriter implements Writer {
     }
 
     @Override
-    public void write(@Nonnull final List<Metric> metrics) {
+    public void write(@Nonnull final List<? extends Metric> metrics) {
         for (Metric family : metrics) {
             LOG.info("{}", serializer.serialize(family));
         }

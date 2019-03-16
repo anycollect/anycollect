@@ -72,7 +72,7 @@ public final class DiscrepancyProcessor implements Processor, Lifecycle {
     }
 
     @Override
-    public void submit(@Nonnull final List<Metric> sources) {
+    public void submit(@Nonnull final List<? extends Metric> sources) {
         if (dispatcher == null) {
             return;
         }

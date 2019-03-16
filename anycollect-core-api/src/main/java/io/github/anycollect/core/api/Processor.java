@@ -9,5 +9,5 @@ import java.util.List;
 public interface Processor extends Route {
     void start(@Nonnull Dispatcher dispatcher);
 
-    void submit(@Nonnull List<Metric> sources);
+    void submit(@Nonnull List<? extends Metric> sources);
 }

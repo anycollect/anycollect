@@ -1,17 +1,19 @@
 package io.github.anycollect.core.impl.writers.socket;
 
-import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.api.Writer;
+import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.extensions.annotations.*;
 import io.github.anycollect.metric.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
 import java.util.List;
 
+@NotThreadSafe
 @Extension(name = SocketWriter.NAME, point = Writer.class)
 public final class SocketWriter implements Writer, Lifecycle {
     public static final String NAME = "SocketWriter";
@@ -37,23 +39,22 @@ public final class SocketWriter implements Writer, Lifecycle {
         this.id = id;
     }
 
-    // TODO multithreading access
     @Override
-    public synchronized void write(@Nonnull final List<Metric> metrics) {
-        for (Metric family : metrics) {
-            write(family);
+    public void write(@Nonnull final List<? extends Metric> metrics) {
+        for (Metric metric : metrics) {
+            write(metric);
         }
     }
 
-    private void write(@Nonnull final Metric family) {
-        String data = serializer.serialize(family);
+    private void write(@Nonnull final Metric metric) {
+        String data = serializer.serialize(metric);
         try {
             sender.connected();
             sender.send(data);
             // TODO schedule flush
             sender.flush();
         } catch (IOException e) {
-            LOG.debug("fail to send metric family: {}", family);
+            LOG.trace("fail to send metric family: {}", metric);
             sender.closed();
         }
     }
