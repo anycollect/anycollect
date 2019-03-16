@@ -36,9 +36,8 @@ public final class SchedulerFactoryImpl implements SchedulerFactory {
         ThreadFactory threadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-pull-(" + target.getId() + ")-[%d]")
                 .build();
-        ScheduledThreadPoolExecutor executorService
-                = new MonitoredScheduledThreadPoolExecutor(
-                        poolSize, threadFactory, registry, Tags.of("target", target.getId()));
+        ScheduledThreadPoolExecutor executorService = new MonitoredScheduledThreadPoolExecutor(poolSize, threadFactory,
+                registry, "pull", Tags.of("target", target.getId()));
         return new SchedulerImpl(executorService);
     }
 }

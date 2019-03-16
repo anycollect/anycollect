@@ -22,46 +22,39 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
 
     public MonitoredScheduledThreadPoolExecutor(final int corePoolSize,
                                                 @Nonnull final MeterRegistry registry,
-                                                final Tags tags) {
-        this(corePoolSize, new ThreadFactoryBuilder().setNameFormat("thread-[%d]").build(),
-                Clock.getDefault(), registry, tags);
+                                                @Nonnull final String prefix,
+                                                @Nonnull final Tags tags) {
+        this(corePoolSize, new ThreadFactoryBuilder().setNameFormat("thread-[%d]").build(), registry, prefix, tags);
     }
 
     public MonitoredScheduledThreadPoolExecutor(final int corePoolSize,
                                                 final ThreadFactory threadFactory,
                                                 @Nonnull final MeterRegistry registry,
-                                                final Tags tags) {
-        this(corePoolSize, threadFactory, Clock.getDefault(), registry, tags);
-    }
-
-    public MonitoredScheduledThreadPoolExecutor(final int corePoolSize,
-                                                final ThreadFactory threadFactory,
-                                                @Nonnull final Clock clock,
-                                                @Nonnull final MeterRegistry registry,
-                                                final Tags tags) {
+                                                @Nonnull final String prefix,
+                                                @Nonnull final Tags tags) {
         super(corePoolSize, threadFactory);
-        this.clock = clock;
-        discrepancySummary = Distribution.key("scheduler.discrepancy")
+        this.clock = Clock.getDefault();
+        discrepancySummary = Distribution.key(prefix, "scheduler.discrepancy")
                 .unit("percents")
                 .concatTags(tags)
                 .register(registry);
-        processingTimeSummary = Distribution.key("scheduler.processing.time")
+        processingTimeSummary = Distribution.key(prefix, "scheduler.processing.time")
                 .nanos()
                 .concatTags(tags)
                 .register(registry);
-        failedJobsCounter = Counter.key("scheduler.jobs.failed")
+        failedJobsCounter = Counter.key(prefix, "scheduler.jobs.failed")
                 .unit("jobs")
                 .concatTags(tags)
                 .register(registry);
-        succeededJobsCounter = Counter.key("scheduler.jobs.succeeded")
+        succeededJobsCounter = Counter.key(prefix, "scheduler.jobs.succeeded")
                 .unit("jobs")
                 .concatTags(tags)
                 .register(registry);
-        Gauge.make("scheduler.queue.size", this, executor -> executor.getQueue().size())
+        Gauge.make(this, executor -> executor.getQueue().size(), prefix, "scheduler.queue.size")
                 .unit("jobs")
                 .concatTags(tags)
                 .register(registry);
-        Gauge.make("scheduler.threads.live", this, executor -> getPoolSize());
+        Gauge.make(this, executor -> getPoolSize(), prefix, "scheduler.threads.live");
     }
 
     @Override

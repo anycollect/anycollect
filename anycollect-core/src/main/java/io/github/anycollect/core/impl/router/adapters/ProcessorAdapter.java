@@ -8,9 +8,11 @@ import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class ProcessorAdapter extends AbstractRouterNode implements MetricProcessor {
     private final Processor processor;
+    private final AtomicBoolean stopped = new AtomicBoolean(false);
 
     public ProcessorAdapter(@Nonnull final Processor processor) {
         super(processor.getId());
@@ -18,8 +20,15 @@ public final class ProcessorAdapter extends AbstractRouterNode implements Metric
     }
 
     @Override
-    public void consume(@Nonnull final List<Metric> families) {
-        processor.submit(families);
+    public void consume(@Nonnull final List<? extends Metric> metrics) {
+        if (!stopped.get()) {
+            processor.submit(metrics);
+        }
+    }
+
+    @Override
+    public void stop() {
+        stopped.set(true);
     }
 
     @Override

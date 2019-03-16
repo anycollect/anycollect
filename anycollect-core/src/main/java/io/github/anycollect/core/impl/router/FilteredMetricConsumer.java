@@ -20,12 +20,17 @@ public final class FilteredMetricConsumer implements MetricConsumer {
     }
 
     @Override
-    public void consume(@Nonnull final List<Metric> families) {
-        List<Metric> filtered = families.stream()
+    public void consume(@Nonnull final List<? extends Metric> metrics) {
+        List<? extends Metric> filtered = metrics.stream()
                 .filter(metric -> filter.accept(metric) != FilterReply.DENY)
                 .map(filter::map)
                 .collect(toList());
         delegate.consume(filtered);
+    }
+
+    @Override
+    public void stop() {
+        delegate.stop();
     }
 
     @Nonnull

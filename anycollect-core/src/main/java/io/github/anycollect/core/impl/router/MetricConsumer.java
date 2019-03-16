@@ -6,5 +6,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface MetricConsumer extends RouterNode {
-    void consume(@Nonnull List<Metric> families);
+    void consume(@Nonnull List<? extends Metric> metrics);
+
+    void stop();
 }

@@ -7,9 +7,11 @@ import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class WriterAdapter extends AbstractRouterNode implements MetricConsumer {
     private final Writer writer;
+    private final AtomicBoolean stopped = new AtomicBoolean(false);
 
     public WriterAdapter(@Nonnull final Writer writer) {
         super(writer.getId());
@@ -17,7 +19,14 @@ public final class WriterAdapter extends AbstractRouterNode implements MetricCon
     }
 
     @Override
-    public void consume(@Nonnull final List<Metric> families) {
-        this.writer.write(families);
+    public void consume(@Nonnull final List<? extends Metric> metrics) {
+        if (!stopped.get()) {
+            this.writer.write(metrics);
+        }
+    }
+
+    @Override
+    public void stop() {
+        stopped.set(true);
     }
 }

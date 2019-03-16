@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
 class MonitoredScheduledThreadPoolExecutorTest {
     private MeterRegistry registry = spy(new NoopMeterRegistry());
     private MonitoredScheduledThreadPoolExecutor executor =
-            new MonitoredScheduledThreadPoolExecutor(1, registry, Tags.empty());
+            new MonitoredScheduledThreadPoolExecutor(1, registry, "", Tags.empty());
 
     @Test
     void metersIsCreated() throws Exception {
