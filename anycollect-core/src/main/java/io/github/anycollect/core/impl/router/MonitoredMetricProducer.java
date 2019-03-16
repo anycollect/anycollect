@@ -45,6 +45,7 @@ public final class MonitoredMetricProducer implements MetricProducer {
             this.producedMetrics = Counter.key("router.route.dispatch")
                     .unit("metrics")
                     .tag("route", producer.getAddress())
+                    .meta(this.getClass())
                     .register(registry);
         }
 

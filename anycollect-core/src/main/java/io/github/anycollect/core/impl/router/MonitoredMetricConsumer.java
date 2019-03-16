@@ -17,10 +17,12 @@ public class MonitoredMetricConsumer implements MetricConsumer {
         this.consumedMetrics = Counter.key("router.route.delivery")
                 .unit("metrics")
                 .tag("route", getAddress())
+                .meta(this.getClass())
                 .register(registry);
         this.processingTime = Timer.key("router.route.processing.time")
                 .unit(TimeUnit.MILLISECONDS)
                 .tag("route", getAddress())
+                .meta(this.getClass())
                 .register(registry);
     }
 

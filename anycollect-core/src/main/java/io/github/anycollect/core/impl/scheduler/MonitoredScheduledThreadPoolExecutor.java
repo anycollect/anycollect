@@ -37,18 +37,22 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
         discrepancySummary = Distribution.key(prefix, "scheduler.discrepancy")
                 .unit("percents")
                 .concatTags(tags)
+                .meta(this.getClass())
                 .register(registry);
         processingTimeSummary = Timer.key(prefix, "scheduler.processing.time")
                 .unit(TimeUnit.MILLISECONDS)
                 .concatTags(tags)
+                .meta(this.getClass())
                 .register(registry);
         failedJobsCounter = Counter.key(prefix, "scheduler.jobs.failed")
                 .unit("jobs")
                 .concatTags(tags)
+                .meta(this.getClass())
                 .register(registry);
         succeededJobsCounter = Counter.key(prefix, "scheduler.jobs.succeeded")
                 .unit("jobs")
                 .concatTags(tags)
+                .meta(this.getClass())
                 .register(registry);
         Gauge.make(this, executor -> executor.getQueue().size(), prefix, "scheduler.queue.size")
                 .unit("jobs")

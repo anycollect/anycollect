@@ -34,15 +34,18 @@ public final class PooledJavaApp extends JavaApp {
                 .concatTags(tags)
                 .tag("state", "active")
                 .unit("connections")
+                .meta(this.getClass())
                 .register(registry);
         Gauge.make("jmx.pool.connections.live", pool, JmxConnectionPool::getNumIdle)
                 .concatTags(tags)
                 .tag("state", "idle")
                 .unit("connections")
+                .meta(this.getClass())
                 .register(registry);
         FunctionCounter.make("jmx.pool.connections.invalidated", pool, JmxConnectionPool::getTotalInvalidated)
                 .concatTags(tags)
                 .unit("connections")
+                .meta(this.getClass())
                 .register(registry);
     }
 

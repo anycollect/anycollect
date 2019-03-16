@@ -52,10 +52,12 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
         this.failed = Counter.key("pull.jobs.failed")
                 .unit("jobs")
                 .tag("target", target.getId())
+                .meta(this.getClass())
                 .register(registry);
         this.succeeded = Counter.key("pull.jobs.succeeded")
                 .unit("jobs")
                 .tag("target", target.getId())
+                .meta(this.getClass())
                 .register(registry);
     }
 
