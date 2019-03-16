@@ -14,11 +14,13 @@ import java.util.Map;
 public class MBean implements Measurable {
     private final Map<String, String> properties;
     private final Map<String, Object> attributes;
-    private final Tags targetTags;
+    private final Tags tags;
+    private final Tags meta;
 
-    public MBean(final ObjectName objectName, final AttributeList attributes, final Tags targetTags) {
+    public MBean(final ObjectName objectName, final AttributeList attributes, final Tags tags, final Tags meta) {
         this.properties = new HashMap<>(objectName.getKeyPropertyList());
-        this.targetTags = targetTags;
+        this.tags = tags;
+        this.meta = meta;
         this.attributes = new HashMap<>();
         for (Attribute attribute : attributes.asList()) {
             this.attributes.put(attribute.getName(), attribute.getValue());
@@ -46,7 +48,13 @@ public class MBean implements Measurable {
     @Nonnull
     @Override
     public Tags getTags() {
-        return targetTags;
+        return tags;
+    }
+
+    @Nonnull
+    @Override
+    public Tags getMeta() {
+        return meta;
     }
 
     private Object traverse(final String path) {

@@ -7,6 +7,7 @@ import io.github.anycollect.metric.ImmutableTags;
 import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
+import io.github.anycollect.readers.jmx.server.JavaApp;
 
 import javax.annotation.Nonnull;
 import javax.management.*;
@@ -42,7 +43,7 @@ public class JvmMemory extends JmxQuery {
     @Nonnull
     @Override
     public List<Metric> executeOn(@Nonnull final MBeanServerConnection connection,
-                                  @Nonnull final Tags targetTags) throws ConnectionException {
+                                  @Nonnull final JavaApp app) throws ConnectionException {
         List<Metric> families = new ArrayList<>();
         for (ObjectName objectName : queryNames(connection, MEMORY_POOL_OBJECT_PATTERN)) {
             AttributeList attributes;
@@ -57,11 +58,11 @@ public class JvmMemory extends JmxQuery {
             long used = (Long) usage.get(USED);
             String type = HEAP_TYPE.equals(((Attribute) attributes.get(2)).getValue()) ? "heap" : "nonheap";
             ImmutableTags tags = Tags.builder()
-                    .concat(targetTags)
+                    .concat(app.getTags())
                     .tag("pool", name.replace(' ', '_'))
                     .tag("type", type)
                     .build();
-            Metric family = Metric.of("jvm.memory.used", tags, Tags.empty(),
+            Metric family = Metric.of("jvm.memory.used", tags, app.getMeta(),
                     Measurement.gauge(used, "bytes"), timestamp);
             families.add(family);
         }

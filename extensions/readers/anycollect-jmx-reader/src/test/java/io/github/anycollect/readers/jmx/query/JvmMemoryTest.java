@@ -38,7 +38,7 @@ class JvmMemoryTest {
         when(memoryPool.getType()).thenReturn(MemoryType.HEAP);
         when(memoryPool.getUsage()).thenReturn(heap);
         server.registerMBean(memoryPool, new ObjectName("java.lang:type=MemoryPool,name=Test"));
-        List<Metric> families = jvmMemory.executeOn(server, Tags.of("instance", "test"));
+        List<Metric> families = jvmMemory.executeOn(server, new MockJavaApp(Tags.of("instance", "test")));
         assertThat(families).hasSize(1);
         assertThat(families.get(0))
                 .hasKey("jvm.memory.used")

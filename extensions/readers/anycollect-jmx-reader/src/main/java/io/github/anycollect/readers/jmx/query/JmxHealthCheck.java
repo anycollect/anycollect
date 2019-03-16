@@ -2,6 +2,7 @@ package io.github.anycollect.readers.jmx.query;
 
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.metric.*;
+import io.github.anycollect.readers.jmx.server.JavaApp;
 
 import javax.annotation.Nonnull;
 import javax.management.MBeanServerConnection;
@@ -17,7 +18,7 @@ public class JmxHealthCheck extends JmxQuery {
     @Nonnull
     @Override
     public List<Metric> executeOn(@Nonnull final MBeanServerConnection connection,
-                                  @Nonnull final Tags targetTags) throws ConnectionException {
+                                  @Nonnull final JavaApp app) throws ConnectionException {
         try {
             connection.getDefaultDomain();
         } catch (IOException e) {

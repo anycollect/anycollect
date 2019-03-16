@@ -1,12 +1,10 @@
 package io.github.anycollect.readers.jmx.query;
 
 import io.github.anycollect.core.exceptions.ConnectionException;
-import io.github.anycollect.metric.Tags;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.management.MBeanServerConnection;
-
 import java.io.IOException;
 
 import static org.mockito.Mockito.mock;
@@ -18,7 +16,7 @@ class JmxHealthCheckTest {
         JmxHealthCheck check = new JmxHealthCheck();
         MBeanServerConnection connection = mock(MBeanServerConnection.class);
         when(connection.getDefaultDomain()).thenThrow(IOException.class);
-        Assertions.assertThatThrownBy(() -> check.executeOn(connection, Tags.empty()))
+        Assertions.assertThatThrownBy(() -> check.executeOn(connection, new MockJavaApp()))
                 .isInstanceOf(ConnectionException.class);
     }
 
@@ -27,6 +25,6 @@ class JmxHealthCheckTest {
         JmxHealthCheck check = new JmxHealthCheck();
         MBeanServerConnection connection = mock(MBeanServerConnection.class);
         when(connection.getDefaultDomain()).thenReturn("test");
-        Assertions.assertThat(check.executeOn(connection, Tags.empty())).isEmpty();
+        Assertions.assertThat(check.executeOn(connection, new MockJavaApp())).isEmpty();
     }
 }

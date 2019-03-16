@@ -1,7 +1,10 @@
 package io.github.anycollect.metric;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Objects;
+
+import static java.util.stream.Collectors.joining;
 
 public abstract class BaseBuilder<T extends BaseBuilder<T>> {
     private String key;
@@ -45,7 +48,7 @@ public abstract class BaseBuilder<T extends BaseBuilder<T>> {
 
     protected T key(@Nonnull final String... keyParts) {
         Objects.requireNonNull(keyParts, "parts of key must not be null");
-        this.key = String.join(".", keyParts);
+        this.key = Arrays.stream(keyParts).filter(part -> !part.isEmpty()).collect(joining("."));
         return self();
     }
 

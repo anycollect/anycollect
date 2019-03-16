@@ -44,7 +44,7 @@ class JvmThreadsTest {
         ThreadInfo[] infos = new ThreadInfo[]{info};
         when(thread.getThreadInfo(ids)).thenReturn(infos);
         server.registerMBean(thread, new ObjectName("java.lang:type=Threading"));
-        List<Metric> families = jvmThreads.executeOn(server, Tags.empty());
+        List<Metric> families = jvmThreads.executeOn(server, new MockJavaApp());
         assertThatFamilies(families)
                 .contains("jvm.threads.live", Tags.of("type", "daemon"))
                 .hasMeasurement(Stat.value(), Type.GAUGE, "threads", 1);

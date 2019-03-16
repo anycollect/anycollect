@@ -8,8 +8,8 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public final class SelfTarget extends AbstractTarget<SelfQuery> {
-    public SelfTarget(@Nonnull final String id, @Nonnull final Tags tags) {
-        super(id, tags);
+    public SelfTarget(@Nonnull final String id, @Nonnull final Tags tags, @Nonnull final Tags meta) {
+        super(id, tags, meta);
     }
 
     @Override

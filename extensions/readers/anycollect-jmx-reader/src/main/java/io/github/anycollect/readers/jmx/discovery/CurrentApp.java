@@ -7,6 +7,7 @@ import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.server.JmxConnection;
 import io.github.anycollect.readers.jmx.server.JmxConnectionFactory;
@@ -34,7 +35,7 @@ public final class CurrentApp implements JavaAppDiscovery {
     public CurrentApp(@ExtConfig @Nonnull final Config config) {
         JmxConnectionPoolFactory poolFactory = new CommonsJmxConnectionPoolFactory();
         JmxConnectionPool pool = poolFactory.create(JMX_CONNECTION_FACTORY);
-        app = Collections.singleton(JavaApp.create(config.currentApplicationName, pool, config.registry));
+        app = Collections.singleton(JavaApp.create(config.currentApplicationName, Tags.empty(), Tags.empty(), pool, config.registry));
     }
 
     @Override

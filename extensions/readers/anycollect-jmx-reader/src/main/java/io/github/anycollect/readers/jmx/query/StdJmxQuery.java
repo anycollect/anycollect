@@ -11,6 +11,7 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
+import io.github.anycollect.readers.jmx.server.JavaApp;
 import lombok.EqualsAndHashCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +36,15 @@ public final class StdJmxQuery extends JmxQuery {
 
     // TODO is it ok to instantiate such classes in configuration phase?
     @JsonCreator
-    public StdJmxQuery(@JsonProperty("queryId") @Nonnull final String queryId,
+    public StdJmxQuery(@JsonProperty(value = "queryId", required = true) @Nonnull final String queryId,
+                       @JsonProperty("tags") @Nullable final Tags tags,
+                       @JsonProperty("meta") @Nullable final Tags meta,
                        @JsonProperty("mbean") @Nonnull final String objectPattern,
                        @JsonProperty("restriction") @Nullable final Restriction restriction,
                        @JsonProperty("families") @Nonnull final List<FamilyConfig> families,
                        @JacksonInject @Nonnull final Measurers types,
                        @JacksonInject @Nonnull final Clock clock) {
-        super(queryId);
+        super(queryId, tags != null ? tags : Tags.empty(), meta != null ? meta : Tags.empty());
         this.clock = clock;
         measurers = new ArrayList<>();
         Set<String> activeAttributes = new HashSet<>();
@@ -73,7 +76,7 @@ public final class StdJmxQuery extends JmxQuery {
     @Nonnull
     @Override
     public List<Metric> executeOn(@Nonnull final MBeanServerConnection connection,
-                                  @Nonnull final Tags targetTags)
+                                  @Nonnull final JavaApp app)
             throws QueryException, ConnectionException {
         Set<ObjectName> objectNames = queryNames(connection, objectPattern);
         List<Metric> metricFamilies = new ArrayList<>();
@@ -87,7 +90,9 @@ public final class StdJmxQuery extends JmxQuery {
                 }
                 long timestamp = clock.wallTime();
                 // TODO maybe cache, do benchmark?
-                MBean mbean = new MBean(objectName, attributeList, targetTags);
+                MBean mbean = new MBean(objectName, attributeList,
+                        Tags.concat(app.getTags(), getTags()),
+                        Tags.concat(app.getMeta(), getMeta()));
                 for (Measurer<MBean> measurer : measurers) {
                     metricFamilies.add(measurer.measure(mbean, timestamp));
                 }

@@ -22,4 +22,7 @@ public interface Measurable {
 
     @Nonnull
     Tags getTags();
+
+    @Nonnull
+    Tags getMeta();
 }

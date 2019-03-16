@@ -18,16 +18,17 @@ public final class PooledJavaApp extends JavaApp {
 
     public PooledJavaApp(@Nonnull final String id,
                          @Nonnull final JmxConnectionPool pool) {
-        super(id, Tags.of("instance", id));
+        super(id, Tags.empty(), Tags.empty());
         Objects.requireNonNull(pool, "jmx connection pool must not be null");
         this.pool = pool;
     }
 
     public PooledJavaApp(@Nonnull final String id,
                          @Nonnull final Tags tags,
+                         @Nonnull final Tags meta,
                          @Nonnull final JmxConnectionPool pool,
                          @Nonnull final MeterRegistry registry) {
-        super(id, tags);
+        super(id, tags, meta);
         Objects.requireNonNull(pool, "jmx connection pool must not be null");
         this.pool = pool;
         Gauge.make("jmx.pool.connections.live", pool, JmxConnectionPool::getNumActive)
@@ -56,7 +57,7 @@ public final class PooledJavaApp extends JavaApp {
             jmxConnection = pool.borrowConnection();
             MBeanServerConnection connection = jmxConnection.getConnection();
             try {
-                return query.executeOn(connection, getTags());
+                return query.executeOn(connection, this);
             } catch (ConnectionException e) {
                 pool.invalidateConnection(jmxConnection);
                 throw e;

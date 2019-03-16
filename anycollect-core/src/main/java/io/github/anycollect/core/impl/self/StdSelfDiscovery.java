@@ -13,7 +13,7 @@ public class StdSelfDiscovery implements SelfDiscovery {
 
     @ExtCreator
     public StdSelfDiscovery() {
-        this.self = new SelfTarget("self", Tags.empty());
+        this.self = new SelfTarget("self", Tags.empty(), Tags.empty());
     }
 
     @Override

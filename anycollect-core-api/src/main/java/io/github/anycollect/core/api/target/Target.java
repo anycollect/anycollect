@@ -23,5 +23,8 @@ public interface Target<Q extends Query> {
     @Nonnull
     Tags getTags();
 
+    @Nonnull
+    Tags getMeta();
+
     List<Metric> execute(@Nonnull Q query) throws QueryException, ConnectionException;
 }

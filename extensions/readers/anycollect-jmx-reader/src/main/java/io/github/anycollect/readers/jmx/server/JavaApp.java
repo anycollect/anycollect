@@ -15,14 +15,16 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 public abstract class JavaApp extends AbstractTarget<JmxQuery> {
-    protected JavaApp(@Nonnull final String id, @Nonnull final Tags tags) {
-        super(id, tags);
+    protected JavaApp(@Nonnull final String id, @Nonnull final Tags tags, @Nonnull final Tags meta) {
+        super(id, tags, meta);
     }
 
     public static JavaApp create(@Nonnull final String id,
+                                 @Nonnull final Tags tags,
+                                 @Nonnull final Tags meta,
                                  @Nonnull final JmxConnectionPool pool,
                                  @Nonnull final MeterRegistry registry) {
-        return new PooledJavaApp(id, Tags.of("instance", id), pool, registry);
+        return new PooledJavaApp(id, tags.isEmpty() ? Tags.of("instance", id) : tags, meta, pool, registry);
     }
 
     @Nonnull

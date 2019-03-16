@@ -10,6 +10,7 @@ import io.github.anycollect.metric.ImmutableTags;
 import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
+import io.github.anycollect.readers.jmx.server.JavaApp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public class JvmThreads extends JmxQuery {
     @Nonnull
     @Override
     public List<Metric> executeOn(@Nonnull final MBeanServerConnection connection,
-                                  @Nonnull final Tags targetTags) throws QueryException, ConnectionException {
+                                  @Nonnull final JavaApp app) throws QueryException, ConnectionException {
         AttributeList attributes;
         try {
             attributes = connection.getAttributes(THREADING_OBJECT_NAME, ATTRIBUTE_NAMES);
@@ -90,21 +91,21 @@ public class JvmThreads extends JmxQuery {
         List<Metric> families = new ArrayList<>();
         families.add(Metric.of(
                 THREADS_STARTED_KEY,
-                targetTags,
-                Tags.empty(),
+                app.getTags(),
+                app.getMeta(),
                 Measurement.counter(totalStartedThreadCount, THREADS_UNIT),
                 timestamp
         ));
         families.add(Metric.of(
                 LIVE_THREADS_KEY,
-                Tags.concat(targetTags, Tags.of("type", "daemon")),
-                Tags.empty(),
+                Tags.concat(app.getTags(), Tags.of("type", "daemon")),
+                app.getMeta(),
                 Measurement.gauge(daemonThreadCount, THREADS_UNIT),
                 timestamp));
         families.add(Metric.of(
                 LIVE_THREADS_KEY,
-                Tags.concat(targetTags, Tags.of("type", "nondaemon")),
-                Tags.empty(),
+                Tags.concat(app.getTags(), Tags.of("type", "nondaemon")),
+                app.getMeta(),
                 Measurement.gauge(threadCount - daemonThreadCount, THREADS_UNIT),
                 timestamp));
         Multiset<String> numberOfThreadsByState = HashMultiset.create();
@@ -114,13 +115,13 @@ public class JvmThreads extends JmxQuery {
         }
         for (String state : numberOfThreadsByState.elementSet()) {
             ImmutableTags tags = Tags.builder()
-                    .concat(targetTags)
+                    .concat(app.getTags())
                     .tag("state", state)
                     .build();
             families.add(Metric.of(
                     THREADS_BY_STATE_KEY,
                     tags,
-                    Tags.empty(),
+                    app.getMeta(),
                     Measurement.gauge(numberOfThreadsByState.count(state), THREADS_UNIT),
                     timestamp));
         }

@@ -28,6 +28,8 @@ public class DefaultJavaAppFactory implements JavaAppFactory {
             JmxConnectionFactory connectionFactory = new JmxConnectionFactoryImpl(definition);
             return JavaApp.create(
                     definition.getInstanceId(),
+                    definition.getTags(),
+                    definition.getMeta(),
                     factory.create(connectionFactory),
                     registry);
         } catch (MalformedURLException e) {

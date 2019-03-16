@@ -6,11 +6,13 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
+import io.github.anycollect.readers.jmx.server.JavaApp;
 import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.management.*;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -27,9 +29,13 @@ public abstract class JmxQuery extends AbstractQuery {
         super(id);
     }
 
+    public JmxQuery(@Nonnull final String id, @Nonnull final Tags tags, @Nonnull final Tags meta) {
+        super(id, tags, meta);
+    }
+
     @Nonnull
     public abstract List<Metric> executeOn(@Nonnull MBeanServerConnection connection,
-                                           @Nonnull Tags targetTags)
+                                           @Nonnull JavaApp app)
             throws QueryException, ConnectionException;
 
     protected Set<ObjectName> queryNames(@Nonnull final MBeanServerConnection connection,
