@@ -1,6 +1,7 @@
 package io.github.anycollect.core.api.target;
 
 import io.github.anycollect.core.api.kv.KeyValue;
+import io.github.anycollect.core.api.kv.KeyValueStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,14 @@ public final class CachedKvDiscovery<D, T extends Target> implements ServiceDisc
 
     @Override
     public synchronized Set<T> discover() {
-        List<D> definitions = kv.getValues(key, definitionClass);
+        List<D> definitions;
+        try {
+            definitions = kv.getValues(key, definitionClass);
+        } catch (KeyValueStorageException e) {
+            LOG.debug("could not get target definitions from key-value storage, "
+                    + "previous target definitions will be used", e);
+            return new HashSet<>(previous.values());
+        }
         Map<D, T> apps = new HashMap<>();
         for (D definition : definitions) {
             if (previous.containsKey(definition)) {

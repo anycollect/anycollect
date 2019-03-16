@@ -5,9 +5,11 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.net.HostAndPort;
 import com.orbitz.consul.Consul;
+import com.orbitz.consul.ConsulException;
 import com.orbitz.consul.KeyValueClient;
 import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.kv.KeyValue;
+import io.github.anycollect.core.api.kv.KeyValueStorageException;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
@@ -32,18 +34,25 @@ public final class ConsulKeyValue implements KeyValue, Lifecycle {
     public ConsulKeyValue(@ExtConfig final ConsulConfig config) {
         this.objectMapper = new ObjectMapper(new YAMLFactory());
         this.objectMapper.registerModule(new GuavaModule());
-        // TODO move to init phase. It may throw an exception if consul is unavailable, it should be handled
         this.consul = Consul.builder()
                 .withHostAndPort(HostAndPort.fromParts(config.host(), config.port()))
+                .withPing(false)
                 .build();
         this.keyValueClient = this.consul.keyValueClient();
     }
 
     @Override
-    public <T> List<T> getValues(@Nonnull final String key,
-                                 @Nonnull final Class<T> valueType) {
+    public <T> List<T> getValues(@Nonnull final String key, @Nonnull final Class<T> valueType)
+            throws KeyValueStorageException {
         List<T> values = new ArrayList<>();
-        for (String valueString : keyValueClient.getValuesAsString(key)) {
+        List<String> valuesAsString;
+        try {
+            valuesAsString = keyValueClient.getValuesAsString(key);
+        } catch (ConsulException e) {
+            LOG.debug("could not get values by key \"{}\" from consul", key, e);
+            throw new KeyValueStorageException("could not get values from consul", e);
+        }
+        for (String valueString : valuesAsString) {
             T value = null;
             try {
                 value = objectMapper.readValue(valueString, valueType);
