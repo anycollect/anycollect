@@ -44,7 +44,7 @@ public final class CachedKvDiscovery<D, T extends Target> implements ServiceDisc
         try {
             definitions = kv.getValues(key, definitionClass);
         } catch (KeyValueStorageException e) {
-            LOG.debug("could not get target definitions from key-value storage, "
+            LOG.warn("could not get target definitions from key-value storage, "
                     + "previous target definitions will be used", e);
             return new HashSet<>(previous.values());
         }

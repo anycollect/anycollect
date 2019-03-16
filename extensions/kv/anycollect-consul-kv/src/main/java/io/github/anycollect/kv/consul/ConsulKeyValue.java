@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +50,10 @@ public final class ConsulKeyValue implements KeyValue, Lifecycle {
         try {
             valuesAsString = keyValueClient.getValuesAsString(key);
         } catch (ConsulException e) {
+            if (e.getCause() instanceof ConnectException) {
+                LOG.warn("could not connect to consul");
+                throw new KeyValueStorageException("could not connect to consul");
+            }
             LOG.debug("could not get values by key \"{}\" from consul", key, e);
             throw new KeyValueStorageException("could not get values from consul", e);
         }
