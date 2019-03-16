@@ -10,14 +10,4 @@ public abstract class BaseMeterBuilder<T extends BaseMeterBuilder<T>> extends Ba
     public BaseMeterBuilder(@Nonnull final String... keyParts) {
         key(keyParts);
     }
-
-    @Override
-    public T unit(@Nonnull final String unit) {
-        return super.unit(unit);
-    }
-
-    @Override
-    public T nanos() {
-        return super.nanos();
-    }
 }

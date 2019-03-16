@@ -16,7 +16,7 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
     private final Map<CustomFuture<?>, Long> lastRunStartTimes = new ConcurrentHashMap<>();
     private final Distribution discrepancySummary;
     private final Set<CustomFuture<?>> running = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final Distribution processingTimeSummary;
+    private final Timer processingTimeSummary;
     private final Counter failedJobsCounter;
     private final Counter succeededJobsCounter;
 
@@ -38,8 +38,8 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
                 .unit("percents")
                 .concatTags(tags)
                 .register(registry);
-        processingTimeSummary = Distribution.key(prefix, "scheduler.processing.time")
-                .nanos()
+        processingTimeSummary = Timer.key(prefix, "scheduler.processing.time")
+                .unit(TimeUnit.MILLISECONDS)
                 .concatTags(tags)
                 .register(registry);
         failedJobsCounter = Counter.key(prefix, "scheduler.jobs.failed")
@@ -100,7 +100,7 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
         if (runnable instanceof CustomFuture) {
             CustomFuture<?> future = (CustomFuture<?>) runnable;
             long processingTime = clock.monotonicTime() - lastRunStartTimes.get(future);
-            processingTimeSummary.record(processingTime);
+            processingTimeSummary.record(processingTime, TimeUnit.NANOSECONDS);
             running.remove(future);
             if (throwable == null && future.isDone()) {
                 try {

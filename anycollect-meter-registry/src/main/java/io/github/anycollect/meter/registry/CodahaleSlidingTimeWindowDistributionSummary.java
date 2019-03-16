@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class CodahaleSlidingTimeWindowDistributionSummary extends AbstractMeter implements Distribution, Meter {
+public class CodahaleSlidingTimeWindowDistributionSummary extends AbstractMeter implements DistributionMeter {
     private final Clock clock;
     private final Histogram histogram;
     private final double[] quantiles;

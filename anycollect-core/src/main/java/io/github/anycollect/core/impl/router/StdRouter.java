@@ -12,13 +12,11 @@ import io.github.anycollect.core.impl.router.adapters.WriterAdapter;
 import io.github.anycollect.core.impl.router.config.RouterConfig;
 import io.github.anycollect.core.impl.router.config.TopologyItem;
 import io.github.anycollect.core.impl.router.filters.FilterChain;
-import io.github.anycollect.core.impl.scheduler.MonitoredScheduledThreadPoolExecutor;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.Tags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 import static java.util.stream.Collectors.toList;
@@ -96,8 +95,7 @@ public final class StdRouter implements Router, Lifecycle {
         ThreadFactory factory = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-route(" + consumer.getAddress() + ")-[%d]")
                 .build();
-        ExecutorService executorService = new MonitoredScheduledThreadPoolExecutor(1, factory,
-                registry, "router", Tags.of("route", consumer.getAddress()));
+        ExecutorService executorService = Executors.newSingleThreadExecutor(factory);
         return new BackgroundMetricConsumer(executorService, new MonitoredMetricConsumer(consumer, registry));
     }
 

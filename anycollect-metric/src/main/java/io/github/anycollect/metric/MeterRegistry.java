@@ -2,6 +2,7 @@ package io.github.anycollect.metric;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 
@@ -27,6 +28,9 @@ public interface MeterRegistry {
 
     @Nonnull
     Distribution distribution(@Nonnull MeterId id);
+
+    @Nonnull
+    Timer timer(@Nonnull MeterId id, @Nonnull TimeUnit timeUnit);
 
     List<Metric> measure(@Nonnull Predicate<MeterId> filter);
 }

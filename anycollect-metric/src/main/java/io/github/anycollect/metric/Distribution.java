@@ -29,6 +29,10 @@ public interface Distribution {
             return this;
         }
 
+        public DistributionBuilder unit(@Nonnull final String unit) {
+            return super.unit(unit);
+        }
+
         public Distribution register(@Nonnull final MeterRegistry registry) {
             ImmutableMeterId id = new ImmutableMeterId(
                     getKey(), getUnit(),

@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 
@@ -75,16 +76,27 @@ public class AnyCollectMeterRegistry implements MeterRegistry {
     @Override
     public Distribution distribution(@Nonnull final MeterId id) {
         // TODO configure window and percentiles for each id
-        return (Distribution) meters.computeIfAbsent(id, meterId ->
-                CodahaleSlidingTimeWindowDistributionSummary.builder()
-                        .id(meterId)
-                        .quantiles(QUANTILES)
-                        .window(100)
-                        .prefix(config.globalPrefix())
-                        .tags(config.commonTags())
-                        .meta(config.commonMeta())
-                        .clock(clock)
-                        .build());
+        return (Distribution) meters.computeIfAbsent(id, this::makeDistribuition);
+    }
+
+    private DistributionMeter makeDistribuition(final MeterId id) {
+        // TODO configure window and percentiles for each id
+        return CodahaleSlidingTimeWindowDistributionSummary.builder()
+                .id(id)
+                .quantiles(QUANTILES)
+                .window(100)
+                .prefix(config.globalPrefix())
+                .tags(config.commonTags())
+                .meta(config.commonMeta())
+                .clock(clock)
+                .build();
+    }
+
+    @Nonnull
+    @Override
+    public Timer timer(@Nonnull final MeterId id, @Nonnull final TimeUnit timeUnit) {
+        return (Timer) meters.computeIfAbsent(id, meterId ->
+                new DistributionDelegatingTimer(meterId, makeDistribuition(meterId), timeUnit));
     }
 
     @Override

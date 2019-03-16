@@ -5,6 +5,7 @@ import io.github.anycollect.metric.*;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 
@@ -35,6 +36,12 @@ public final class NoopMeterRegistry implements MeterRegistry {
     @Override
     public Distribution distribution(@Nonnull final MeterId id) {
         return Distribution.NOOP;
+    }
+
+    @Nonnull
+    @Override
+    public Timer timer(@Nonnull final MeterId id, @Nonnull final TimeUnit timeUnit) {
+        return Timer.NOOP;
     }
 
     @Override
