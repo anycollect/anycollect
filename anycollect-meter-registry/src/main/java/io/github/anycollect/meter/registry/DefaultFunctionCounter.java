@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 
-public class DefaultFunctionCounter<T> extends AbstractMeter implements FunctionCounter, Measurable {
+public class DefaultFunctionCounter<T> extends AbstractMeter implements FunctionCounter, Meter {
     private final Clock clock;
     private final T obj;
     private final ToDoubleFunction<T> value;

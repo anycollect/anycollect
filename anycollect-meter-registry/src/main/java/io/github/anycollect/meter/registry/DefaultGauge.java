@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 
-public class DefaultGauge<T> extends AbstractMeter implements Gauge, Measurable {
+public class DefaultGauge<T> extends AbstractMeter implements Gauge, Meter {
     private final Clock clock;
     private final T obj;
     private final ToDoubleFunction<T> value;

@@ -59,4 +59,8 @@ public interface Metric {
     default boolean isEmpty() {
         return getMeasurements().isEmpty();
     }
+
+    default int size() {
+        return getMeasurements().size();
+    }
 }

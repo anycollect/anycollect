@@ -1,4 +1,6 @@
-package io.github.anycollect.metric;
+package io.github.anycollect.meter.registry;
+
+import io.github.anycollect.metric.MeterId;
 
 import javax.annotation.Nonnull;
 
@@ -10,7 +12,6 @@ public abstract class AbstractMeter implements Meter {
     }
 
     @Nonnull
-    @Override
     public final MeterId getId() {
         return id;
     }

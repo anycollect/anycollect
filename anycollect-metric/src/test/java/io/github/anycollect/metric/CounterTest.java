@@ -2,8 +2,6 @@ package io.github.anycollect.metric;
 
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nonnull;
-
 import static org.mockito.Mockito.*;
 
 class CounterTest {
@@ -24,12 +22,6 @@ class CounterTest {
             @Override
             public void increment(double amount) {
 
-            }
-
-            @Nonnull
-            @Override
-            public MeterId getId() {
-                return null;
             }
         });
         counter.increment();

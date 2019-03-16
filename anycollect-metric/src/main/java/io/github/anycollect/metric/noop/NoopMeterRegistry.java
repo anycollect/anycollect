@@ -14,13 +14,13 @@ public final class NoopMeterRegistry implements MeterRegistry {
     public <T> Gauge gauge(@Nonnull final MeterId id,
                            @Nonnull final T obj,
                            @Nonnull final ToDoubleFunction<T> value) {
-        return new NoopGauge(id);
+        return Gauge.NOOP;
     }
 
     @Nonnull
     @Override
     public Counter counter(@Nonnull final MeterId id) {
-        return new NoopCounter(id);
+        return Counter.NOOP;
     }
 
     @Nonnull
@@ -28,13 +28,13 @@ public final class NoopMeterRegistry implements MeterRegistry {
     public <T> FunctionCounter counter(@Nonnull final MeterId id,
                                        @Nonnull final T obj,
                                        @Nonnull final ToDoubleFunction<T> value) {
-        return new NoopFunctionCounter(id);
+        return FunctionCounter.NOOP;
     }
 
     @Nonnull
     @Override
     public Distribution distribution(@Nonnull final MeterId id) {
-        return new NoopDistribution(id);
+        return Distribution.NOOP;
     }
 
     @Override

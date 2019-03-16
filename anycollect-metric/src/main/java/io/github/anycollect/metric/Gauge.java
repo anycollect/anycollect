@@ -3,11 +3,19 @@ package io.github.anycollect.metric;
 import javax.annotation.Nonnull;
 import java.util.function.ToDoubleFunction;
 
-public interface Gauge extends Meter {
+public interface Gauge {
+    Gauge NOOP = new Gauge() { };
+
     static <T> GaugeBuilder<T> make(@Nonnull final String key,
-                                   @Nonnull final T obj,
-                                   @Nonnull final ToDoubleFunction<T> value) {
+                                    @Nonnull final T obj,
+                                    @Nonnull final ToDoubleFunction<T> value) {
         return new GaugeBuilder<>(key, obj, value);
+    }
+
+    static <T> GaugeBuilder<T> make(@Nonnull final T obj,
+                                    @Nonnull final ToDoubleFunction<T> value,
+                                    @Nonnull final String... keyParts) {
+        return new GaugeBuilder<>(obj, value, keyParts);
     }
 
     final class GaugeBuilder<T> extends BaseMeterBuilder<GaugeBuilder<T>> {
@@ -18,6 +26,14 @@ public interface Gauge extends Meter {
                      @Nonnull final T obj,
                      @Nonnull final ToDoubleFunction<T> value) {
             super(key);
+            this.obj = obj;
+            this.value = value;
+        }
+
+        GaugeBuilder(@Nonnull final T obj,
+                     @Nonnull final ToDoubleFunction<T> value,
+                     @Nonnull final String... keyParts) {
+            super(keyParts);
             this.obj = obj;
             this.value = value;
         }

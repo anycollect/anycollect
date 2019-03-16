@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.DoubleAdder;
 
-public class CumulativeCounter extends AbstractMeter implements Counter, Measurable {
+public class CumulativeCounter extends AbstractMeter implements Counter, Meter {
     private final Clock clock;
     private final DoubleAdder adder = new DoubleAdder();
     private final PreparedMetric preparedCounter;

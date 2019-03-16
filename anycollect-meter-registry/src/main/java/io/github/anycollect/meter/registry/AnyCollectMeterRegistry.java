@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.toList;
 public class AnyCollectMeterRegistry implements MeterRegistry {
     public static final String NAME = "MeterRegistry";
     private static final double[] QUANTILES = new double[]{0.5, 0.75, 0.9, 0.95, 0.99, 0.999};
-    private final ConcurrentMap<MeterId, Measurable> meters = new ConcurrentHashMap<>();
+    private final ConcurrentMap<MeterId, Meter> meters = new ConcurrentHashMap<>();
     private final Clock clock = Clock.getDefault();
     private final AnyCollectMeterRegistryConfig config;
 

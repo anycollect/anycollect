@@ -2,9 +2,15 @@ package io.github.anycollect.metric;
 
 import javax.annotation.Nonnull;
 
-public interface Distribution extends Meter {
+public interface Distribution {
+    Distribution NOOP = amount -> { };
+
     static DistributionBuilder key(@Nonnull final String key) {
         return new DistributionBuilder(key);
+    }
+
+    static DistributionBuilder key(@Nonnull final String... keyParts) {
+        return new DistributionBuilder(keyParts);
     }
 
     void record(long amount);
@@ -12,6 +18,10 @@ public interface Distribution extends Meter {
     final class DistributionBuilder extends BaseMeterBuilder<DistributionBuilder> {
         DistributionBuilder(@Nonnull final String value) {
             super(value);
+        }
+
+        public DistributionBuilder(@Nonnull final String... keyParts) {
+            super(keyParts);
         }
 
         @Override

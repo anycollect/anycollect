@@ -2,9 +2,15 @@ package io.github.anycollect.metric;
 
 import javax.annotation.Nonnull;
 
-public interface Counter extends Meter {
+public interface Counter {
+    Counter NOOP = amount -> { };
+
     static CounterBuilder key(@Nonnull final String key) {
         return new CounterBuilder(key);
+    }
+
+    static CounterBuilder key(@Nonnull final String... keyParts) {
+        return new CounterBuilder(keyParts);
     }
 
     default void increment() {
@@ -17,6 +23,10 @@ public interface Counter extends Meter {
     final class CounterBuilder extends BaseMeterBuilder<CounterBuilder> {
         CounterBuilder(@Nonnull final String key) {
             super(key);
+        }
+
+        public CounterBuilder(@Nonnull final String... keyParts) {
+            super(keyParts);
         }
 
         @Override
