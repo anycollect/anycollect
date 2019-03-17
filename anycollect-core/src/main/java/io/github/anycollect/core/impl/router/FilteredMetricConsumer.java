@@ -38,4 +38,9 @@ public final class FilteredMetricConsumer implements MetricConsumer {
     public String getAddress() {
         return delegate.getAddress();
     }
+
+    @Override
+    public String toString() {
+        return getAddress();
+    }
 }

@@ -30,7 +30,6 @@ public class MonitoredMetricConsumer implements MetricConsumer {
     public void consume(@Nonnull final List<? extends Metric> metrics) {
         consumedMetrics.increment(metrics.size());
         processingTime.record(() -> delegate.consume(metrics));
-        delegate.consume(metrics);
     }
 
     @Override
