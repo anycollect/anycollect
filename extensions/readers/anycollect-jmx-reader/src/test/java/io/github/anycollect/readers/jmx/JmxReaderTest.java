@@ -4,6 +4,7 @@ import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.impl.matcher.StaticQueryMatcherResolver;
 import io.github.anycollect.core.impl.measurables.StdMeasurers;
 import io.github.anycollect.core.impl.pull.PullManagerImpl;
+import io.github.anycollect.core.impl.self.StdSelfDiscovery;
 import io.github.anycollect.extensions.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.DefinitionLoader;
 import io.github.anycollect.extensions.InstanceLoader;
@@ -42,6 +43,7 @@ class JmxReaderTest {
     @BeforeEach
     void createJmxReader() throws Exception {
         DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Arrays.asList(
+                StdSelfDiscovery.class,
                 PullManagerImpl.class,
                 CurrentApp.class,
                 StaticJmxQueryProvider.class,
@@ -53,7 +55,7 @@ class JmxReaderTest {
         File config = FileUtils.getFile("src", "test", "resources", "jmx-reader.yaml");
         InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config), definitions);
         List<Instance> instances = new ArrayList<>(instanceLoader.load());
-        jmx = (JmxReader) instances.get(5).resolve();
+        jmx = (JmxReader) instances.get(6).resolve();
     }
 
     @Test

@@ -1,5 +1,9 @@
 extenstions:
 - !load
+  extension: SelfDiscovery
+  instance: self
+  injectMode: auto
+- !load
   extension: PullEngine
   instance: puller
   config:

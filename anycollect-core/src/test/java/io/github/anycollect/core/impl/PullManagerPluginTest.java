@@ -6,6 +6,7 @@ import io.github.anycollect.core.api.internal.ImmutableState;
 import io.github.anycollect.core.api.internal.PullManager;
 import io.github.anycollect.core.api.internal.State;
 import io.github.anycollect.core.impl.pull.PullManagerImpl;
+import io.github.anycollect.core.impl.self.StdSelfDiscovery;
 import io.github.anycollect.extensions.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.DefinitionLoader;
 import io.github.anycollect.extensions.InstanceLoader;
@@ -21,10 +22,7 @@ import org.junit.jupiter.api.Test;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -36,12 +34,12 @@ class PullManagerPluginTest {
 
     @BeforeEach
     void createPullManager() throws Exception {
-        DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Collections.singletonList(PullManagerImpl.class));
+        DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Arrays.asList(StdSelfDiscovery.class, PullManagerImpl.class));
         Collection<Definition> definitions = definitionLoader.load();
         File config = FileUtils.getFile("src", "test", "resources", "anycollect.yaml");
         InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config), definitions);
         List<Instance> instances = new ArrayList<>(instanceLoader.load());
-        puller = (PullManager) instances.get(0).resolve();
+        puller = (PullManager) instances.get(1).resolve();
     }
 
     @Test

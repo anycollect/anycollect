@@ -8,6 +8,8 @@ import io.github.anycollect.core.api.internal.PullManager;
 import io.github.anycollect.core.api.internal.QueryMatcherResolver;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.query.QueryProvider;
+import io.github.anycollect.core.api.query.SelfQuery;
+import io.github.anycollect.core.api.target.SelfDiscovery;
 import io.github.anycollect.core.api.target.ServiceDiscovery;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.pull.availability.HealthChecker;
@@ -38,6 +40,7 @@ public final class PullManagerImpl implements PullManager {
     private static final Logger LOG = LoggerFactory.getLogger(PullManagerImpl.class);
     private final PullScheduler puller;
     private final Scheduler updater;
+    private final SelfDiscovery selfDiscovery;
     private final int updatePeriodInSeconds;
     private final int defaultPullPeriodInSeconds;
     private final HealthChecksConfig healthChecks;
@@ -47,9 +50,11 @@ public final class PullManagerImpl implements PullManager {
 
     @ExtCreator
     public PullManagerImpl(
+            @ExtDependency(qualifier = "self") @Nonnull final SelfDiscovery selfDiscovery,
             @ExtDependency(qualifier = "registry", optional = true) @Nullable final MeterRegistry optRegistry,
             @ExtConfig @Nonnull final PullManagerConfig config) {
         LOG.debug("create pull manager with config {}", config);
+        this.selfDiscovery = selfDiscovery;
         this.updatePeriodInSeconds = config.getUpdatePeriodInSeconds();
         this.defaultPullPeriodInSeconds = config.getDefaultPullPeriodInSeconds();
         ThreadFactory updaterThreads = new ThreadFactoryBuilder()
@@ -69,11 +74,13 @@ public final class PullManagerImpl implements PullManager {
     }
 
     public PullManagerImpl(@Nonnull final PullScheduler puller,
+                           @Nonnull final SelfDiscovery selfDiscovery,
                            @Nonnull final Scheduler updater,
                            @Nonnull final Scheduler healthCheckScheduler,
                            final int updatePeriodInSeconds,
                            final int defaultPullPeriodInSeconds) {
         this.puller = puller;
+        this.selfDiscovery = selfDiscovery;
         this.updater = updater;
         this.updatePeriodInSeconds = updatePeriodInSeconds;
         this.defaultPullPeriodInSeconds = defaultPullPeriodInSeconds;
@@ -95,6 +102,18 @@ public final class PullManagerImpl implements PullManager {
                 resolver,
                 defaultPullPeriodInSeconds);
         start(stateProvider, dispatcher, healthCheck);
+    }
+
+    @Override
+    public <Q extends SelfQuery> void start(@Nonnull final Q selfQuery, @Nonnull final Dispatcher dispatcher) {
+        start(selfQuery, dispatcher, defaultPullPeriodInSeconds);
+    }
+
+    @Override
+    public <Q extends SelfQuery> void start(@Nonnull final Q selfQuery,
+                                            @Nonnull final Dispatcher dispatcher,
+                                            final int periodInSeconds) {
+        puller.schedulePull(selfDiscovery.self(), selfQuery, dispatcher, periodInSeconds);
     }
 
     @Override

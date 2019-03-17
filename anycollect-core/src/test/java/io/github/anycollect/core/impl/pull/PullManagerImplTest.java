@@ -4,6 +4,7 @@ import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.DesiredStateProvider;
 import io.github.anycollect.core.api.internal.ImmutableState;
 import io.github.anycollect.core.api.internal.State;
+import io.github.anycollect.core.api.target.SelfDiscovery;
 import io.github.anycollect.core.impl.JitScheduler;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
@@ -19,7 +20,7 @@ class PullManagerImplTest {
     void scheduleInitialState() {
         PullScheduler scheduler = mock(PullScheduler.class);
         Scheduler updater = new JitScheduler();
-        PullManagerImpl manager = new PullManagerImpl(scheduler, updater, mock(Scheduler.class),1, 10);
+        PullManagerImpl manager = new PullManagerImpl(scheduler, mock(SelfDiscovery.class), updater, mock(Scheduler.class),1, 10);
         @SuppressWarnings("unchecked")
         DesiredStateProvider<TestTarget, TestQuery> provider = mock(DesiredStateProvider.class);
         Dispatcher dispatcher = mock(Dispatcher.class);
