@@ -45,6 +45,14 @@ extensions:
   scope: global
   priority: default
 
+# System
+- !load
+  extension: SystemReader
+  instance: system
+  injectMode: manual
+  scope: global
+  priority: default
+
 # Slf4j
 - !load
   extension: Slf4jWriter

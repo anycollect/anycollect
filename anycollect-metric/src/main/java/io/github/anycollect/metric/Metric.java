@@ -3,10 +3,15 @@ package io.github.anycollect.metric;
 import io.github.anycollect.metric.prepared.PreparedMetricBuilder;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public interface Metric {
+    static Builder builder() {
+        return new Builder();
+    }
+
     static PreparedMetricBuilder prepare() {
         return new PreparedMetricBuilder();
     }
@@ -62,5 +67,42 @@ public interface Metric {
 
     default int size() {
         return getMeasurements().size();
+    }
+
+    class Builder extends BaseBuilder<Builder> {
+        private long timestamp;
+        private final List<Measurement> measurements = new ArrayList<>();
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        public Builder key(@Nonnull final String key) {
+            return super.key(key);
+        }
+
+        @Override
+        public Builder key(@Nonnull final String... keyParts) {
+            return super.key(keyParts);
+        }
+
+        public Builder at(final long timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public Builder measurement(@Nonnull final Stat stat,
+                                   @Nonnull final Type type,
+                                   @Nonnull final String unit,
+                                   final double value) {
+            measurements.add(new ImmutableMeasurement(stat, type, unit, value));
+            return this;
+        }
+
+        public Metric build() {
+            return new ImmutableMetric(getKey(), timestamp, measurements,
+                    getTagsBuilder().build(), getMetaBuilder().build());
+        }
     }
 }

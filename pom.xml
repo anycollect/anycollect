@@ -32,6 +32,7 @@
         <module>extensions/kv/anycollect-consul-kv</module>
         <module>extensions/readers/anycollect-async-socket-reader</module>
         <module>distros/anycollect-dist</module>
+        <module>extensions/readers/anycollect-system-reader</module>
     </modules>
 
     <build>
