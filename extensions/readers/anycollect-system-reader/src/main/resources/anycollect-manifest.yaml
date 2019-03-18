@@ -1,3 +1,5 @@
 manifest:
   extensions:
-    - class: io.github.anycollect.readers.system.SystemReader
+  - class: io.github.anycollect.readers.system.SystemReader
+  - class: io.github.anycollect.readers.process.KvProcessDiscovery
+  - class: io.github.anycollect.readers.process.ProcessReader

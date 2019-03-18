@@ -28,6 +28,12 @@ public final class CachedKvDiscovery<D, T extends Target> implements ServiceDisc
     private final String key;
     private Map<D, T> previous = new HashMap<>();
 
+    public static <T extends Target> CachedKvDiscovery<T, T> create(@Nonnull final KeyValue kv,
+                                                                    @Nonnull final Class<T> targetClass,
+                                                                    @Nonnull final String key) {
+        return new CachedKvDiscovery<>(kv, targetClass, TargetFactory.identity(), key);
+    }
+
     public CachedKvDiscovery(@Nonnull final KeyValue kv,
                              @Nonnull final Class<D> definitionClass,
                              @Nonnull final TargetFactory<D, T> targetFactory,
