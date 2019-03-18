@@ -40,7 +40,7 @@ public final class Process extends AbstractTarget<ProcessStats> {
                 .measurement(Stat.VALUE, Type.GAUGE, "percents", memoryUsage)
                 .build());
         if (previous == null) {
-            this.previous = current;
+            this.previous = copy(current);
         } else {
             long userTimeDelta = current.getUserTime() - previous.getUserTime();
             long kernelTimeDelta = current.getKernelTime() - previous.getKernelTime();
@@ -53,6 +53,16 @@ public final class Process extends AbstractTarget<ProcessStats> {
                     .measurement(Stat.VALUE, Type.GAUGE, "percents", cpuUsage)
                     .build());
         }
+        this.previous = copy(current);
         return metrics;
+    }
+
+    // we need to make a copy of important fields because oshi can modify this object
+    private OSProcess copy(final OSProcess source) {
+        OSProcess copy = new OSProcess();
+        copy.setUserTime(source.getUserTime());
+        copy.setKernelTime(source.getKernelTime());
+        copy.setUpTime(source.getUpTime());
+        return copy;
     }
 }
