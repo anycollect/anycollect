@@ -38,6 +38,7 @@ public final class Process extends AbstractTarget<ProcessStats> {
         double memoryUsage = 100.0 * rss / totalMemory;
         metrics.add(Metric.builder()
                 .key("process.memory.usage")
+                .at(clock.wallTime())
                 .concatTags(getTags())
                 .concatMeta(getMeta())
                 .measurement(Stat.VALUE, Type.GAUGE, "percents", memoryUsage)
