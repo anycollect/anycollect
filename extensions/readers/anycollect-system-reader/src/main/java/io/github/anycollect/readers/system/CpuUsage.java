@@ -63,6 +63,7 @@ public final class CpuUsage extends SelfQuery {
             metrics.add(makeCpuUsageMetric(
                     "active", "total", timestamp, activePercentage, target));
         }
+        prevTicks = ticks;
         return metrics;
     }
 
@@ -93,6 +94,7 @@ public final class CpuUsage extends SelfQuery {
                 metrics.add(usage);
             }
         }
+        prevTicksPerCore = ticksPerCore;
         return metrics;
     }
 
