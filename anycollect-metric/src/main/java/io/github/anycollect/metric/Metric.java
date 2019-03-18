@@ -70,7 +70,7 @@ public interface Metric {
     }
 
     class Builder extends BaseBuilder<Builder> {
-        private long timestamp;
+        private long timestamp = -1;
         private final List<Measurement> measurements = new ArrayList<>();
 
         @Override
@@ -101,6 +101,9 @@ public interface Metric {
         }
 
         public Metric build() {
+            if (timestamp == -1) {
+                throw new IllegalStateException("timestamp must be set");
+            }
             return new ImmutableMetric(getKey(), timestamp, measurements,
                     getTagsBuilder().build(), getMetaBuilder().build());
         }

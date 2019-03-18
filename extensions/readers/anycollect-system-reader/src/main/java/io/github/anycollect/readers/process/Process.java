@@ -2,6 +2,7 @@ package io.github.anycollect.readers.process;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.target.AbstractTarget;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Stat;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Process extends AbstractTarget<ProcessStats> {
+    private final Clock clock;
     private final int pid;
     private volatile OSProcess previous;
 
@@ -24,6 +26,7 @@ public final class Process extends AbstractTarget<ProcessStats> {
                    @JsonProperty("meta") @Nullable final Tags meta) {
         super("pid@" + pid, tags != null ? tags : Tags.empty(), meta != null ? meta : Tags.empty());
         this.pid = pid;
+        this.clock = Clock.getDefault();
     }
 
     @Override
@@ -48,6 +51,7 @@ public final class Process extends AbstractTarget<ProcessStats> {
             double cpuUsage = 100.0 * (userTimeDelta + kernelTimeDelta) / upTimeDelta;
             metrics.add(Metric.builder()
                     .key("process.cpu.usage")
+                    .at(clock.wallTime())
                     .concatTags(getTags())
                     .concatMeta(getMeta())
                     .measurement(Stat.VALUE, Type.GAUGE, "percents", cpuUsage)
