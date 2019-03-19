@@ -3,6 +3,7 @@ package io.github.anycollect.core.impl.writers.socket;
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.api.Writer;
 import io.github.anycollect.core.api.common.Lifecycle;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.annotations.*;
 import io.github.anycollect.metric.Metric;
 import org.slf4j.Logger;
@@ -33,8 +34,7 @@ public final class SocketWriter implements Writer, Lifecycle {
             this.sender = new UdpSender(config.getHost(), config.getPort());
         } else {
             LOG.error("protocol {} is not supported", config.getProtocol());
-            // TODO acceptable exception
-            throw new RuntimeException("protocol " + config.getProtocol() + " is not supported");
+            throw new ConfigurationException("protocol " + config.getProtocol() + " is not supported");
         }
         this.id = id;
     }

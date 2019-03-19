@@ -8,11 +8,14 @@ import io.github.anycollect.readers.jmx.server.JmxConnectionFactory;
 import io.github.anycollect.readers.jmx.server.JmxConnectionFactoryImpl;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPoolFactory;
 import io.github.anycollect.readers.jmx.server.pool.impl.CommonsJmxConnectionPoolFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.net.MalformedURLException;
 
 public class DefaultJavaAppFactory implements JavaAppFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultJavaAppFactory.class);
     private final JmxConnectionPoolFactory factory;
     private final MeterRegistry registry;
 
@@ -33,6 +36,7 @@ public class DefaultJavaAppFactory implements JavaAppFactory {
                     factory.create(connectionFactory),
                     registry);
         } catch (MalformedURLException e) {
+            LOG.error("could not create java target because url \"{}\" is malformed", definition.getUrl(), e);
             throw new TargetCreationException("could not create java target", e);
         }
     }

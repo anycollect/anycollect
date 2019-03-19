@@ -20,7 +20,6 @@ public class JmxConnectionFactoryImpl implements JmxConnectionFactory {
     private final JavaAppConfig config;
     private final JMXServiceURL serviceURL;
 
-    // TODO other checked exception
     public JmxConnectionFactoryImpl(@Nonnull final JavaAppConfig config) throws MalformedURLException {
         this(JmxConnectorFactory.DEFAULT, config);
     }

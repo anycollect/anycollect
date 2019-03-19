@@ -7,6 +7,7 @@ import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.measurable.FamilyConfig;
 import io.github.anycollect.core.api.measurable.Measurer;
 import io.github.anycollect.core.api.measurable.Measurers;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.Metric;
@@ -62,8 +63,7 @@ public final class StdJmxQuery extends JmxQuery {
         try {
             this.objectPattern = new ObjectName(objectPattern);
         } catch (MalformedObjectNameException e) {
-            // TODO replace to configuration exception
-            throw new RuntimeException(e);
+            throw new ConfigurationException("object name " + objectPattern + " is malformed", e);
         }
         if (restriction != null) {
             this.restriction = restriction;

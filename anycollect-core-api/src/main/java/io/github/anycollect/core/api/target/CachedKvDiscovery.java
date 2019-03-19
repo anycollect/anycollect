@@ -64,7 +64,7 @@ public final class CachedKvDiscovery<D, T extends Target> implements ServiceDisc
             try {
                 target = targetFactory.create(definition);
             } catch (TargetCreationException e) {
-                LOG.warn("could not create target from definition {}", definition);
+                LOG.error("could not create target from definition {}", definition, e);
             }
             apps.put(definition, target);
         }
