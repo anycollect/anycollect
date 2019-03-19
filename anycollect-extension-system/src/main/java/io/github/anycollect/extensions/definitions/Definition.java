@@ -1,7 +1,7 @@
 package io.github.anycollect.extensions.definitions;
 
 import io.github.anycollect.extensions.di.Instantiator;
-import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.ExtensionCreationException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,8 +11,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
-
-import static java.util.stream.Collectors.toList;
 
 @ToString
 @EqualsAndHashCode

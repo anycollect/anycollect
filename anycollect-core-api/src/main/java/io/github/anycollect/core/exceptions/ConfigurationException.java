@@ -1,4 +1,4 @@
-package io.github.anycollect.extensions.exceptions;
+package io.github.anycollect.core.exceptions;
 
 /**
  * Signals that configuration that has been passed is wrong.

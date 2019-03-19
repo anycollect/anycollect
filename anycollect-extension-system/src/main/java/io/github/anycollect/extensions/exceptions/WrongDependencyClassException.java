@@ -1,5 +1,7 @@
 package io.github.anycollect.extensions.exceptions;
 
+import io.github.anycollect.core.exceptions.ConfigurationException;
+
 public final class WrongDependencyClassException extends ConfigurationException {
     public WrongDependencyClassException(final String name,
                                          final Class<?> expected,

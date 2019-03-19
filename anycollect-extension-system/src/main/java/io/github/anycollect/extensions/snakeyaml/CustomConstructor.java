@@ -7,7 +7,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.extensions.VarSubstitutor;
 import io.github.anycollect.extensions.definitions.*;
-import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
 import io.github.anycollect.jackson.AnyCollectModule;
 import io.github.anycollect.metric.MeterRegistry;

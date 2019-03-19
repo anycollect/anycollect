@@ -1,6 +1,6 @@
 package io.github.anycollect.extensions.definitions;
 
-import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.ExtensionCreationException;
 import io.github.anycollect.extensions.utils.ConstrictorUtils;
 import lombok.EqualsAndHashCode;

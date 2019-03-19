@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import io.github.anycollect.extensions.definitions.*;
-import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
 import io.github.anycollect.extensions.utils.ConstrictorUtils;
 import io.github.anycollect.extensions.utils.TestConfigUtils;

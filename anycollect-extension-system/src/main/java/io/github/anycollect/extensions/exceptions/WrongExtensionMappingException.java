@@ -1,5 +1,7 @@
 package io.github.anycollect.extensions.exceptions;
 
+import io.github.anycollect.core.exceptions.ConfigurationException;
+
 /**
  * Signals that extension class and extension point class specified in configuration are incompatible.
  */

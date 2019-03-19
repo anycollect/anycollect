@@ -1,7 +1,7 @@
 package io.github.anycollect.extensions.definitions;
 
 import io.github.anycollect.extensions.di.InjectionPoint;
-import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.WrongDependencyClassException;
 
 public final class SingleDependencyDefinition extends AbstractDependencyDefinition {

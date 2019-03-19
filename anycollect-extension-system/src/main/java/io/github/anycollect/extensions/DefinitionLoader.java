@@ -1,7 +1,7 @@
 package io.github.anycollect.extensions;
 
 import io.github.anycollect.extensions.definitions.Definition;
-import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 
 import java.util.Collection;
 

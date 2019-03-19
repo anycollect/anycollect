@@ -2,7 +2,7 @@ package io.github.anycollect.extensions;
 
 import io.github.anycollect.extensions.annotations.*;
 import io.github.anycollect.extensions.definitions.*;
-import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.ExtensionDescriptorException;
 import io.github.anycollect.extensions.exceptions.UnresolvableConstructorException;
 import io.github.anycollect.extensions.exceptions.WrongExtensionMappingException;

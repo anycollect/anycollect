@@ -7,7 +7,7 @@ import io.github.anycollect.extensions.definitions.ConfigDefinition;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.MultiDependencyDefinition;
 import io.github.anycollect.extensions.definitions.SingleDependencyDefinition;
-import io.github.anycollect.extensions.exceptions.ConfigurationException;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.ExtensionDescriptorException;
 import io.github.anycollect.extensions.exceptions.UnresolvableConstructorException;
 import io.github.anycollect.extensions.exceptions.WrongExtensionMappingException;

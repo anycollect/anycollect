@@ -1,5 +1,7 @@
 package io.github.anycollect.extensions.exceptions;
 
+import io.github.anycollect.core.exceptions.ConfigurationException;
+
 /**
  * Signals that configuration does not contain a required property.
  */
