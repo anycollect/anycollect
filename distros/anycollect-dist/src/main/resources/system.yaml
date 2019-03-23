@@ -70,16 +70,6 @@ extensions:
   priority: default
   config:
     name: anycollect
-- !load
-  extension: Measurers
-  instance: measurers
-  scope: local
-  injectMode: auto
-  config:
-    families:
-    - name: uptime
-      measurements:
-      - { id: value, path: Uptime, type: timestamp, stat: value }
 # Queries
 - !load
   extension: StaticJmxQueryProvider
@@ -91,9 +81,8 @@ extensions:
     queries:
     - "@class": .JvmMemory
     - "@class": .JvmThreads
-    - queryId: jvm.runtime.uptime
+    - key: jvm.runtime.uptime
       mbean: "java.lang:type=Runtime"
-      families:
-      - what: jvm.runtime.uptime
-        name: uptime
-        baseUnit: ms
+      unit: ms
+      measurements:
+        - { path: Uptime, type: timestamp, stat: value }

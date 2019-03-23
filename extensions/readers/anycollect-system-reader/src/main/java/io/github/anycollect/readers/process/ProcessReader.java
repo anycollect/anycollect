@@ -11,7 +11,6 @@ import io.github.anycollect.core.api.query.QueryProvider;
 import io.github.anycollect.extensions.annotations.*;
 import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
-import oshi.software.os.OperatingSystem;
 
 import javax.annotation.Nonnull;
 
@@ -37,9 +36,8 @@ public final class ProcessReader implements Reader {
     @Override
     public void start(@Nonnull final Dispatcher dispatcher) {
         SystemInfo systemInfo = new SystemInfo();
-        OperatingSystem os = systemInfo.getOperatingSystem();
         GlobalMemory memory = systemInfo.getHardware().getMemory();
-        pullManager.start(discovery, QueryProvider.singleton(new ProcessStats(os, memory)),
+        pullManager.start(discovery, QueryProvider.singleton(new ProcessQuery(memory)),
                 QueryMatcherResolver.consistent(QueryMatcher.all(config.period)), dispatcher);
     }
 

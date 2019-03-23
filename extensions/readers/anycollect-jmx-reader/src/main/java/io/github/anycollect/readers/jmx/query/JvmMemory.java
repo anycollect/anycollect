@@ -1,22 +1,30 @@
 package io.github.anycollect.readers.jmx.query;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
+import io.github.anycollect.core.api.job.Job;
+import io.github.anycollect.core.api.job.TaggingJob;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.exceptions.ConnectionException;
+import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.ImmutableTags;
 import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.server.JavaApp;
+import io.github.anycollect.readers.jmx.query.operations.QueryAttributes;
+import io.github.anycollect.readers.jmx.query.operations.QueryObjectNames;
+import io.github.anycollect.readers.jmx.query.operations.QueryOperation;
 
 import javax.annotation.Nonnull;
-import javax.management.*;
+import javax.management.Attribute;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-public class JvmMemory extends JmxQuery {
+public final class JvmMemory extends JmxQuery {
     private static final ObjectName MEMORY_POOL_OBJECT_PATTERN;
     private static final String NAME_ATTR_NAME = "Name";
     private static final String USAGE_ATTR_NAME = "Usage";
@@ -42,30 +50,41 @@ public class JvmMemory extends JmxQuery {
 
     @Nonnull
     @Override
-    public List<Metric> executeOn(@Nonnull final MBeanServerConnection connection,
-                                  @Nonnull final JavaApp app) throws ConnectionException {
-        List<Metric> families = new ArrayList<>();
-        for (ObjectName objectName : queryNames(connection, MEMORY_POOL_OBJECT_PATTERN)) {
-            AttributeList attributes;
-            try {
-                attributes = connection.getAttributes(objectName, ATTRIBUTES);
-            } catch (InstanceNotFoundException | ReflectionException | IOException e) {
-                throw new ConnectionException("could not get attributes", e);
-            }
-            long timestamp = clock.wallTime();
-            String name = (String) ((Attribute) attributes.get(0)).getValue();
-            CompositeData usage = (CompositeData) ((Attribute) attributes.get(1)).getValue();
-            long used = (Long) usage.get(USED);
-            String type = HEAP_TYPE.equals(((Attribute) attributes.get(2)).getValue()) ? "heap" : "nonheap";
-            ImmutableTags tags = Tags.builder()
-                    .concat(app.getTags())
-                    .tag("pool", name.replace(' ', '_'))
-                    .tag("type", type)
-                    .build();
-            Metric family = Metric.of("jvm.memory.used", tags, app.getMeta(),
-                    Measurement.gauge(used, "bytes"), timestamp);
-            families.add(family);
+    public Job bind(@Nonnull final JavaApp app) {
+        return new TaggingJob(
+                Tags.concat(app.getTags(), getTags()),
+                Tags.concat(app.getMeta(), getTags()),
+                new JvmMemoryJob(app));
+    }
+
+    private final class JvmMemoryJob implements Job {
+        private final JavaApp app;
+        private final QueryOperation<Set<ObjectName>> queryNames;
+
+        JvmMemoryJob(final JavaApp app) {
+            this.app = app;
+            this.queryNames = new QueryObjectNames(MEMORY_POOL_OBJECT_PATTERN);
         }
-        return families;
+
+        @Override
+        public List<Metric> execute() throws QueryException, ConnectionException {
+            List<Metric> metrics = new ArrayList<>();
+            for (ObjectName objectName : app.operate(queryNames)) {
+                List<Attribute> attributes = app.operate(new QueryAttributes(objectName, ATTRIBUTES));
+                long timestamp = clock.wallTime();
+                String name = (String) attributes.get(0).getValue();
+                CompositeData usage = (CompositeData) attributes.get(1).getValue();
+                long used = (Long) usage.get(USED);
+                String type = HEAP_TYPE.equals(attributes.get(2).getValue()) ? "heap" : "nonheap";
+                ImmutableTags tags = Tags.builder()
+                        .tag("pool", name.replace(' ', '_'))
+                        .tag("type", type)
+                        .build();
+                Metric metric = Metric.of("jvm.memory.used", tags, Tags.empty(),
+                        Measurement.gauge(used, "bytes"), timestamp);
+                metrics.add(metric);
+            }
+            return metrics;
+        }
     }
 }

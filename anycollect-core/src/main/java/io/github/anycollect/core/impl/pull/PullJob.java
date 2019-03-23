@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.pull;
 
+import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.query.Query;
@@ -10,7 +11,6 @@ import io.github.anycollect.metric.Counter;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.noop.NoopMeterRegistry;
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +20,9 @@ import java.util.Objects;
 
 public final class PullJob<T extends Target<Q>, Q extends Query> implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(PullJob.class);
-    @Getter
     private final T target;
-    @Getter
     private final Q query;
+    private final Job job;
     private final Dispatcher dispatcher;
     private final Clock clock;
     private final Counter failed;
@@ -47,6 +46,7 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
         Objects.requireNonNull(clock, "clock must not be null");
         this.target = target;
         this.query = query;
+        this.job = target.bind(query);
         this.dispatcher = dispatcher;
         this.clock = clock;
         this.failed = Counter.key("pull.jobs.failed")
@@ -65,18 +65,18 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
     public void run() {
         long start = clock.wallTime();
         try {
-            List<Metric> metrics = target.execute(query);
+            List<Metric> metrics;
+            synchronized (job) {
+                metrics = job.execute();
+            }
             succeeded.increment();
             dispatcher.dispatch(metrics);
-            LOG.debug("success: {}.execute({}) taken {}ms", target, query, clock.wallTime() - start);
+            LOG.debug("success: {}.execute({}) taken {}ms and produces {} metrics", target.getId(), query.getId(),
+                    clock.wallTime() - start, metrics.size());
         } catch (QueryException | ConnectionException | RuntimeException e) {
             failed.increment();
-            LOG.debug("failed: {}.execute({}) taken {}ms and failed", target, query, clock.wallTime() - start, e);
+            LOG.debug("failed: {}.execute({}) taken {}ms and failed", target.getId(), query.getId(),
+                    clock.wallTime() - start, e);
         }
-    }
-
-    @Override
-    public String toString() {
-        return target.getId() + ".execute(" + query.getId() + ")";
     }
 }

@@ -19,7 +19,7 @@ public final class ImmutableMetric implements Metric {
 
     public ImmutableMetric(@Nonnull final String key,
                            final long timestamp,
-                           @Nonnull final List<Measurement> measurements,
+                           @Nonnull final List<? extends Measurement> measurements,
                            @Nonnull final Tags tags,
                            @Nonnull final Tags meta) {
         this.key = key;

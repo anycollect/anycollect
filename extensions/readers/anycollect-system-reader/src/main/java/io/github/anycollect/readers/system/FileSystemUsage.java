@@ -2,10 +2,7 @@ package io.github.anycollect.readers.system;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.query.SelfQuery;
-import io.github.anycollect.core.api.target.SelfTarget;
 import io.github.anycollect.metric.Metric;
-import io.github.anycollect.metric.Stat;
-import io.github.anycollect.metric.Type;
 import oshi.software.os.FileSystem;
 import oshi.software.os.OSFileStore;
 
@@ -27,16 +24,14 @@ public final class FileSystemUsage extends SelfQuery {
     }
 
     @Override
-    public List<Metric> executeOn(@Nonnull final SelfTarget target) {
+    public List<Metric> execute() {
         List<Metric> metrics = new ArrayList<>();
         if (config.reportOpenDescriptors()) {
             long openFileDescriptors = fileSystem.getOpenFileDescriptors();
             metrics.add(Metric.builder()
                     .key("fs.open.descriptors")
-                    .concatTags(target.getTags())
-                    .concatMeta(target.getMeta())
                     .at(clock.wallTime())
-                    .measurement(Stat.VALUE, Type.GAUGE, "descriptors", openFileDescriptors)
+                    .gauge("descriptors", openFileDescriptors)
                     .build()
             );
         }
@@ -53,12 +48,10 @@ public final class FileSystemUsage extends SelfQuery {
             String device = fileStore.getVolume();
             metrics.add(Metric.builder()
                     .key("fs.usage")
-                    .concatTags(target.getTags())
                     .tag("mount", mount)
                     .tag("fs", fileSystem)
                     .tag("device", device)
-                    .measurement(Stat.VALUE, Type.GAUGE, "percents", usage)
-                    .concatMeta(target.getMeta())
+                    .gauge("percents", usage)
                     .at(timestamp)
                     .build());
         }

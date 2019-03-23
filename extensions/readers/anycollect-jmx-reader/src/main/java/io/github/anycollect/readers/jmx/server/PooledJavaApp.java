@@ -2,14 +2,16 @@ package io.github.anycollect.readers.jmx.server;
 
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.*;
-import io.github.anycollect.readers.jmx.query.JmxQuery;
+import io.github.anycollect.metric.FunctionCounter;
+import io.github.anycollect.metric.Gauge;
+import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.metric.Tags;
+import io.github.anycollect.readers.jmx.query.operations.QueryOperation;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
 import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
 import javax.management.MBeanServerConnection;
-import java.util.List;
 import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = true)
@@ -50,14 +52,14 @@ public final class PooledJavaApp extends JavaApp {
                 .register(registry);
     }
 
-    @Nonnull
-    public List<Metric> execute(@Nonnull final JmxQuery query) throws QueryException, ConnectionException {
+    @Override
+    public <T> T operate(@Nonnull final QueryOperation<T> operation) throws QueryException, ConnectionException {
         JmxConnection jmxConnection = null;
         try {
             jmxConnection = pool.borrowConnection();
             MBeanServerConnection connection = jmxConnection.getConnection();
             try {
-                return query.executeOn(connection, this);
+                return operation.operate(connection);
             } catch (ConnectionException e) {
                 pool.invalidateConnection(jmxConnection);
                 throw e;

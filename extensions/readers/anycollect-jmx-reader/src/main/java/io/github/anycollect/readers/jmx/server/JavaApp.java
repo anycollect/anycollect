@@ -1,17 +1,17 @@
 package io.github.anycollect.readers.jmx.server;
 
+import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.core.api.target.AbstractTarget;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
+import io.github.anycollect.readers.jmx.query.operations.QueryOperation;
 import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
 import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 public abstract class JavaApp extends AbstractTarget<JmxQuery> {
@@ -28,5 +28,10 @@ public abstract class JavaApp extends AbstractTarget<JmxQuery> {
     }
 
     @Nonnull
-    public abstract List<Metric> execute(@Nonnull JmxQuery query) throws QueryException, ConnectionException;
+    @Override
+    public final Job bind(@Nonnull final JmxQuery query) {
+        return query.bind(this);
+    }
+
+    public abstract <T> T operate(@Nonnull QueryOperation<T> operation) throws QueryException, ConnectionException;
 }

@@ -16,6 +16,7 @@ import javax.management.ObjectName;
 public interface Restriction {
     Restriction ALL = objectName -> true;
 
+    @Nonnull
     static Restriction all() {
         return ALL;
     }

@@ -4,7 +4,6 @@ import io.github.anycollect.core.api.target.SelfDiscovery;
 import io.github.anycollect.core.api.target.SelfTarget;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
-import io.github.anycollect.metric.Tags;
 
 @Extension(name = StdSelfDiscovery.NAME, point = SelfDiscovery.class)
 public class StdSelfDiscovery implements SelfDiscovery {
@@ -13,7 +12,7 @@ public class StdSelfDiscovery implements SelfDiscovery {
 
     @ExtCreator
     public StdSelfDiscovery() {
-        this.self = new SelfTarget("self", Tags.empty(), Tags.empty());
+        this.self = new SelfTarget("self");
     }
 
     @Override

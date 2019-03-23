@@ -19,6 +19,7 @@ class PullJobTest {
     @BeforeEach
     void setUp() {
         when(target.getId()).thenReturn("id");
+        when(target.bind(any())).thenCallRealMethod();
         job = new PullJob<>(target, query, dispatcher);
     }
 

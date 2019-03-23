@@ -92,6 +92,15 @@ public interface Metric {
             return this;
         }
 
+        public Builder counter(@Nonnull final String unit, final double value) {
+            return measurement(Stat.VALUE, Type.COUNTER, unit, value);
+        }
+
+
+        public Builder gauge(@Nonnull final String unit, final double value) {
+            return measurement(Stat.VALUE, Type.GAUGE, unit, value);
+        }
+
         public Builder measurement(@Nonnull final Stat stat,
                                    @Nonnull final Type type,
                                    @Nonnull final String unit,

@@ -3,25 +3,29 @@ package io.github.anycollect.readers.jmx.query;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import io.github.anycollect.core.api.job.Job;
+import io.github.anycollect.core.api.job.TaggingJob;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.ImmutableTags;
-import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
+import io.github.anycollect.readers.jmx.query.operations.InvokeOperation;
 import io.github.anycollect.readers.jmx.server.JavaApp;
+import io.github.anycollect.readers.jmx.query.operations.QueryAttributes;
+import io.github.anycollect.readers.jmx.query.operations.QueryOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import javax.management.*;
+import javax.management.Attribute;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JvmThreads extends JmxQuery {
+public final class JvmThreads extends JmxQuery {
     private static final Logger LOG = LoggerFactory.getLogger(JvmThreads.class);
     private static final ObjectName THREADING_OBJECT_NAME;
     private static final String THREAD_COUNT_ATTR_NAME = "ThreadCount";
@@ -59,72 +63,69 @@ public class JvmThreads extends JmxQuery {
 
     @Nonnull
     @Override
-    public List<Metric> executeOn(@Nonnull final MBeanServerConnection connection,
-                                  @Nonnull final JavaApp app) throws QueryException, ConnectionException {
-        AttributeList attributes;
-        try {
-            attributes = connection.getAttributes(THREADING_OBJECT_NAME, ATTRIBUTE_NAMES);
-        } catch (InstanceNotFoundException | ReflectionException | IOException e) {
-            throw new ConnectionException("could not query attributes", e);
+    public Job bind(@Nonnull final JavaApp app) {
+        return new TaggingJob(
+                Tags.concat(app.getTags(), getTags()),
+                Tags.concat(app.getMeta(), getMeta()),
+                new JvmThreadsJob(app));
+    }
+
+    private final class JvmThreadsJob implements Job {
+        private final JavaApp app;
+        private final QueryOperation<List<Attribute>> queryAttributes;
+
+        JvmThreadsJob(final JavaApp app) {
+            this.app = app;
+            this.queryAttributes = new QueryAttributes(THREADING_OBJECT_NAME, ATTRIBUTE_NAMES);
         }
-        int threadCount = (int) ((Attribute) attributes.get(0)).getValue();
-        int daemonThreadCount = (int) ((Attribute) attributes.get(1)).getValue();
-        long[] allThreadIds = (long[]) ((Attribute) attributes.get(2)).getValue();
-        long totalStartedThreadCount = (long) ((Attribute) attributes.get(3)).getValue();
-        Object[] params = new Object[]{allThreadIds};
-        CompositeData[] threadInfos;
-        try {
-            threadInfos = (CompositeData[]) connection.invoke(
-                    THREADING_OBJECT_NAME,
+
+        @Override
+        public List<Metric> execute() throws QueryException, ConnectionException {
+            List<Attribute> attributes = app.operate(queryAttributes);
+            int threadCount = (int) attributes.get(0).getValue();
+            int daemonThreadCount = (int) attributes.get(1).getValue();
+            long[] allThreadIds = (long[]) attributes.get(2).getValue();
+            long totalStartedThreadCount = (long) attributes.get(3).getValue();
+            Object[] params = new Object[]{allThreadIds};
+            CompositeData[] threadInfos;
+            InvokeOperation invoke = new InvokeOperation(THREADING_OBJECT_NAME,
                     GET_THREAD_INFO_OP_NAME,
                     params,
                     new String[]{long[].class.getName()});
-        } catch (InstanceNotFoundException | MBeanException | ReflectionException e) {
-            LOG.debug("could not invoke method", e);
-            throw new QueryException("could not invoke method", e);
-        } catch (IOException e) {
-            throw new ConnectionException("could not invoke method", e);
+            threadInfos = (CompositeData[]) app.operate(invoke);
+            long timestamp = clock.wallTime();
+            List<Metric> metrics = new ArrayList<>();
+            metrics.add(Metric.builder()
+                    .key(THREADS_STARTED_KEY)
+                    .at(timestamp)
+                    .counter(THREADS_UNIT, totalStartedThreadCount)
+                    .build());
+            metrics.add(Metric.builder()
+                    .key(LIVE_THREADS_KEY)
+                    .tag("type", "daemon")
+                    .at(timestamp)
+                    .gauge(THREADS_UNIT, daemonThreadCount)
+                    .build());
+            metrics.add(Metric.builder()
+                    .key(LIVE_THREADS_KEY)
+                    .tag("type", "nondaemon")
+                    .at(timestamp)
+                    .gauge(THREADS_UNIT, threadCount - daemonThreadCount)
+                    .build());
+            Multiset<String> numberOfThreadsByState = HashMultiset.create();
+            for (CompositeData threadInfo : threadInfos) {
+                String state = (String) threadInfo.get(THREAD_STATE_PROP);
+                numberOfThreadsByState.add(state);
+            }
+            for (String state : numberOfThreadsByState.elementSet()) {
+                metrics.add(Metric.builder()
+                        .key(THREADS_BY_STATE_KEY)
+                        .tag("state", state)
+                        .at(timestamp)
+                        .gauge(THREADS_UNIT, numberOfThreadsByState.count(state))
+                        .build());
+            }
+            return metrics;
         }
-
-        long timestamp = clock.wallTime();
-
-        List<Metric> families = new ArrayList<>();
-        families.add(Metric.of(
-                THREADS_STARTED_KEY,
-                app.getTags(),
-                app.getMeta(),
-                Measurement.counter(totalStartedThreadCount, THREADS_UNIT),
-                timestamp
-        ));
-        families.add(Metric.of(
-                LIVE_THREADS_KEY,
-                Tags.concat(app.getTags(), Tags.of("type", "daemon")),
-                app.getMeta(),
-                Measurement.gauge(daemonThreadCount, THREADS_UNIT),
-                timestamp));
-        families.add(Metric.of(
-                LIVE_THREADS_KEY,
-                Tags.concat(app.getTags(), Tags.of("type", "nondaemon")),
-                app.getMeta(),
-                Measurement.gauge(threadCount - daemonThreadCount, THREADS_UNIT),
-                timestamp));
-        Multiset<String> numberOfThreadsByState = HashMultiset.create();
-        for (CompositeData threadInfo : threadInfos) {
-            String state = (String) threadInfo.get(THREAD_STATE_PROP);
-            numberOfThreadsByState.add(state);
-        }
-        for (String state : numberOfThreadsByState.elementSet()) {
-            ImmutableTags tags = Tags.builder()
-                    .concat(app.getTags())
-                    .tag("state", state)
-                    .build();
-            families.add(Metric.of(
-                    THREADS_BY_STATE_KEY,
-                    tags,
-                    app.getMeta(),
-                    Measurement.gauge(numberOfThreadsByState.count(state), THREADS_UNIT),
-                    timestamp));
-        }
-        return families;
     }
 }

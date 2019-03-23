@@ -11,7 +11,6 @@ import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.annotations.InstanceId;
 import io.github.anycollect.readers.jmx.discovery.JavaAppDiscovery;
-import io.github.anycollect.readers.jmx.query.JmxHealthCheck;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
 import io.github.anycollect.readers.jmx.query.JmxQueryProvider;
 import io.github.anycollect.readers.jmx.server.JavaApp;
@@ -43,7 +42,7 @@ public class JmxReader implements Reader {
 
     @Override
     public void start(@Nonnull final Dispatcher dispatcher) {
-        puller.start(discovery, queries, matcher, dispatcher, new JmxHealthCheck());
+        puller.start(discovery, queries, matcher, dispatcher);
     }
 
     @Override

@@ -17,6 +17,7 @@ class HealthCheckTest {
     @Test
     void whenNoExceptionsDuringExecutionThenPassedHealthCheck() throws Exception {
         TestQuery query = mock(TestQuery.class);
+        when(target.bind(any())).thenCallRealMethod();
         HealthCheck<TestTarget, TestQuery> check = new HealthCheck<>(target, query);
         when(target.execute(query)).thenReturn(Collections.emptyList());
         Health health = check.call();
@@ -28,6 +29,7 @@ class HealthCheckTest {
     @SuppressWarnings("unchecked")
     void whenExceptionsDuringExecutionThenFailedHealthCheck() throws Exception {
         TestQuery query = mock(TestQuery.class);
+        when(target.bind(any())).thenCallRealMethod();
         HealthCheck<TestTarget, TestQuery> check = new HealthCheck<>(target, query);
         when(target.execute(query)).thenThrow(QueryException.class, ConnectionException.class, RuntimeException.class);
         Health health1 = check.call();

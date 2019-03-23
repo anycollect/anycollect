@@ -1,7 +1,6 @@
 manifest:
   extensions:
   - class: io.github.anycollect.core.impl.matcher.StaticQueryMatcherResolver
-  - class: io.github.anycollect.core.impl.measurables.StdMeasurers
   - class: io.github.anycollect.core.impl.pull.PullManagerImpl
   - class: io.github.anycollect.core.impl.router.StdRouter
   - class: io.github.anycollect.core.impl.writers.slf4j.Slf4jWriter

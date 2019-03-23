@@ -51,7 +51,9 @@ class ServiceAvailabilityCheckTest {
     private static List<Metric> makeCheck(boolean timeout) throws Exception {
         Dispatcher dispatcher = mock(Dispatcher.class);
         TestTarget target1 = mock(TestTarget.class);
+        when(target1.bind(any())).thenCallRealMethod();
         TestTarget target2 = mock(TestTarget.class);
+        when(target2.bind(any())).thenCallRealMethod();
         TestQuery query = mock(TestQuery.class);
         when(target1.execute(query)).thenReturn(Collections.emptyList());
         when(target2.execute(query)).thenThrow(ConnectionException.class);

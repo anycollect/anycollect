@@ -2,26 +2,31 @@ package io.github.anycollect.readers.jmx.query;
 
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.server.JavaApp;
+import io.github.anycollect.readers.jmx.query.operations.QueryOperation;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.List;
+import javax.management.MBeanServerConnection;
 
 public class MockJavaApp extends JavaApp {
+    private final MBeanServerConnection connection;
+
     protected MockJavaApp() {
-        super("simple", Tags.empty(), Tags.empty());
+        this(null);
     }
 
-    public MockJavaApp(@Nonnull Tags tags) {
+    protected MockJavaApp(MBeanServerConnection connection) {
+        this(connection, Tags.empty());
+    }
+
+    public MockJavaApp(MBeanServerConnection connection, @Nonnull Tags tags) {
         super("simple", tags, Tags.empty());
+        this.connection = connection;
     }
 
-    @Nonnull
     @Override
-    public List<Metric> execute(@Nonnull JmxQuery query) throws QueryException, ConnectionException {
-        return Collections.emptyList();
+    public <T> T operate(@Nonnull QueryOperation<T> operation) throws QueryException, ConnectionException {
+        return operation.operate(connection);
     }
 }

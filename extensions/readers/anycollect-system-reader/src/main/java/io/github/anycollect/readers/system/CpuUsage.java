@@ -2,10 +2,7 @@ package io.github.anycollect.readers.system;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.query.SelfQuery;
-import io.github.anycollect.core.api.target.SelfTarget;
 import io.github.anycollect.metric.Metric;
-import io.github.anycollect.metric.Stat;
-import io.github.anycollect.metric.Type;
 import oshi.hardware.CentralProcessor;
 
 import javax.annotation.Nonnull;
@@ -29,18 +26,18 @@ public final class CpuUsage extends SelfQuery {
     }
 
     @Override
-    public List<Metric> executeOn(@Nonnull final SelfTarget target) {
+    public List<Metric> execute() {
         List<Metric> metrics = new ArrayList<>();
         if (config.totalCpu()) {
-            metrics.addAll(computeUsageTotals(target));
+            metrics.addAll(computeUsageTotals());
         }
         if (config.perCore()) {
-            metrics.addAll(computeUsagePerCore(target));
+            metrics.addAll(computeUsagePerCore());
         }
         return metrics;
     }
 
-    private List<Metric> computeUsageTotals(final SelfTarget target) {
+    private List<Metric> computeUsageTotals() {
         long[] ticks = processor.getSystemCpuLoadTicks();
         if (prevTicks == null) {
             this.prevTicks = ticks;
@@ -54,20 +51,20 @@ public final class CpuUsage extends SelfQuery {
                 long delta = ticks[tickType.getIndex()] - prevTicks[tickType.getIndex()];
                 double percentage = 100.0 * delta / totalDelta;
                 metrics.add(makeCpuUsageMetric(
-                        tickType.name().toLowerCase(), "total", timestamp, percentage, target));
+                        tickType.name().toLowerCase(), "total", timestamp, percentage));
             }
         }
         if (config.reportActive()) {
             long activeDelta = computeActive(ticks) - computeActive(prevTicks);
             double activePercentage = 100.0 * activeDelta / totalDelta;
             metrics.add(makeCpuUsageMetric(
-                    "active", "total", timestamp, activePercentage, target));
+                    "active", "total", timestamp, activePercentage));
         }
         prevTicks = ticks;
         return metrics;
     }
 
-    private List<Metric> computeUsagePerCore(final SelfTarget target) {
+    private List<Metric> computeUsagePerCore() {
         long[][] ticksPerCore = processor.getProcessorCpuLoadTicks();
         if (prevTicksPerCore == null) {
             prevTicksPerCore = ticksPerCore;
@@ -82,7 +79,7 @@ public final class CpuUsage extends SelfQuery {
                     long delta = ticksPerCore[cpu][tickType.getIndex()] - prevTicksPerCore[cpu][tickType.getIndex()];
                     double percentage = 100.0 * delta / totalDelta;
                     Metric usage = makeCpuUsageMetric(
-                            tickType.name().toLowerCase(), Integer.toString(cpu), timestamp, percentage, target);
+                            tickType.name().toLowerCase(), Integer.toString(cpu), timestamp, percentage);
                     metrics.add(usage);
                 }
             }
@@ -90,7 +87,7 @@ public final class CpuUsage extends SelfQuery {
                 long activeDelta = computeActive(ticksPerCore[cpu]) - computeActive(prevTicksPerCore[cpu]);
                 double activePercentage = 100.0 * activeDelta / totalDelta;
                 Metric usage = makeCpuUsageMetric(
-                        "active", Integer.toString(cpu), timestamp, activePercentage, target);
+                        "active", Integer.toString(cpu), timestamp, activePercentage);
                 metrics.add(usage);
             }
         }
@@ -110,16 +107,13 @@ public final class CpuUsage extends SelfQuery {
         return computeTotal(ticks) - ticks[CentralProcessor.TickType.IDLE.getIndex()];
     }
 
-    private Metric makeCpuUsageMetric(final String state, final String cpu, final long timestamp, final double value,
-                                      final SelfTarget target) {
+    private Metric makeCpuUsageMetric(final String state, final String cpu, final long timestamp, final double value) {
         return Metric.builder()
                 .key("cpu.usage")
                 .at(timestamp)
-                .concatTags(target.getTags())
                 .tag("state", state)
                 .tag("cpu", cpu)
-                .concatMeta(target.getMeta())
-                .measurement(Stat.VALUE, Type.GAUGE, "percents", value)
+                .gauge("percents", value)
                 .build();
     }
 }
