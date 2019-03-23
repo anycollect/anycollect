@@ -65,6 +65,10 @@ public final class ImmutableTags implements Tags {
     public static final class Builder {
         private final Map<String, String> tags = new LinkedHashMap<>();
 
+        public Builder tag(@Nonnull final String key, final int value) {
+            return tag(key, Integer.toString(value));
+        }
+
         public Builder tag(@Nonnull final String key, @Nonnull final String value) {
             Objects.requireNonNull(key, " tag key must not be null");
             Objects.requireNonNull(value, " tag value must not be null");

@@ -29,8 +29,6 @@ public final class ProcessQuery extends AbstractQuery {
         metrics.add(Metric.builder()
                 .key("process.memory.usage")
                 .at(clock.wallTime())
-                .concatTags(getTags())
-                .concatMeta(getMeta())
                 .gauge("percents", memoryUsage)
                 .build());
         if (previous == null) {

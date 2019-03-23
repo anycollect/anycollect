@@ -84,7 +84,7 @@ final class CustomConstructor extends Constructor {
 
         @Override
         public Object construct(final Node node) {
-            LOG.debug("start processing node: {}", node);
+            LOG.trace("start processing node: {}", node);
             if (!(node instanceof MappingNode)) {
                 throw new ConfigurationException("Non-mapping use of tag !load is illegal: " + node);
             }
@@ -96,6 +96,7 @@ final class CustomConstructor extends Constructor {
             Object config = getNullableConfig(definition, instanceName);
             Map<String, Instance> singleDependencies = getSingleDependencies();
             Map<String, List<Instance>> multiDependencies = getMultiDependencies();
+            LOG.debug("creating \"{}\".{}", scopeId, instanceName);
             Instance instance = definition.createInstance(
                     instanceName, config, singleDependencies, multiDependencies,
                     context, getInjectMode(), getScope(), getPriority(), scopeId);
@@ -105,7 +106,7 @@ final class CustomConstructor extends Constructor {
             if (context.getInstance(instance.getDefinition().getExtensionPointClass(), scopeId) == instance) {
                 VALUES.addValue(instance.getDefinition().getExtensionPointClass(), resolved);
             }
-            LOG.debug("instance has been successfully loaded: {}", instance);
+            LOG.trace("instance has been successfully loaded: {}", instance);
             instanceRegistry.put(instance.getInstanceName(), instance);
             return instance;
         }
