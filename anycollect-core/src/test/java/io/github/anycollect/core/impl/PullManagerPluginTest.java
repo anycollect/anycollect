@@ -10,6 +10,7 @@ import io.github.anycollect.core.impl.self.StdSelfDiscovery;
 import io.github.anycollect.extensions.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.DefinitionLoader;
 import io.github.anycollect.extensions.InstanceLoader;
+import io.github.anycollect.extensions.definitions.ContextImpl;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
@@ -37,8 +38,10 @@ class PullManagerPluginTest {
         DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Arrays.asList(StdSelfDiscovery.class, PullManagerImpl.class));
         Collection<Definition> definitions = definitionLoader.load();
         File config = FileUtils.getFile("src", "test", "resources", "anycollect.yaml");
-        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config), definitions);
-        List<Instance> instances = new ArrayList<>(instanceLoader.load());
+        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config));
+        ContextImpl context = new ContextImpl(definitions);
+        instanceLoader.load(context);
+        List<Instance> instances = context.getInstances();
         puller = (PullManager) instances.get(1).resolve();
     }
 

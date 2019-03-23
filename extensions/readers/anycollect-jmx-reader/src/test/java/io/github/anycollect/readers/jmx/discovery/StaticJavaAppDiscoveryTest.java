@@ -3,6 +3,7 @@ package io.github.anycollect.readers.jmx.discovery;
 import io.github.anycollect.extensions.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.DefinitionLoader;
 import io.github.anycollect.extensions.InstanceLoader;
+import io.github.anycollect.extensions.definitions.ContextImpl;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
@@ -27,8 +28,10 @@ class StaticJavaAppDiscoveryTest {
         DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Collections.singletonList(StaticJavaAppDiscovery.class));
         Collection<Definition> definitions = definitionLoader.load();
         File config = FileUtils.getFile("src", "test", "resources", "static-java-app-discovery.yaml");
-        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config), definitions);
-        List<Instance> instances = new ArrayList<>(instanceLoader.load());
+        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config));
+        ContextImpl context = new ContextImpl(definitions);
+        instanceLoader.load(context);
+        List<Instance> instances = context.getInstances();
         discovery = (StaticJavaAppDiscovery) instances.get(0).resolve();
     }
 

@@ -45,29 +45,29 @@ public final class AnyCollect {
         AnnotationDefinitionLoader annotationDefinitionLoader = new AnnotationDefinitionLoader(extensionClasses);
         Collection<Definition> definitions = annotationDefinitionLoader.load();
         VarSubstitutor substitutor = new EnvVarSubstitutor();
-        this.instances = new ArrayList<>();
-        ExtendableContext context = new ContextImpl();
+        ExtendableContext context = new ContextImpl(definitions);
         if (conf.getInitFile() != null) {
             LOG.info("Starting init phase");
             File config = FileUtils.getFile(absolutePath, conf.getInitFile());
-            InstanceLoader instanceLoader = new YamlInstanceLoader(context, config.getName(),
-                    new FileReader(config), definitions, substitutor);
-            instances.addAll(instanceLoader.load());
+            InstanceLoader instanceLoader = new YamlInstanceLoader(config.getName(),
+                    new FileReader(config), substitutor);
+            instanceLoader.load(context);
         }
         LOG.info("Starting system phase");
-        YamlInstanceLoader systemLoader = new YamlInstanceLoader(context, "system",
+        YamlInstanceLoader systemLoader = new YamlInstanceLoader("system",
                 new InputStreamReader(AnyCollect.class.getClassLoader().getResourceAsStream("system.yaml")),
-                definitions, substitutor);
-        instances.addAll(systemLoader.load());
+                substitutor);
+        systemLoader.load(context);
 
         LOG.info("Starting custom phase");
         for (String configPath : conf.getCustomFiles()) {
             File config = FileUtils.getFile(absolutePath, configPath);
             LOG.info("custom -> {}", config);
-            InstanceLoader instanceLoader = new YamlInstanceLoader(context, config.getName(),
-                    new FileReader(config), definitions, substitutor);
-            instances.addAll(instanceLoader.load());
+            InstanceLoader instanceLoader = new YamlInstanceLoader(config.getName(),
+                    new FileReader(config), substitutor);
+            instanceLoader.load(context);
         }
+        this.instances = new ArrayList<>(context.getInstances());
     }
 
     public void run() throws Exception {

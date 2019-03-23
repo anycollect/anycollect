@@ -6,6 +6,7 @@ import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.extensions.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.DefinitionLoader;
 import io.github.anycollect.extensions.InstanceLoader;
+import io.github.anycollect.extensions.definitions.ContextImpl;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
@@ -16,7 +17,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -33,8 +33,10 @@ class StaticQueryMatcherResolverTest {
         DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Collections.singletonList(StaticQueryMatcherResolver.class));
         Collection<Definition> definitions = definitionLoader.load();
         File config = FileUtils.getFile("src", "test", "resources", "static-query-matcher-resolver.yaml");
-        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config), definitions);
-        List<Instance> instances = new ArrayList<>(instanceLoader.load());
+        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config));
+        ContextImpl context = new ContextImpl(definitions);
+        instanceLoader.load(context);
+        List<Instance> instances = context.getInstances();
         resolver = (StaticQueryMatcherResolver) instances.get(0).resolve();
     }
 

@@ -2,19 +2,24 @@ package io.github.anycollect.extensions.definitions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 public final class ContextImpl implements ExtendableContext {
+    private final Map<String, Definition> definitions;
     private final List<Instance> instances;
 
-    public ContextImpl() {
+    public ContextImpl(@Nonnull final Collection<Definition> definitions) {
         this.instances = new ArrayList<>();
+        this.definitions = new HashMap<>();
+        for (Definition definition : definitions) {
+            this.definitions.put(definition.getName(), definition);
+        }
     }
 
-    public ContextImpl(@Nonnull final List<Instance> instances) {
-        this.instances = instances;
+    @Override
+    public boolean hasInstance(@Nonnull final String name, @Nonnull final String scopeId) {
+        return getInstance(name, scopeId) != null;
     }
 
     @Nullable
@@ -28,6 +33,22 @@ public final class ContextImpl implements ExtendableContext {
     @Override
     public Instance getInstance(@Nonnull final String name, @Nonnull final String scopeId) {
         return getInstance(instance -> instance.getInstanceName().equals(name), scopeId);
+    }
+
+    @Override
+    public boolean hasDefinition(@Nonnull final String name) {
+        return definitions.containsKey(name);
+    }
+
+    @Nullable
+    @Override
+    public Definition getDefinition(@Nonnull final String name) {
+        return definitions.get(name);
+    }
+
+    @Override
+    public List<Instance> getInstances() {
+        return instances;
     }
 
     private Instance getInstance(@Nonnull final Predicate<Instance> filter, @Nonnull final String scopeId) {

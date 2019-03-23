@@ -1,5 +1,6 @@
 package io.github.anycollect.extensions;
 
+import io.github.anycollect.extensions.definitions.ContextImpl;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.samples.Configs;
@@ -40,8 +41,9 @@ class ComponentTest {
         AnnotationDefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Collections.singletonList(extension));
         Collection<Definition> definitions = definitionLoader.load();
         YamlInstanceLoader instanceLoader = new YamlInstanceLoader(
-                new StringReader(TestConfigUtils.read(filename)),
-                definitions);
-        return instanceLoader.load();
+                new StringReader(TestConfigUtils.read(filename)));
+        ContextImpl context = new ContextImpl(definitions);
+        instanceLoader.load(context);
+        return context.getInstances();
     }
 }

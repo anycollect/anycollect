@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.github.anycollect.core.api.internal.Clock;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.VarSubstitutor;
 import io.github.anycollect.extensions.definitions.*;
-import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
 import io.github.anycollect.jackson.AnyCollectModule;
 import io.github.anycollect.metric.MeterRegistry;
@@ -35,8 +35,6 @@ final class CustomConstructor extends Constructor {
     private static final String SCOPE = "scope";
     private static final String PRIORITY = "priority";
     private static final String CONFIG = "config";
-    private final Map<String, Definition> extensionRegistry;
-    private final Map<String, Instance> instanceRegistry;
     private final ExtendableContext context;
     private final String scopeId;
     private final VarSubstitutor environment;
@@ -52,19 +50,9 @@ final class CustomConstructor extends Constructor {
         MAPPER.setInjectableValues(VALUES);
     }
 
-    CustomConstructor(final Collection<Definition> extensions) {
-        this(new ContextImpl(), "default", extensions, VarSubstitutor.EMPTY);
-    }
-
     CustomConstructor(final ExtendableContext context,
                       final String scopeId,
-                      final Collection<Definition> extensions,
                       final VarSubstitutor environment) {
-        this.extensionRegistry = new HashMap<>();
-        for (Definition extension : extensions) {
-            this.extensionRegistry.put(extension.getName(), extension);
-        }
-        this.instanceRegistry = new LinkedHashMap<>();
         this.context = context;
         this.scopeId = scopeId;
         this.environment = environment;
@@ -72,10 +60,6 @@ final class CustomConstructor extends Constructor {
         yamlConstructors.put(new Tag("!ref"), new PluginRefConstruct());
         yamlConstructors.put(new Tag("!refs"), new PluginRefsConstruct());
         yamlConstructors.put(new Tag("!var"), new VarSubstituteConstruct());
-    }
-
-    Collection<Instance> getInstances() {
-        return Collections.unmodifiableCollection(instanceRegistry.values());
     }
 
     class PluginInstanceDefinitionConstruct extends AbstractConstruct {
@@ -107,7 +91,6 @@ final class CustomConstructor extends Constructor {
                 VALUES.addValue(instance.getDefinition().getExtensionPointClass(), resolved);
             }
             LOG.trace("instance has been successfully loaded: {}", instance);
-            instanceRegistry.put(instance.getInstanceName(), instance);
             return instance;
         }
 
@@ -263,15 +246,15 @@ final class CustomConstructor extends Constructor {
     }
 
     private Definition getExtension() {
-        if (!extensionRegistry.containsKey(extensionName)) {
+        if (!context.hasDefinition(extensionName)) {
             LOG.error("could not find extension definition for {}", extensionName);
             throw new ConfigurationException("could not find extension definition for " + extensionName);
         }
-        return extensionRegistry.get(extensionName);
+        return context.getDefinition(extensionName);
     }
 
     private Instance getInstance(final String instanceName) {
-        if (!instanceRegistry.containsKey(instanceName)) {
+        if (!context.hasInstance(instanceName, scopeId)) {
             Instance instance = context.getInstance(instanceName, scopeId);
             if (instance == null) {
                 LOG.error("could not find definition for {}, define this extension before use", instanceName);
@@ -279,7 +262,7 @@ final class CustomConstructor extends Constructor {
             }
             return instance;
         }
-        return instanceRegistry.get(instanceName);
+        return context.getInstance(instanceName, scopeId);
     }
 
     @Getter

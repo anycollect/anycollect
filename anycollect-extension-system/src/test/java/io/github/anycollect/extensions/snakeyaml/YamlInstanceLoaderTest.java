@@ -196,9 +196,10 @@ class YamlInstanceLoaderTest {
     }
 
     private List<Instance> loadReader(Reader reader) {
-        Collection<Instance> definitions =
-                new YamlInstanceLoader(reader, this.definitions).load();
-        return new ArrayList<>(definitions);
+        ContextImpl context = new ContextImpl(this.definitions);
+        new YamlInstanceLoader(reader).load(context);
+        Collection<Instance> instances = context.getInstances();
+        return new ArrayList<>(instances);
     }
 
     interface ExtPoint1 {

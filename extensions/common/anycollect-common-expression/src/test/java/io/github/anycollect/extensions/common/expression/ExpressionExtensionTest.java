@@ -9,7 +9,9 @@ import io.github.anycollect.extensions.common.expression.filters.TrimFilter;
 import io.github.anycollect.extensions.common.expression.parser.ParseException;
 import io.github.anycollect.extensions.common.expression.parser.TokenType;
 import io.github.anycollect.extensions.common.expression.std.StdExpressionFactory;
+import io.github.anycollect.extensions.definitions.ContextImpl;
 import io.github.anycollect.extensions.definitions.Definition;
+import io.github.anycollect.extensions.definitions.ExtendableContext;
 import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
 import org.apache.commons.io.FileUtils;
@@ -20,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -40,8 +41,10 @@ class ExpressionExtensionTest {
         );
         Collection<Definition> definitions = definitionLoader.load();
         File config = FileUtils.getFile("src", "test", "resources", "anycollect.yaml");
-        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config), definitions);
-        List<Instance> instances = new ArrayList<>(instanceLoader.load());
+        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config));
+        ExtendableContext context = new ContextImpl(definitions);
+        instanceLoader.load(context);
+        List<Instance> instances = context.getInstances();
         expressions = (StdExpressionFactory) instances.get(3).resolve();
     }
 
