@@ -5,12 +5,12 @@ import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
+import java.util.Iterator;
 import java.util.List;
-
-import static java.util.stream.Collectors.joining;
 
 @Extension(name = AnyCollectSerializer.NAME, point = Serializer.class)
 public final class AnyCollectSerializer implements Serializer {
@@ -23,20 +23,53 @@ public final class AnyCollectSerializer implements Serializer {
     @Nonnull
     @Override
     public String serialize(@Nonnull final Metric metric) {
-        String key = metric.getKey();
-        Tags tags = metric.getTags();
-        Tags meta = metric.getMeta();
-        List<? extends Measurement> measurements = metric.getMeasurements();
-        return key + "; "
-                + (!tags.isEmpty() ? tags + "; " : "{}; ")
-                + (!meta.isEmpty() ? meta + "; " : "{}; ")
-                + measurements.stream()
-                .map(this::serialize)
-                .collect(joining(","));
+        StringBuilder builder = new StringBuilder();
+        builder.append(metric.getKey()).append(";");
+        serialize(metric.getTags(), builder);
+        builder.append(";");
+        serialize(metric.getMeta(), builder);
+        builder.append(";");
+        serialize(metric.getMeasurements(), builder);
+        return builder.toString();
     }
 
-    private String serialize(final Measurement measurement) {
-        return measurement.getStat() + "[" + measurement.getType() + "]"
-                + "=" + measurement.getValue() + "(" + measurement.getUnit() + ")";
+    private void serialize(final List<? extends Measurement> measurements, final StringBuilder builder) {
+        Iterator<? extends Measurement> iterator = measurements.iterator();
+        while (iterator.hasNext()) {
+            Measurement measurement = iterator.next();
+            serialize(measurement, builder);
+            if (iterator.hasNext()) {
+                builder.append(",");
+            }
+        }
+    }
+
+    private void serialize(final Measurement measurement, final StringBuilder builder) {
+        builder.append(measurement.getStat())
+                .append("[")
+                .append(measurement.getType())
+                .append("]")
+                .append("=")
+                .append(measurement.getValue())
+                .append("(")
+                .append(measurement.getUnit())
+                .append(")");
+    }
+
+    private void serialize(final Tags tags, final StringBuilder builder) {
+        if (tags == null) {
+            builder.append("{}");
+            return;
+        }
+        builder.append("{");
+        Iterator<Tag> iterator = tags.iterator();
+        while (iterator.hasNext()) {
+            Tag tag = iterator.next();
+            builder.append(tag.getKey()).append("=").append("\"").append(tag.getValue()).append("\"");
+            if (iterator.hasNext()) {
+                builder.append(",");
+            }
+        }
+        builder.append("}");
     }
 }
