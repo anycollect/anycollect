@@ -3,8 +3,7 @@ package io.github.anycollect.extensions.definitions;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.Collections;
-import java.util.List;
+import javax.annotation.Nonnull;
 
 @ToString
 public final class Instance {
@@ -12,7 +11,6 @@ public final class Instance {
     private final Definition definition;
     @Getter
     private final String instanceName;
-    private final List<Dependency> dependencies;
     private final Object resolved;
     @Getter
     private final InjectMode injectMode;
@@ -21,45 +19,38 @@ public final class Instance {
     @Getter
     private final Scope scope;
     @Getter
-    private final String scopeId;
+    private final boolean copy;
 
-    Instance(final Definition definition,
-             final String instanceName,
-             final List<Dependency> dependencies,
-             final Object resolved) {
-        this.definition = definition;
-        this.instanceName = instanceName;
-        this.dependencies = dependencies;
-        this.resolved = resolved;
-        this.injectMode = InjectMode.MANUAL;
-        this.priority = Priority.OVERRIDE;
-        this.scope = Scope.LOCAL;
-        this.scopeId = "default";
+    public Instance(final Definition definition,
+                    final String instanceName,
+                    final Object resolved,
+                    final InjectMode injectMode,
+                    final Priority priority,
+                    final Scope scope) {
+        this(definition, instanceName, resolved, injectMode, priority, scope, false);
     }
 
     public Instance(final Definition definition,
                     final String instanceName,
-                    final List<Dependency> dependencies,
                     final Object resolved,
                     final InjectMode injectMode,
                     final Priority priority,
                     final Scope scope,
-                    final String scopeId) {
+                    final boolean copy) {
         this.definition = definition;
         this.instanceName = instanceName;
-        this.dependencies = dependencies;
         this.resolved = resolved;
         this.injectMode = injectMode;
         this.priority = priority;
         this.scope = scope;
-        this.scopeId = scopeId;
-    }
-
-    public List<Dependency> getDependencies() {
-        return Collections.unmodifiableList(dependencies);
+        this.copy = copy;
     }
 
     public Object resolve() {
         return resolved;
+    }
+
+    public Instance copy(@Nonnull final Scope scope) {
+        return new Instance(definition, instanceName, resolved, injectMode, priority, scope, true);
     }
 }

@@ -7,6 +7,7 @@ import io.github.anycollect.extensions.definitions.ContextImpl;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
+import io.github.anycollect.meter.registry.AnyCollectMeterRegistry;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.server.PooledJavaApp;
 import org.apache.commons.io.FileUtils;
@@ -16,7 +17,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,14 +29,17 @@ class StaticJavaAppDiscoveryTest {
 
     @BeforeEach
     void createPullManager() throws Exception {
-        DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Collections.singletonList(StaticJavaAppDiscovery.class));
+        DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Arrays.asList(
+                AnyCollectMeterRegistry.class,
+                StaticJavaAppDiscovery.class)
+        );
         Collection<Definition> definitions = definitionLoader.load();
         File config = FileUtils.getFile("src", "test", "resources", "static-java-app-discovery.yaml");
         InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config));
         ContextImpl context = new ContextImpl(definitions);
         instanceLoader.load(context);
         List<Instance> instances = context.getInstances();
-        discovery = (StaticJavaAppDiscovery) instances.get(0).resolve();
+        discovery = (StaticJavaAppDiscovery) instances.get(1).resolve();
     }
 
     @Test

@@ -5,3 +5,4 @@ manifest:
   - class: io.github.anycollect.readers.jmx.discovery.KvJavaAppDiscovery
   - class: io.github.anycollect.readers.jmx.discovery.CurrentApp
   - class: io.github.anycollect.readers.jmx.query.StaticJmxQueryProvider
+  - class: io.github.anycollect.readers.jmx.query.JvmMetrics

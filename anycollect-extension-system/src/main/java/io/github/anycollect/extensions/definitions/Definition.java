@@ -70,7 +70,7 @@ public final class Definition {
                                    final Map<String, Instance> singleDependencies,
                                    final Map<String, List<Instance>> multiDependencies) {
         return createInstance(instanceName, config, singleDependencies, multiDependencies,
-                Context.EMPTY, InjectMode.MANUAL, Scope.LOCAL, Priority.DEFAULT, "default");
+                Context.EMPTY, InjectMode.MANUAL, Priority.DEFAULT, new SimpleScope(null, "default"));
     }
 
     public Instance createInstance(final String instanceName,
@@ -79,9 +79,8 @@ public final class Definition {
                                    final Map<String, List<Instance>> multiDependencies,
                                    final Context context,
                                    final InjectMode injectMode,
-                                   final Scope scope,
                                    final Priority priority,
-                                   final String scopeId) {
+                                   final Scope scope) {
         List<Dependency> dependencies = new ArrayList<>();
         if (configDefinition != null) {
             if (configDefinition.isSingle()) {
@@ -100,7 +99,7 @@ public final class Definition {
             }
             Instance instance = singleDependencies.get(dependencyName);
             if (instance == null) {
-                instance = context.getInstance(definition.getParameterType(), scopeId);
+                instance = context.getInstance(definition.getParameterType(), scope);
             }
             Dependency dependency = definition.create(instance);
             dependencies.add(dependency);
@@ -116,7 +115,7 @@ public final class Definition {
         }
         try {
             Object resolved = instantiator.instantiate(dependencies);
-            return new Instance(this, instanceName, dependencies, resolved, injectMode, priority, scope, scopeId);
+            return new Instance(this, instanceName, resolved, injectMode, priority, scope);
         } catch (IllegalAccessException | InstantiationException e) {
             throw new IllegalStateException("could not instantiate extension from " + instantiator
                     + " using " + dependencies, e);

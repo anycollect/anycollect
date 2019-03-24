@@ -1,19 +1,18 @@
 package io.github.anycollect.readers.jmx.query;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
+import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.core.api.job.TaggingJob;
-import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.ImmutableTags;
 import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.query.operations.QueryAttributes;
 import io.github.anycollect.readers.jmx.query.operations.QueryObjectNames;
 import io.github.anycollect.readers.jmx.query.operations.QueryOperation;
+import io.github.anycollect.readers.jmx.server.JavaApp;
 
 import javax.annotation.Nonnull;
 import javax.management.Attribute;
@@ -43,9 +42,9 @@ public final class JvmMemory extends JmxQuery {
 
     private final Clock clock;
 
-    public JvmMemory(@JacksonInject @Nonnull final Clock clock) {
+    public JvmMemory() {
         super("jvm.memory");
-        this.clock = clock;
+        this.clock = Clock.getDefault();
     }
 
     @Nonnull

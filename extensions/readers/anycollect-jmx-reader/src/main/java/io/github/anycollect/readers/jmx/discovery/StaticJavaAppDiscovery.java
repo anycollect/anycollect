@@ -1,11 +1,11 @@
 package io.github.anycollect.readers.jmx.discovery;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.anycollect.core.api.target.TargetCreationException;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
+import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.readers.jmx.config.JavaAppConfig;
@@ -29,9 +29,10 @@ public final class StaticJavaAppDiscovery implements JavaAppDiscovery {
     private final Set<JavaApp> apps;
 
     @ExtCreator
-    public StaticJavaAppDiscovery(@ExtConfig @Nonnull final Config config) {
+    public StaticJavaAppDiscovery(@ExtDependency(qualifier = "registry") @Nonnull final MeterRegistry registry,
+                                  @ExtConfig @Nonnull final Config config) {
         // TODO inject
-        JavaAppFactory factory = new DefaultJavaAppFactory(config.registry);
+        JavaAppFactory factory = new DefaultJavaAppFactory(registry);
         apps = new HashSet<>();
         for (JavaAppConfig appConfig : config.appConfigs) {
             try {
@@ -48,13 +49,10 @@ public final class StaticJavaAppDiscovery implements JavaAppDiscovery {
     }
 
     public static class Config {
-        private final MeterRegistry registry;
         private final List<JavaAppConfig> appConfigs;
 
         @JsonCreator
-        public Config(@JacksonInject @Nonnull final MeterRegistry registry,
-                      @JsonProperty("instances") @Nonnull final List<JavaAppConfig> appConfigs) {
-            this.registry = registry;
+        public Config(@JsonProperty("instances") @Nonnull final List<JavaAppConfig> appConfigs) {
             this.appConfigs = appConfigs;
         }
     }

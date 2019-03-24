@@ -10,6 +10,10 @@ import org.immutables.value.Value;
 @JsonSerialize(as = ImmutableCurrentProcessDiscoveryConfig.class)
 @JsonDeserialize(as = ImmutableCurrentProcessDiscoveryConfig.class)
 public interface CurrentProcessDiscoveryConfig {
+    static ImmutableCurrentProcessDiscoveryConfig.Builder builder() {
+        return ImmutableCurrentProcessDiscoveryConfig.builder();
+    }
+
     @Value.Default
     @JsonProperty("tags")
     default Tags tags() {

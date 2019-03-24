@@ -1,0 +1,3 @@
+manifest:
+  extensions:
+    - class: io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader

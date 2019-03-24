@@ -85,24 +85,20 @@ class YamlInstanceLoaderTest {
         Definition ext1def = definitions.get(0);
         Instance ext1 = instances.get(0);
         assertThat(ext1.getInstanceName()).isEqualTo("ext1");
-        assertThat(ext1.getDependencies()).isEmpty();
         assertThat(ext1.getDefinition()).isSameAs(ext1def);
 
         Definition ext2def = definitions.get(1);
         Instance ext2_1 = instances.get(1);
         assertThat(ext2_1.getInstanceName()).isEqualTo("ext2_1");
-        assertThat(ext2_1.getDependencies()).isEmpty();
         assertThat(ext2_1.getDefinition()).isSameAs(ext2def);
 
         Instance ext2_2 = instances.get(2);
         assertThat(ext2_2.getInstanceName()).isEqualTo("ext2_2");
-        assertThat(ext2_2.getDependencies()).isEmpty();
         assertThat(ext2_2.getDefinition()).isSameAs(ext2def);
 
         Definition ext3def = definitions.get(2);
         Instance ext3 = instances.get(3);
         assertThat(ext3.getInstanceName()).isEqualTo("Ext3");
-        assertThat(ext3.getDependencies()).hasSize(3);
         Ext3 ext3Resolved = (Ext3) ext3.resolve();
         assertThat(ext3Resolved.getExt1()).isSameAs(ext1.resolve());
         assertThat(ext3Resolved.getExt2s()).hasSameElementsAs(Arrays.asList((Ext2) ext2_1.resolve(), (Ext2) ext2_2.resolve()));

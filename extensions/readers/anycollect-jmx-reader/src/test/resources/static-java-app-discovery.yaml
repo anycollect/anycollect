@@ -1,5 +1,9 @@
 extensions:
 - !load
+  extension: MeterRegistry
+  instance: registry
+  injectMode: auto
+- !load
   extension: StaticJavaAppDiscovery
   instance: javaDiscovery
   config:

@@ -35,8 +35,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-@Extension(name = "PullEngine", point = PullManager.class)
+@Extension(name = PullManagerImpl.NAME, point = PullManager.class)
 public final class PullManagerImpl implements PullManager {
+    public static final String NAME = "PullEngine";
     private static final Logger LOG = LoggerFactory.getLogger(PullManagerImpl.class);
     private final PullScheduler puller;
     private final Scheduler updater;

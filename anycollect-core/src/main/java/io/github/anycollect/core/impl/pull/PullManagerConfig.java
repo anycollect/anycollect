@@ -1,6 +1,5 @@
 package io.github.anycollect.core.impl.pull;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -49,13 +48,7 @@ public final class PullManagerConfig {
         private int defaultPoolSize = DEFAULT_POOL_SIZE;
         private ConcurrencyRules.Builder concurrencyRulesBuilder = ConcurrencyRules.builder();
         private HealthChecksConfig healthChecks;
-        private Clock clock;
-
-        @JacksonInject
-        public Builder withClock(@Nonnull final Clock clock) {
-            this.clock = clock;
-            return this;
-        }
+        private Clock clock = Clock.getDefault();
 
         @JsonProperty("updatePeriod")
         public Builder withUpdatePeriod(final int seconds) {

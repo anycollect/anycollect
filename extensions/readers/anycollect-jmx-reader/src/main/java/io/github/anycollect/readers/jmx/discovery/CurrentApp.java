@@ -1,10 +1,10 @@
 package io.github.anycollect.readers.jmx.discovery;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
+import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.Tags;
@@ -32,10 +32,12 @@ public final class CurrentApp implements JavaAppDiscovery {
     private final Set<JavaApp> app;
 
     @ExtCreator
-    public CurrentApp(@ExtConfig @Nonnull final Config config) {
+    public CurrentApp(@ExtDependency(qualifier = "registry") @Nonnull final MeterRegistry registry,
+                      @ExtConfig @Nonnull final Config config) {
         JmxConnectionPoolFactory poolFactory = new CommonsJmxConnectionPoolFactory();
         JmxConnectionPool pool = poolFactory.create(JMX_CONNECTION_FACTORY);
-        app = Collections.singleton(JavaApp.create(config.currentApplicationName, Tags.empty(), Tags.empty(), pool, config.registry));
+        app = Collections.singleton(JavaApp.create(config.currentApplicationName,
+                Tags.empty(), Tags.empty(), pool, registry));
     }
 
     @Override
@@ -44,13 +46,10 @@ public final class CurrentApp implements JavaAppDiscovery {
     }
 
     public static class Config {
-        private final MeterRegistry registry;
         private final String currentApplicationName;
 
         @JsonCreator
-        public Config(@JacksonInject @Nonnull final MeterRegistry registry,
-                      @JsonProperty("name") @Nonnull final String currentApplicationName) {
-            this.registry = registry;
+        public Config(@JsonProperty("name") @Nonnull final String currentApplicationName) {
             this.currentApplicationName = currentApplicationName;
         }
     }

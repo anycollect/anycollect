@@ -18,21 +18,21 @@ public final class ContextImpl implements ExtendableContext {
     }
 
     @Override
-    public boolean hasInstance(@Nonnull final String name, @Nonnull final String scopeId) {
-        return getInstance(name, scopeId) != null;
+    public boolean hasInstance(@Nonnull final String name, @Nonnull final Scope scope) {
+        return getInstance(name, scope) != null;
     }
 
     @Nullable
     @Override
-    public Instance getInstance(@Nonnull final Class<?> type, @Nonnull final String scopeId) {
+    public Instance getInstance(@Nonnull final Class<?> type, @Nonnull final Scope scope) {
         return getInstance(instance -> instance.getDefinition().getExtensionPointClass().equals(type)
-                && instance.getInjectMode() == InjectMode.AUTO, scopeId);
+                && instance.getInjectMode() == InjectMode.AUTO, scope);
     }
 
     @Nullable
     @Override
-    public Instance getInstance(@Nonnull final String name, @Nonnull final String scopeId) {
-        return getInstance(instance -> instance.getInstanceName().equals(name), scopeId);
+    public Instance getInstance(@Nonnull final String name, @Nonnull final Scope scope) {
+        return getInstance(instance -> instance.getInstanceName().equals(name), scope);
     }
 
     @Override
@@ -51,11 +51,11 @@ public final class ContextImpl implements ExtendableContext {
         return instances;
     }
 
-    private Instance getInstance(@Nonnull final Predicate<Instance> filter, @Nonnull final String scopeId) {
+    private Instance getInstance(@Nonnull final Predicate<Instance> filter, @Nonnull final Scope scope) {
         Instance candidate = null;
         for (Instance instance : instances) {
             if (filter.test(instance)) {
-                if (instance.getScope() == Scope.GLOBAL || instance.getScopeId().equals(scopeId)) {
+                if (instance.getScope().isParent(scope)) {
                     if (candidate == null) {
                         candidate = instance;
                         continue;
@@ -67,10 +67,7 @@ public final class ContextImpl implements ExtendableContext {
                     if (priority.isLowerThan(candidate.getPriority())) {
                         continue;
                     }
-                    if (candidate.getScopeId().equals(scopeId) && !instance.getScopeId().equals(scopeId)) {
-                        continue;
-                    }
-                    if (!candidate.getScopeId().equals(scopeId) && instance.getScopeId().equals(scopeId)) {
+                    if (instance.getScope().distance(scope) < candidate.getScope().distance(scope)) {
                         candidate = instance;
                     }
                 }
@@ -82,5 +79,10 @@ public final class ContextImpl implements ExtendableContext {
     @Override
     public void addInstance(@Nonnull final Instance instance) {
         this.instances.add(instance);
+    }
+
+    @Override
+    public void addDefinition(@Nonnull final Definition definition) {
+        definitions.put(definition.getName(), definition);
     }
 }

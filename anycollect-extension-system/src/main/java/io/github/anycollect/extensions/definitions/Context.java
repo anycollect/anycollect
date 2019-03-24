@@ -8,19 +8,19 @@ import java.util.List;
 public interface Context {
     Context EMPTY = new Context() {
         @Override
-        public boolean hasInstance(@Nonnull final String name, @Nonnull final String scopeId) {
+        public boolean hasInstance(@Nonnull final String name, @Nonnull final Scope scope) {
             return false;
         }
 
         @Nullable
         @Override
-        public Instance getInstance(@Nonnull final Class<?> type, @Nonnull final String scopeId) {
+        public Instance getInstance(@Nonnull final Class<?> type, @Nonnull final Scope scope) {
             return null;
         }
 
         @Nullable
         @Override
-        public Instance getInstance(@Nonnull final String name, @Nonnull final String scopeId) {
+        public Instance getInstance(@Nonnull final String name, @Nonnull final Scope scope) {
             return null;
         }
 
@@ -41,13 +41,13 @@ public interface Context {
         }
     };
 
-    boolean hasInstance(@Nonnull String name, @Nonnull String scopeId);
+    boolean hasInstance(@Nonnull String name,  @Nonnull Scope scope);
 
     @Nullable
-    Instance getInstance(@Nonnull Class<?> type, @Nonnull String scopeId);
+    Instance getInstance(@Nonnull Class<?> type, @Nonnull Scope scope);
 
     @Nullable
-    Instance getInstance(@Nonnull String name, @Nonnull String scopeId);
+    Instance getInstance(@Nonnull String name,  @Nonnull Scope scope);
 
     boolean hasDefinition(@Nonnull String name);
 

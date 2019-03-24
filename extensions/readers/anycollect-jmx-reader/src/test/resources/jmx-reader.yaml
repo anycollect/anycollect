@@ -14,6 +14,10 @@ extensions:
     - targetId: "test"
       poolSize: 1
 - !load
+  extension: MeterRegistry
+  instance: registry
+  injectMode: auto
+- !load
   extension: CurrentApp
   instance: discovery
   config:

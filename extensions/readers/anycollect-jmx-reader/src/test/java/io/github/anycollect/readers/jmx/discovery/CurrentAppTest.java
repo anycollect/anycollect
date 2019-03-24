@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 class CurrentAppTest {
     @Test
     void connectionMustBeOfTypeMBeanServer() throws ConnectionException, QueryException {
-        CurrentApp discovery = new CurrentApp(new CurrentApp.Config(new NoopMeterRegistry(), "dummy"));
+        CurrentApp discovery = new CurrentApp(new NoopMeterRegistry(), new CurrentApp.Config("dummy"));
 
         JavaApp server = discovery.discover().iterator().next();
         @SuppressWarnings("unchecked")

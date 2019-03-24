@@ -1,0 +1,4 @@
+manifest:
+  extensions:
+    - class: io.github.anycollect.CoreLoader
+    - class: io.github.anycollect.InternalReader

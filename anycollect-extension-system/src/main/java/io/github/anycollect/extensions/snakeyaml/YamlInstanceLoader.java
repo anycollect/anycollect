@@ -3,33 +3,58 @@ package io.github.anycollect.extensions.snakeyaml;
 import io.github.anycollect.extensions.EnvVarSubstitutor;
 import io.github.anycollect.extensions.InstanceLoader;
 import io.github.anycollect.extensions.VarSubstitutor;
+import io.github.anycollect.extensions.annotations.ExtCreator;
+import io.github.anycollect.extensions.annotations.ExtDependency;
+import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.definitions.ExtendableContext;
+import io.github.anycollect.extensions.definitions.FileScope;
+import io.github.anycollect.extensions.definitions.Scope;
+import io.github.anycollect.extensions.definitions.SimpleScope;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nonnull;
 import java.io.Reader;
 
+@Extension(name = YamlInstanceLoader.NAME, point = InstanceLoader.class)
 public final class YamlInstanceLoader implements InstanceLoader {
+    public static final String NAME = "YamlLoader";
+    private final Scope scope;
     private final Reader yamlReader;
-    private final String scopeId;
     private final VarSubstitutor environment;
 
+
     public YamlInstanceLoader(final Reader yamlReader) {
-        this("default", yamlReader, new EnvVarSubstitutor());
+        this(new SimpleScope(null, "default"), yamlReader, new EnvVarSubstitutor());
     }
 
-    public YamlInstanceLoader(final String scopeId,
+    // TODO
+    @ExtCreator
+    public YamlInstanceLoader(@ExtDependency(qualifier = "parentLoader") @Nonnull final InstanceLoader parentLoader) {
+        this(FileScope.child(parentLoader.getScope(), null), null, null);
+    }
+
+    public YamlInstanceLoader(final Scope scope,
                               final Reader yamlReader,
                               final VarSubstitutor environment) {
-        this.scopeId = scopeId;
+        this.scope = scope;
         this.yamlReader = yamlReader;
         this.environment = environment;
     }
 
     @Override
+    public Scope getScope() {
+        return scope;
+    }
+
+    @Override
     public void load(@Nonnull final ExtendableContext context) {
-        CustomConstructor constructor = new CustomConstructor(context, scopeId, environment);
+        CustomConstructor constructor = new CustomConstructor(context, scope, environment);
         Yaml yaml = new Yaml(constructor);
         yaml.load(yamlReader);
+    }
+
+    @Override
+    public String toString() {
+        return scope.toString();
     }
 }

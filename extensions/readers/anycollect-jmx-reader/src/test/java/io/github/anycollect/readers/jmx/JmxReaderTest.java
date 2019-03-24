@@ -11,6 +11,7 @@ import io.github.anycollect.extensions.definitions.ContextImpl;
 import io.github.anycollect.extensions.definitions.Definition;
 import io.github.anycollect.extensions.definitions.Instance;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
+import io.github.anycollect.meter.registry.AnyCollectMeterRegistry;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
@@ -43,6 +44,7 @@ class JmxReaderTest {
     void createJmxReader() throws Exception {
         DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Arrays.asList(
                 StdSelfDiscovery.class,
+                AnyCollectMeterRegistry.class,
                 PullManagerImpl.class,
                 CurrentApp.class,
                 StaticJmxQueryProvider.class,
@@ -55,7 +57,7 @@ class JmxReaderTest {
         ContextImpl context = new ContextImpl(definitions);
         instanceLoader.load(context);
         List<Instance> instances = context.getInstances();
-        jmx = (JmxReader) instances.get(5).resolve();
+        jmx = (JmxReader) instances.get(6).resolve();
     }
 
     @Test

@@ -1,6 +1,5 @@
 package io.github.anycollect.readers.jmx.query;
 
-import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Tags;
@@ -27,7 +26,7 @@ class JvmMemoryTest {
     @BeforeEach
     void setUp() {
         server = MBeanServerFactory.createMBeanServer();
-        jvmMemory = new JvmMemory(Clock.getDefault());
+        jvmMemory = new JvmMemory();
     }
 
     @Test

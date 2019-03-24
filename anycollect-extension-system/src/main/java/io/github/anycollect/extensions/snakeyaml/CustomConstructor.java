@@ -4,14 +4,12 @@ import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.exceptions.ConfigurationException;
+import io.github.anycollect.extensions.InstanceLoader;
 import io.github.anycollect.extensions.VarSubstitutor;
 import io.github.anycollect.extensions.definitions.*;
 import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
 import io.github.anycollect.jackson.AnyCollectModule;
-import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +18,10 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -32,11 +33,11 @@ final class CustomConstructor extends Constructor {
     private static final String EXTENSION = "extension";
     private static final String INSTANCE = "instance";
     private static final String INJECT_MODE = "injectMode";
-    private static final String SCOPE = "scope";
     private static final String PRIORITY = "priority";
     private static final String CONFIG = "config";
     private final ExtendableContext context;
-    private final String scopeId;
+    //    private final InstanceLoader loader;
+    private final Scope scope;
     private final VarSubstitutor environment;
     private static final InjectableValues.Std VALUES;
     private String extensionName;
@@ -45,16 +46,14 @@ final class CustomConstructor extends Constructor {
         MAPPER.registerModule(new AnyCollectModule());
         MAPPER.registerModule(new GuavaModule());
         VALUES = new InjectableValues.Std();
-        VALUES.addValue(Clock.class, Clock.getDefault());
-        VALUES.addValue(MeterRegistry.class, new NoopMeterRegistry());
         MAPPER.setInjectableValues(VALUES);
     }
 
     CustomConstructor(final ExtendableContext context,
-                      final String scopeId,
+                      final Scope scope,
                       final VarSubstitutor environment) {
         this.context = context;
-        this.scopeId = scopeId;
+        this.scope = scope;
         this.environment = environment;
         yamlConstructors.put(new Tag("!load"), new PluginInstanceDefinitionConstruct());
         yamlConstructors.put(new Tag("!ref"), new PluginRefConstruct());
@@ -77,20 +76,30 @@ final class CustomConstructor extends Constructor {
             this.values = constructMapping(currentNode);
             Definition definition = getExtension();
             String instanceName = getInstanceName();
+            LOG.info("Creating \"{}\".{}", scope, instanceName);
             Object config = getNullableConfig(definition, instanceName);
             Map<String, Instance> singleDependencies = getSingleDependencies();
             Map<String, List<Instance>> multiDependencies = getMultiDependencies();
-            LOG.debug("creating \"{}\".{}", scopeId, instanceName);
+
+//            if (definition.getExtensionPointClass().equals(InstanceLoader.class)) {
+//                singleDependencies.put("parentLoader", loader);
+//            }
+
             Instance instance = definition.createInstance(
                     instanceName, config, singleDependencies, multiDependencies,
-                    context, getInjectMode(), getScope(), getPriority(), scopeId);
+                    context, getInjectMode(), getPriority(), scope);
             context.addInstance(instance);
             Object resolved = instance.resolve();
             // TODO
-            if (context.getInstance(instance.getDefinition().getExtensionPointClass(), scopeId) == instance) {
+            if (context.getInstance(instance.getDefinition().getExtensionPointClass(), scope) == instance) {
                 VALUES.addValue(instance.getDefinition().getExtensionPointClass(), resolved);
             }
             LOG.trace("instance has been successfully loaded: {}", instance);
+            if (resolved instanceof InstanceLoader) {
+                InstanceLoader childLoader = (InstanceLoader) resolved;
+                LOG.info("Start child instance loader {}", instanceName);
+                childLoader.load(context);
+            }
             return instance;
         }
 
@@ -117,12 +126,6 @@ final class CustomConstructor extends Constructor {
             return values.containsKey(INJECT_MODE)
                     ? InjectMode.valueOf(((String) values.get(INJECT_MODE)).toUpperCase())
                     : InjectMode.MANUAL;
-        }
-
-        private Scope getScope() {
-            return values.containsKey(SCOPE)
-                    ? Scope.valueOf(((String) values.get(SCOPE)).toUpperCase())
-                    : Scope.LOCAL;
         }
 
         private Priority getPriority() {
@@ -254,15 +257,15 @@ final class CustomConstructor extends Constructor {
     }
 
     private Instance getInstance(final String instanceName) {
-        if (!context.hasInstance(instanceName, scopeId)) {
-            Instance instance = context.getInstance(instanceName, scopeId);
+        if (!context.hasInstance(instanceName, scope)) {
+            Instance instance = context.getInstance(instanceName, scope);
             if (instance == null) {
                 LOG.error("could not find definition for {}, define this extension before use", instanceName);
                 throw new ConfigurationException("could not find definition for " + instanceName);
             }
             return instance;
         }
-        return context.getInstance(instanceName, scopeId);
+        return context.getInstance(instanceName, scope);
     }
 
     @Getter

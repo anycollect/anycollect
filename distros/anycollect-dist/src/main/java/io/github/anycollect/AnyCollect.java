@@ -11,19 +11,14 @@ import io.github.anycollect.extensions.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.EnvVarSubstitutor;
 import io.github.anycollect.extensions.InstanceLoader;
 import io.github.anycollect.extensions.VarSubstitutor;
-import io.github.anycollect.extensions.definitions.ContextImpl;
-import io.github.anycollect.extensions.definitions.Definition;
-import io.github.anycollect.extensions.definitions.ExtendableContext;
-import io.github.anycollect.extensions.definitions.Instance;
+import io.github.anycollect.extensions.definitions.*;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 
@@ -40,33 +35,19 @@ public final class AnyCollect {
 
     private final Collection<Instance> instances;
 
-    private AnyCollect(final String absolutePath, final Config conf) throws Exception {
+    private AnyCollect(final File configFile) throws Exception {
         List<Class<?>> extensionClasses = loadExtensionClasses();
         AnnotationDefinitionLoader annotationDefinitionLoader = new AnnotationDefinitionLoader(extensionClasses);
         Collection<Definition> definitions = annotationDefinitionLoader.load();
         VarSubstitutor substitutor = new EnvVarSubstitutor();
         ExtendableContext context = new ContextImpl(definitions);
-        if (conf.getInitFile() != null) {
-            LOG.info("Starting init phase");
-            File config = FileUtils.getFile(absolutePath, conf.getInitFile());
-            InstanceLoader instanceLoader = new YamlInstanceLoader(config.getName(),
-                    new FileReader(config), substitutor);
-            instanceLoader.load(context);
-        }
-        LOG.info("Starting system phase");
-        YamlInstanceLoader systemLoader = new YamlInstanceLoader("system",
-                new InputStreamReader(AnyCollect.class.getClassLoader().getResourceAsStream("system.yaml")),
-                substitutor);
-        systemLoader.load(context);
-
-        LOG.info("Starting custom phase");
-        for (String configPath : conf.getCustomFiles()) {
-            File config = FileUtils.getFile(absolutePath, configPath);
-            LOG.info("custom -> {}", config);
-            InstanceLoader instanceLoader = new YamlInstanceLoader(config.getName(),
-                    new FileReader(config), substitutor);
-            instanceLoader.load(context);
-        }
+        Scope scope = FileScope.root(configFile);
+        InstanceLoader instanceLoader
+                = new YamlInstanceLoader(scope, new FileReader(configFile), substitutor);
+        Instance rootLoader = new Instance(context.getDefinition(YamlInstanceLoader.NAME),
+                "root", instanceLoader, InjectMode.AUTO, Priority.DEFAULT, scope);
+        context.addInstance(rootLoader);
+        instanceLoader.load(context);
         this.instances = new ArrayList<>(context.getInstances());
     }
 
@@ -92,21 +73,23 @@ public final class AnyCollect {
     }
 
     public static void main(final String... args) throws Exception {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        Config config = mapper.readValue(new File(args[0]), Config.class);
-        new AnyCollect(new File(args[0]).getParentFile().getAbsolutePath(), config).run();
+        File config = new File(args[0]);
+        new AnyCollect(config).run();
     }
 
     private void initialize() {
         for (Instance instance : instances) {
-            Object resolved = instance.resolve();
-            if (resolved instanceof Lifecycle) {
-                ((Lifecycle) resolved).init();
+            if (!instance.isCopy()) {
+                Object resolved = instance.resolve();
+                if (resolved instanceof Lifecycle) {
+                    ((Lifecycle) resolved).init();
+                }
             }
         }
     }
 
     private void shutdown() {
+        Thread.currentThread().setName("graceful-shutdown");
         LOG.info("graceful shutdown");
         destroy();
     }
@@ -115,9 +98,11 @@ public final class AnyCollect {
         ArrayList<Instance> reversed = new ArrayList<>(this.instances);
         Collections.reverse(reversed);
         for (Instance instance : reversed) {
-            Object resolved = instance.resolve();
-            if (resolved instanceof Lifecycle) {
-                ((Lifecycle) resolved).destroy();
+            if (!instance.isCopy()) {
+                Object resolved = instance.resolve();
+                if (resolved instanceof Lifecycle) {
+                    ((Lifecycle) resolved).destroy();
+                }
             }
         }
     }

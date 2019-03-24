@@ -10,5 +10,9 @@ import java.util.List;
 @JsonSerialize(as = ImmutableRouterConfig.class)
 @JsonDeserialize(as = ImmutableRouterConfig.class)
 public interface RouterConfig {
+    static ImmutableRouterConfig.Builder builder() {
+        return ImmutableRouterConfig.builder();
+    }
+
     List<TopologyItem> topology();
 }
