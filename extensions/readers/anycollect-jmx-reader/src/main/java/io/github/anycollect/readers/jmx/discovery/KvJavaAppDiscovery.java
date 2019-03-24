@@ -1,6 +1,5 @@
 package io.github.anycollect.readers.jmx.discovery;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.anycollect.core.api.kv.KeyValue;
@@ -15,7 +14,7 @@ import io.github.anycollect.readers.jmx.config.JavaAppConfig;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Set;
 
 @Extension(name = KvJavaAppDiscovery.NAME, point = JavaAppDiscovery.class)
 public final class KvJavaAppDiscovery implements JavaAppDiscovery {
@@ -23,12 +22,13 @@ public final class KvJavaAppDiscovery implements JavaAppDiscovery {
     private final ServiceDiscovery<JavaApp> delegate;
 
     @ExtCreator
-    public KvJavaAppDiscovery(@ExtDependency(qualifier = "kv") @Nonnull final KeyValue kv,
+    public KvJavaAppDiscovery(@ExtDependency(qualifier = "registry") @Nonnull final MeterRegistry registry,
+                              @ExtDependency(qualifier = "kv") @Nonnull final KeyValue kv,
                               @ExtConfig @Nonnull final Config config) {
         this.delegate = new CachedKvDiscovery<>(
                 kv,
                 JavaAppConfig.class,
-                new DefaultJavaAppFactory(config.registry),
+                new DefaultJavaAppFactory(registry),
                 config.key
         );
     }
@@ -40,13 +40,10 @@ public final class KvJavaAppDiscovery implements JavaAppDiscovery {
 
     public static final class Config {
         private final String key;
-        private final MeterRegistry registry;
 
         @JsonCreator
-        public Config(@JsonProperty("key") final String key,
-                      @JacksonInject final MeterRegistry registry) {
+        public Config(@JsonProperty("key") final String key) {
             this.key = key;
-            this.registry = registry;
         }
     }
 }
