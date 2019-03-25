@@ -3,7 +3,6 @@ package io.github.anycollect.readers.process.discovery.current;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
-import io.github.anycollect.extensions.annotations.InstanceId;
 import io.github.anycollect.readers.process.Process;
 import io.github.anycollect.readers.process.discovery.ProcessDiscovery;
 import oshi.SystemInfo;
@@ -19,9 +18,7 @@ public final class CurrentProcessDiscovery extends ProcessDiscovery {
     private final Process process;
 
     @ExtCreator
-    public CurrentProcessDiscovery(@ExtConfig @Nonnull final CurrentProcessDiscoveryConfig config,
-                                   @InstanceId @Nonnull final String id) {
-        super(id);
+    public CurrentProcessDiscovery(@ExtConfig @Nonnull final CurrentProcessDiscoveryConfig config) {
         OperatingSystem os = new SystemInfo().getOperatingSystem();
         int pid = os.getProcessId();
         this.process = new Process(pid, config.tags(), createMeta(os.getProcess(pid)));

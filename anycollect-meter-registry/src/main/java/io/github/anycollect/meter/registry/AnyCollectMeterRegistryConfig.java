@@ -10,6 +10,10 @@ import javax.annotation.Nonnull;
 @Value.Style(builder = "new", stagedBuilder = true, passAnnotations = {Nonnull.class})
 @JsonDeserialize(builder = ImmutableAnyCollectMeterRegistryConfig.Builder.class)
 public interface AnyCollectMeterRegistryConfig {
+    static ImmutableAnyCollectMeterRegistryConfig.Builder builder() {
+        return new ImmutableAnyCollectMeterRegistryConfig.Builder();
+    }
+
     AnyCollectMeterRegistryConfig DEFAULT = new AnyCollectMeterRegistryConfig() {
     };
 

@@ -53,10 +53,18 @@ public final class JvmThreads extends JmxQuery {
     private static final String THREADS_BY_STATE_KEY = "jvm.threads.states";
     private static final String THREADS_UNIT = "threads";
 
+    private final String prefix;
     private final Clock clock;
 
     public JvmThreads() {
-        super("jvm.threads");
+        this("", Tags.empty(), Tags.empty());
+    }
+
+    public JvmThreads(@Nonnull final String prefix,
+                      @Nonnull final Tags tags,
+                      @Nonnull final Tags meta) {
+        super("jvm.threads", tags, meta);
+        this.prefix = prefix;
         this.clock = Clock.getDefault();
     }
 
@@ -64,6 +72,7 @@ public final class JvmThreads extends JmxQuery {
     @Override
     public Job bind(@Nonnull final JavaApp app) {
         return new TaggingJob(
+                prefix,
                 Tags.concat(app.getTags(), getTags()),
                 Tags.concat(app.getMeta(), getMeta()),
                 new JvmThreadsJob(app));

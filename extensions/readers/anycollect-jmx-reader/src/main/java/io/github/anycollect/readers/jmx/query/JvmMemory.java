@@ -40,10 +40,18 @@ public final class JvmMemory extends JmxQuery {
         }
     }
 
+    private final String prefix;
     private final Clock clock;
 
     public JvmMemory() {
-        super("jvm.memory");
+        this("", Tags.empty(), Tags.empty());
+    }
+
+    public JvmMemory(@Nonnull final String prefix,
+                     @Nonnull final Tags tags,
+                     @Nonnull final Tags meta) {
+        super("jvm.memory", tags, meta);
+        this.prefix = prefix;
         this.clock = Clock.getDefault();
     }
 
@@ -51,6 +59,7 @@ public final class JvmMemory extends JmxQuery {
     @Override
     public Job bind(@Nonnull final JavaApp app) {
         return new TaggingJob(
+                prefix,
                 Tags.concat(app.getTags(), getTags()),
                 Tags.concat(app.getMeta(), getTags()),
                 new JvmMemoryJob(app));

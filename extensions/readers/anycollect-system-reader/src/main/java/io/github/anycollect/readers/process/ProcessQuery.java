@@ -12,22 +12,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ProcessQuery extends AbstractQuery {
+    private final String prefix;
+    private final String cpuUsageKey;
+    private final String memUsageKey;
     private final Clock clock;
-    private final GlobalMemory memory;
+    private final long totalMemory;
 
-    public ProcessQuery(@Nonnull final GlobalMemory memory) {
+    public ProcessQuery(@Nonnull final String prefix,
+                        @Nonnull final String cpuUsageKey,
+                        @Nonnull final String memUsageKey,
+                        @Nonnull final GlobalMemory memory) {
         super("processes");
-        this.memory = memory;
+        this.prefix = prefix;
+        this.cpuUsageKey = cpuUsageKey;
+        this.memUsageKey = memUsageKey;
+        this.totalMemory = memory.getTotal();
         this.clock = Clock.getDefault();
     }
 
     public List<Metric> execute(@Nullable final OSProcess previous, @Nonnull final OSProcess current) {
         List<Metric> metrics = new ArrayList<>();
-        long totalMemory = memory.getTotal();
         long rss = current.getResidentSetSize();
         double memoryUsage = 100.0 * rss / totalMemory;
         metrics.add(Metric.builder()
-                .key("process.memory.usage")
+                .key(prefix, memUsageKey)
                 .at(clock.wallTime())
                 .gauge("percents", memoryUsage)
                 .build());
@@ -39,10 +47,8 @@ public final class ProcessQuery extends AbstractQuery {
         long upTimeDelta = current.getUpTime() - previous.getUpTime();
         double cpuUsage = 100.0 * (userTimeDelta + kernelTimeDelta) / upTimeDelta;
         metrics.add(Metric.builder()
-                .key("process.cpu.usage")
+                .key(prefix, cpuUsageKey)
                 .at(clock.wallTime())
-                .concatTags(getTags())
-                .concatMeta(getMeta())
                 .gauge("percents", cpuUsage)
                 .build());
         return metrics;

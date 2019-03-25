@@ -8,12 +8,6 @@ import oshi.software.os.OSProcess;
 import javax.annotation.Nonnull;
 
 public abstract class ProcessDiscovery implements ServiceDiscovery<Process> {
-    private final String id;
-
-    public ProcessDiscovery(@Nonnull final String id) {
-        this.id = id;
-    }
-
     protected Tags createMeta(@Nonnull final OSProcess process) {
         return Tags.builder()
                 .tag("pid", process.getProcessID())
@@ -21,7 +15,6 @@ public abstract class ProcessDiscovery implements ServiceDiscovery<Process> {
                 .tag("group", process.getGroup())
                 .tag("process.name", process.getName())
                 .tag("command.line", process.getCommandLine())
-                .tag("discovery", id)
                 .tag("target.kind", "process")
                 .build();
     }

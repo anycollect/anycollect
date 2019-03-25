@@ -3,55 +3,60 @@ package io.github.anycollect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.github.anycollect.metric.Tags;
 import org.immutables.value.Value;
 
 @Value.Immutable
 @JsonSerialize(as = ImmutableInternalMonitoringConfig.class)
 @JsonDeserialize(as = ImmutableInternalMonitoringConfig.class)
 public interface InternalMonitoringConfig {
-    static InternalMonitoringConfig common(int period) {
-        return new DefaultInternalMonitoringConfig(period);
-    }
+    InternalMonitoringConfig DEFAULT = new InternalMonitoringConfig() { };
 
-    @JsonProperty("period")
     @Value.Default
+    @JsonProperty("period")
     default int period() {
         return 10;
     }
 
+    @JsonProperty("prefix")
+    @Value.Default
+    default String prefix() {
+        return "anycollect";
+    }
+
+    @JsonProperty("tags")
+    @Value.Default
+    default Tags tags() {
+        return Tags.empty();
+    }
+
+    @JsonProperty("meta")
+    @Value.Default
+    default Tags meta() {
+        return Tags.of("source", "internal");
+    }
+
     @JsonProperty("jvm")
     @Value.Default
-    default JvmConfig jvm() {
-        return JvmConfig.DEFAULT;
+    default MetricConfig jvm() {
+        return MetricConfig.ENABLED;
     }
 
-    @JsonProperty("registry")
+    @JsonProperty("mem")
     @Value.Default
-    default MeterRegistryConfig registry() {
-        return MeterRegistryConfig.DEFAULT;
+    default MetricConfig mem() {
+        return MetricConfig.ENABLED;
     }
 
-    @JsonProperty("process")
+    @JsonProperty("cpu")
     @Value.Default
-    default ProcessConfig process() {
-        return ProcessConfig.DEFAULT;
+    default MetricConfig cpu() {
+        return MetricConfig.ENABLED;
     }
 
-    class DefaultInternalMonitoringConfig implements InternalMonitoringConfig {
-        private final int period;
-
-        public DefaultInternalMonitoringConfig(final int period) {
-            this.period = period;
-        }
-
-        @Override
-        public int period() {
-            return period;
-        }
-
-        @Override
-        public JvmConfig jvm() {
-            return JvmConfig.common(period);
-        }
+    @JsonProperty("logic")
+    @Value.Default
+    default MetricConfig logic() {
+        return MetricConfig.ENABLED;
     }
 }

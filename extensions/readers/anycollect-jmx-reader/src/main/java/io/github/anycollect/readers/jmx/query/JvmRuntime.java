@@ -14,10 +14,16 @@ public final class JvmRuntime extends JmxQuery {
     private final StdJmxQuery uptime;
 
     public JvmRuntime() {
-        super("jvm.runtime");
-        this.uptime = new StdJmxQuery("jvm.runtime.uptime",
-                Tags.empty(),
-                Tags.empty(),
+        this("", Tags.empty(), Tags.empty());
+    }
+
+    public JvmRuntime(@Nonnull final String prefix,
+                      @Nonnull final Tags tags,
+                      @Nonnull final Tags meta) {
+        super("jvm.runtime", tags, meta);
+        this.uptime = new StdJmxQuery(prefix.isEmpty() ? "jvm.runtime.uptime" : prefix + "." + "jvm.runtime.uptime",
+                tags,
+                meta,
                 "ms",
                 Collections.emptyList(),
                 "java.lang:type=Runtime",

@@ -20,6 +20,7 @@ import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.definitions.*;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.meter.registry.AnyCollectMeterRegistry;
+import io.github.anycollect.meter.registry.AnyCollectMeterRegistryConfig;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import org.apache.commons.io.FileUtils;
@@ -57,10 +58,14 @@ public final class CoreLoader implements InstanceLoader {
         SelfDiscovery selfDiscovery = new StdSelfDiscovery();
         Definition meterRegistryDefinition;
         MeterRegistry meterRegistry;
-        if (config.internalMonitoring().registry().enabled()) {
+        if (config.internalMonitoring().logic().enabled()) {
             meterRegistryDefinition = context.getDefinition(AnyCollectMeterRegistry.NAME);
             meterRegistry = new AnyCollectMeterRegistry(
-                    config.internalMonitoring().registry().config()
+                    AnyCollectMeterRegistryConfig.builder()
+                    .commonTags(config.internalMonitoring().tags())
+                    .commonMeta(config.internalMonitoring().meta())
+                    .globalPrefix(config.internalMonitoring().prefix())
+                    .build()
             );
         } else {
             meterRegistry = new NoopMeterRegistry();

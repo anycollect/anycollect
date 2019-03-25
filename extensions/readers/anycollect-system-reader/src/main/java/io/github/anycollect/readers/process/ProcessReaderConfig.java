@@ -13,6 +13,24 @@ public interface ProcessReaderConfig {
         return ImmutableProcessReaderConfig.builder();
     }
 
+    @Value.Default
+    @JsonProperty("prefix")
+    default String prefix() {
+        return "";
+    }
+
+    @Value.Default
+    @JsonProperty("memoryUsageKey")
+    default String memoryUsageKey() {
+        return "process.memory.usage";
+    }
+
+    @Value.Default
+    @JsonProperty("cpuUsageKey")
+    default String cpuUsageKey() {
+        return "process.cpu.usage";
+    }
+
     @JsonProperty(value = "period", required = true)
     int period();
 

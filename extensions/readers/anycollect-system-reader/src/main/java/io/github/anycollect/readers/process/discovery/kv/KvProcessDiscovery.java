@@ -19,9 +19,7 @@ public final class KvProcessDiscovery extends ProcessDiscovery {
 
     @ExtCreator
     public KvProcessDiscovery(@ExtDependency(qualifier = "kv") @Nonnull final KeyValue kv,
-                              @ExtConfig @Nonnull final Config config,
-                              @InstanceId @Nonnull final String id) {
-        super(id);
+                              @ExtConfig @Nonnull final Config config) {
         this.delegate = CachedKvDiscovery.create(kv, Process.class, config.key);
     }
 

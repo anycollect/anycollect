@@ -16,6 +16,7 @@ import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPoolFactory;
 import io.github.anycollect.readers.jmx.server.pool.impl.CommonsJmxConnectionPoolFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.management.ManagementFactory;
 import java.util.Collections;
 import java.util.Set;
@@ -37,7 +38,7 @@ public final class CurrentApp implements JavaAppDiscovery {
         JmxConnectionPoolFactory poolFactory = new CommonsJmxConnectionPoolFactory();
         JmxConnectionPool pool = poolFactory.create(JMX_CONNECTION_FACTORY);
         app = Collections.singleton(JavaApp.create(config.currentApplicationName,
-                Tags.empty(), Tags.empty(), pool, registry));
+                config.tags, config.meta, pool, registry));
     }
 
     @Override
@@ -47,10 +48,16 @@ public final class CurrentApp implements JavaAppDiscovery {
 
     public static class Config {
         private final String currentApplicationName;
+        private final Tags tags;
+        private final Tags meta;
 
         @JsonCreator
-        public Config(@JsonProperty("name") @Nonnull final String currentApplicationName) {
+        public Config(@JsonProperty(value = "name", required = true) @Nonnull final String currentApplicationName,
+                      @JsonProperty("tags") @Nullable final Tags tags,
+                      @JsonProperty("meta") @Nullable final Tags meta) {
             this.currentApplicationName = currentApplicationName;
+            this.tags = tags != null ? tags : Tags.empty();
+            this.meta = meta != null ? meta : Tags.empty();
         }
     }
 }

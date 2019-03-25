@@ -17,7 +17,7 @@ public interface CoreConfig {
     @Value.Default
     @JsonProperty("internalMonitoring")
     default InternalMonitoringConfig internalMonitoring() {
-        return InternalMonitoringConfig.common(10);
+        return InternalMonitoringConfig.DEFAULT;
     }
 
     @Value.Default

@@ -2,6 +2,7 @@ package io.github.anycollect.readers.jmx.discovery;
 
 import io.github.anycollect.core.api.target.TargetCreationException;
 import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.config.JavaAppConfig;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.server.JmxConnectionFactory;
@@ -29,9 +30,13 @@ public class DefaultJavaAppFactory implements JavaAppFactory {
     public JavaApp create(@Nonnull final JavaAppConfig definition) throws TargetCreationException {
         try {
             JmxConnectionFactory connectionFactory = new JmxConnectionFactoryImpl(definition);
+            Tags tags = definition.getTags();
+            if (tags.isEmpty()) {
+                tags = Tags.of("instance", definition.getInstanceId());
+            }
             return JavaApp.create(
                     definition.getInstanceId(),
-                    definition.getTags(),
+                    tags,
                     definition.getMeta(),
                     factory.create(connectionFactory),
                     registry);

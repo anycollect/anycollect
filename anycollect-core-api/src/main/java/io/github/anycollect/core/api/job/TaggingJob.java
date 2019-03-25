@@ -11,11 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class TaggingJob implements Job {
+    private final String prefix;
     private final Tags tags;
     private final Tags meta;
     private final Job delegate;
 
-    public TaggingJob(@Nonnull final Tags tags, @Nonnull final Tags meta, @Nonnull final Job delegate) {
+    public TaggingJob(@Nonnull final String prefix,
+                      @Nonnull final Tags tags,
+                      @Nonnull final Tags meta,
+                      @Nonnull final Job delegate) {
+        this.prefix = prefix;
         this.tags = tags;
         this.meta = meta;
         this.delegate = delegate;
@@ -27,7 +32,7 @@ public final class TaggingJob implements Job {
         List<Metric> taggedMetrics = new ArrayList<>(metrics.size());
         for (Metric metric : metrics) {
             ImmutableMetric tagged = new ImmutableMetric(
-                    metric.getKey(),
+                    prefix.isEmpty() ? metric.getKey() : prefix + "." + metric.getKey(),
                     metric.getTimestamp(),
                     metric.getMeasurements(),
                     tags.isEmpty() ? metric.getTags() : Tags.concat(tags, metric.getTags()),

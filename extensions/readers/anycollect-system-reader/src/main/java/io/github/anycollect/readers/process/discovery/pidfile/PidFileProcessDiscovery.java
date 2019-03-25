@@ -4,7 +4,6 @@ import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
-import io.github.anycollect.extensions.annotations.InstanceId;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.process.Process;
 import io.github.anycollect.readers.process.discovery.ProcessDiscovery;
@@ -30,9 +29,8 @@ public final class PidFileProcessDiscovery extends ProcessDiscovery {
     private final OperatingSystem os;
 
     @ExtCreator
-    public PidFileProcessDiscovery(@ExtConfig @Nonnull final PidFileProcessDiscoveryConfig config,
-                                   @InstanceId @Nonnull final String id) throws ConfigurationException {
-        super(id);
+    public PidFileProcessDiscovery(@ExtConfig @Nonnull final PidFileProcessDiscoveryConfig config)
+            throws ConfigurationException {
         try {
             watchService = FileSystems.getDefault().newWatchService();
         } catch (IOException e) {

@@ -37,7 +37,8 @@ public final class ProcessReader implements Reader {
     public void start(@Nonnull final Dispatcher dispatcher) {
         SystemInfo systemInfo = new SystemInfo();
         GlobalMemory memory = systemInfo.getHardware().getMemory();
-        pullManager.start(discovery, QueryProvider.singleton(new ProcessQuery(memory)),
+        ProcessQuery query = new ProcessQuery(config.prefix(), config.cpuUsageKey(), config.memoryUsageKey(), memory);
+        pullManager.start(discovery, QueryProvider.singleton(query),
                 QueryMatcherResolver.consistent(QueryMatcher.all(config.period())), dispatcher);
     }
 

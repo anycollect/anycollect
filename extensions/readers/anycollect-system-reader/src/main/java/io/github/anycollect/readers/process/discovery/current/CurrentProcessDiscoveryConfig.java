@@ -17,6 +17,12 @@ public interface CurrentProcessDiscoveryConfig {
     @Value.Default
     @JsonProperty("tags")
     default Tags tags() {
-        return Tags.of("name", "anycollect");
+        return Tags.empty();
+    }
+
+    @Value.Default
+    @JsonProperty("tags")
+    default Tags meta() {
+        return Tags.empty();
     }
 }

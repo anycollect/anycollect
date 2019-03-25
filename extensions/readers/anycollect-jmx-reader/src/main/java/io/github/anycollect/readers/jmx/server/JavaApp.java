@@ -24,7 +24,7 @@ public abstract class JavaApp extends AbstractTarget<JmxQuery> {
                                  @Nonnull final Tags meta,
                                  @Nonnull final JmxConnectionPool pool,
                                  @Nonnull final MeterRegistry registry) {
-        return new PooledJavaApp(id, tags.isEmpty() ? Tags.of("instance", id) : tags, meta, pool, registry);
+        return new PooledJavaApp(id, tags, meta, pool, registry);
     }
 
     @Nonnull
