@@ -31,6 +31,7 @@ public final class ProcessJob implements Job {
         copy.setUserTime(source.getUserTime());
         copy.setKernelTime(source.getKernelTime());
         copy.setUpTime(source.getUpTime());
+        copy.setResidentSetSize(source.getResidentSetSize());
         return copy;
     }
 }

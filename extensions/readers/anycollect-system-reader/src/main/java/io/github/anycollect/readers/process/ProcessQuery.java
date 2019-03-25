@@ -33,11 +33,16 @@ public final class ProcessQuery extends AbstractQuery {
     public List<Metric> execute(@Nullable final OSProcess previous, @Nonnull final OSProcess current) {
         List<Metric> metrics = new ArrayList<>();
         long rss = current.getResidentSetSize();
-        double memoryUsage = 100.0 * rss / totalMemory;
+        double memoryUsagePercent = 100.0 * rss / totalMemory;
         metrics.add(Metric.builder()
                 .key(prefix, memUsageKey)
                 .at(clock.wallTime())
-                .gauge("percents", memoryUsage)
+                .gauge("percents", memoryUsagePercent)
+                .build());
+        metrics.add(Metric.builder()
+                .key(prefix, memUsageKey)
+                .at(clock.wallTime())
+                .gauge("bytes", rss)
                 .build());
         if (previous == null) {
             return metrics;
