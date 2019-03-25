@@ -85,7 +85,7 @@ public final class JvmMemory extends JmxQuery {
                 long used = (Long) usage.get(USED);
                 String type = HEAP_TYPE.equals(attributes.get(2).getValue()) ? "heap" : "nonheap";
                 ImmutableTags tags = Tags.builder()
-                        .tag("pool", name.replace(' ', '_'))
+                        .tag("pool", name)
                         .tag("type", type)
                         .build();
                 Metric metric = Metric.of("jvm.memory.used", tags, Tags.empty(),

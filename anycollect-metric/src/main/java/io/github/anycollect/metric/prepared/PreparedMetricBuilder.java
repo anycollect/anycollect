@@ -27,6 +27,14 @@ public final class PreparedMetricBuilder extends BaseBuilder<PreparedMetricBuild
         return super.key(keyParts);
     }
 
+    public PreparedMetricBuilder counter(@Nonnull final String unit) {
+        return measurement(Stat.VALUE, Type.COUNTER, unit);
+    }
+
+    public PreparedMetricBuilder gauge(@Nonnull final String unit) {
+        return measurement(Stat.VALUE, Type.GAUGE, unit);
+    }
+
     public PreparedMetricBuilder measurement(@Nonnull final Stat stat,
                                              @Nonnull final Type type,
                                              @Nonnull final String unit) {

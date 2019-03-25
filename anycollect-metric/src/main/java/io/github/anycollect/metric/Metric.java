@@ -96,7 +96,6 @@ public interface Metric {
             return measurement(Stat.VALUE, Type.COUNTER, unit, value);
         }
 
-
         public Builder gauge(@Nonnull final String unit, final double value) {
             return measurement(Stat.VALUE, Type.GAUGE, unit, value);
         }

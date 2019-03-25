@@ -10,10 +10,12 @@ import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 @Extension(name = TagGraphiteSerializer.NAME, point = Serializer.class)
 public final class TagGraphiteSerializer implements Serializer {
     public static final String NAME = "TagGraphiteSerializer";
+    private static final Pattern FORBIDDEN = Pattern.compile("\\s");
 
     @ExtCreator
     public TagGraphiteSerializer() {
@@ -35,9 +37,9 @@ public final class TagGraphiteSerializer implements Serializer {
             if (!tags.isEmpty()) {
                 for (Tag tag : tags) {
                     data.append(";")
-                            .append(tag.getKey())
+                            .append(sanitize(tag.getKey()))
                             .append("=")
-                            .append(tag.getValue());
+                            .append(sanitize(tag.getValue()));
                 }
             }
             data.append(" ");
@@ -47,5 +49,9 @@ public final class TagGraphiteSerializer implements Serializer {
             data.append("\n");
         }
         return data.toString();
+    }
+
+    private String sanitize(final String source) {
+        return FORBIDDEN.matcher(source).replaceAll("_");
     }
 }

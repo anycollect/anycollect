@@ -27,6 +27,7 @@ public final class JvmMetrics implements JmxQueryProvider {
         queries.add(new JvmMemory(config.prefix(), config.tags(), config.meta()));
         queries.add(new JvmThreads(config.prefix(), config.tags(), config.meta()));
         queries.add(new JvmRuntime(config.prefix(), config.tags(), config.meta()));
+        queries.add(new JvmGc(config.prefix(), config.tags(), config.meta()));
     }
 
     @Nonnull

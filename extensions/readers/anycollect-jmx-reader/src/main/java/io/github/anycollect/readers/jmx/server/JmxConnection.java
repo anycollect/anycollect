@@ -8,12 +8,14 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class JmxConnection implements Closeable {
+public final class JmxConnection implements Closeable {
     @Nullable
     private final JMXConnector connector;
     @Nonnull
     private final MBeanServerConnection connection;
+    private final CopyOnWriteArrayList<JmxEventListener> listeners = new CopyOnWriteArrayList<>();
     private volatile boolean destroyed = false;
     private volatile boolean closed = false;
 
@@ -28,24 +30,28 @@ public class JmxConnection implements Closeable {
     }
 
     @Nonnull
-    public final MBeanServerConnection getConnection() {
+    public MBeanServerConnection getConnection() {
         return connection;
     }
 
-    public final void markAsDestroyed() {
+    public void markAsDestroyed() {
         this.destroyed = true;
     }
 
-    public final boolean isAlive() {
+    public boolean isAlive() {
         return !destroyed;
     }
 
-    public final boolean isClosed() {
+    public boolean isClosed() {
         return closed;
     }
 
+    public void addListener(@Nonnull final JmxEventListener listener) {
+        this.listeners.add(listener);
+    }
+
     @Override
-    public final void close() throws IOException {
+    public void close() throws IOException {
         if (closed) {
             return;
         }
@@ -53,5 +59,9 @@ public class JmxConnection implements Closeable {
             connector.close();
         }
         closed = true;
+        JmxEvent event = new JmxConnectionClosedEvent();
+        for (JmxEventListener listener : listeners) {
+            listener.handle(event);
+        }
     }
 }
