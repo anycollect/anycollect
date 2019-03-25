@@ -21,7 +21,7 @@ public final class CurrentProcessDiscovery extends ProcessDiscovery {
     public CurrentProcessDiscovery(@ExtConfig @Nonnull final CurrentProcessDiscoveryConfig config) {
         OperatingSystem os = new SystemInfo().getOperatingSystem();
         int pid = os.getProcessId();
-        this.process = new Process(pid, config.tags(), createMeta(os.getProcess(pid)));
+        this.process = new Process(config.targetId(), pid, config.tags(), createMeta(os.getProcess(pid)));
     }
 
     @Override

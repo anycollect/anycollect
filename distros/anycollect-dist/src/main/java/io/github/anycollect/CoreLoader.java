@@ -10,6 +10,7 @@ import io.github.anycollect.core.impl.pull.PullManagerImpl;
 import io.github.anycollect.core.impl.router.StdRouter;
 import io.github.anycollect.core.impl.router.config.ImmutableRouterConfig;
 import io.github.anycollect.core.impl.router.config.RouterConfig;
+import io.github.anycollect.core.impl.self.SelfDiscoveryConfig;
 import io.github.anycollect.core.impl.self.StdSelfDiscovery;
 import io.github.anycollect.extensions.EnvVarSubstitutor;
 import io.github.anycollect.extensions.InstanceLoader;
@@ -55,7 +56,9 @@ public final class CoreLoader implements InstanceLoader {
 
     @Override
     public void load(@Nonnull final ExtendableContext context) {
-        SelfDiscovery selfDiscovery = new StdSelfDiscovery();
+        SelfDiscovery selfDiscovery = new StdSelfDiscovery(SelfDiscoveryConfig.builder()
+                .targetId("anycollect-self")
+                .build());
         Definition meterRegistryDefinition;
         MeterRegistry meterRegistry;
         if (config.internalMonitoring().logic().enabled()) {

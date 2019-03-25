@@ -106,19 +106,19 @@ public final class JvmThreads extends JmxQuery {
             metrics.add(Metric.builder()
                     .key(THREADS_STARTED_KEY)
                     .at(timestamp)
-                    .counter(THREADS_UNIT, totalStartedThreadCount)
+                    .counter(totalStartedThreadCount)
                     .build());
             metrics.add(Metric.builder()
                     .key(LIVE_THREADS_KEY)
                     .tag("type", "daemon")
                     .at(timestamp)
-                    .gauge(THREADS_UNIT, daemonThreadCount)
+                    .gauge(daemonThreadCount)
                     .build());
             metrics.add(Metric.builder()
                     .key(LIVE_THREADS_KEY)
                     .tag("type", "nondaemon")
                     .at(timestamp)
-                    .gauge(THREADS_UNIT, threadCount - daemonThreadCount)
+                    .gauge(threadCount - daemonThreadCount)
                     .build());
             Multiset<String> numberOfThreadsByState = HashMultiset.create();
             for (CompositeData threadInfo : threadInfos) {

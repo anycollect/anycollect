@@ -8,7 +8,7 @@ import static java.util.stream.Collectors.joining;
 
 public abstract class BaseBuilder<T extends BaseBuilder<T>> {
     private String key;
-    private String unit;
+    private String unit = "";
     private Stat stat;
     private Type type;
     private final ImmutableTags.Builder tagsBuilder = new ImmutableTags.Builder();

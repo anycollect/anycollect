@@ -3,10 +3,7 @@ package io.github.anycollect.core.impl.serializers.graphite;
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
-import io.github.anycollect.metric.Measurement;
-import io.github.anycollect.metric.Metric;
-import io.github.anycollect.metric.Tag;
-import io.github.anycollect.metric.Tags;
+import io.github.anycollect.metric.*;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +30,18 @@ public final class TagGraphiteSerializer implements Serializer {
                 continue;
             }
             data.append(key);
-            data.append(".").append(measurement.getStat());
+            if (!measurement.getUnit().isEmpty()) {
+                data.append(".").append(measurement.getUnit());
+            }
+            if (measurement.getStat().equals(Stat.value())) {
+                if (measurement.getType() == Type.GAUGE) {
+                    data.append(".").append("gauge");
+                } else if (measurement.getType() == Type.COUNTER) {
+                    data.append(".").append("counter");
+                }
+            } else {
+                data.append(".").append(measurement.getStat());
+            }
             if (!tags.isEmpty()) {
                 for (Tag tag : tags) {
                     data.append(";")

@@ -92,8 +92,16 @@ public interface Metric {
             return this;
         }
 
+        public Builder counter(final double value) {
+            return counter("", value);
+        }
+
         public Builder counter(@Nonnull final String unit, final double value) {
             return measurement(Stat.VALUE, Type.COUNTER, unit, value);
+        }
+
+        public Builder gauge(final double value) {
+            return gauge("", value);
         }
 
         public Builder gauge(@Nonnull final String unit, final double value) {

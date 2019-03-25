@@ -18,10 +18,13 @@ public final class Process extends AbstractTarget<ProcessQuery> {
     private final OperatingSystem os;
 
     @JsonCreator
-    public Process(@JsonProperty(value = "pid", required = true) final int pid,
+    public Process(@JsonProperty("id") @Nullable final String targetId,
+                   @JsonProperty(value = "pid", required = true) final int pid,
                    @JsonProperty("tags") @Nullable final Tags tags,
                    @JsonProperty("meta") @Nullable final Tags meta) {
-        super("pid@" + pid, tags != null ? tags : Tags.of("pid", pid), meta != null ? meta : Tags.empty());
+        super(targetId != null ? targetId : "pid@" + pid,
+                tags != null ? tags : Tags.empty(),
+                meta != null ? meta : Tags.empty());
         this.pid = pid;
         this.os = new SystemInfo().getOperatingSystem();
     }

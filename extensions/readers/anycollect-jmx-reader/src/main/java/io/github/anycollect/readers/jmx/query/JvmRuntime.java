@@ -13,10 +13,6 @@ import java.util.Collections;
 public final class JvmRuntime extends JmxQuery {
     private final StdJmxQuery uptime;
 
-    public JvmRuntime() {
-        this("", Tags.empty(), Tags.empty());
-    }
-
     public JvmRuntime(@Nonnull final String prefix,
                       @Nonnull final Tags tags,
                       @Nonnull final Tags meta) {

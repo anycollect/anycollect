@@ -37,7 +37,7 @@ public final class CurrentApp implements JavaAppDiscovery {
                       @ExtConfig @Nonnull final Config config) {
         JmxConnectionPoolFactory poolFactory = new CommonsJmxConnectionPoolFactory();
         JmxConnectionPool pool = poolFactory.create(JMX_CONNECTION_FACTORY);
-        app = Collections.singleton(JavaApp.create(config.currentApplicationName,
+        app = Collections.singleton(JavaApp.create(config.targetId,
                 config.tags, config.meta, pool, registry));
     }
 
@@ -47,15 +47,15 @@ public final class CurrentApp implements JavaAppDiscovery {
     }
 
     public static class Config {
-        private final String currentApplicationName;
+        private final String targetId;
         private final Tags tags;
         private final Tags meta;
 
         @JsonCreator
-        public Config(@JsonProperty(value = "name", required = true) @Nonnull final String currentApplicationName,
+        public Config(@JsonProperty(value = "targetId", required = true) @Nonnull final String targetId,
                       @JsonProperty("tags") @Nullable final Tags tags,
                       @JsonProperty("meta") @Nullable final Tags meta) {
-            this.currentApplicationName = currentApplicationName;
+            this.targetId = targetId;
             this.tags = tags != null ? tags : Tags.empty();
             this.meta = meta != null ? meta : Tags.empty();
         }

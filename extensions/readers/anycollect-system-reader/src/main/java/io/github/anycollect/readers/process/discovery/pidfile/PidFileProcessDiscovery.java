@@ -85,6 +85,6 @@ public final class PidFileProcessDiscovery extends ProcessDiscovery {
         }
         OSProcess process = os.getProcess(pid);
         Tags meta = createMeta(process);
-        return new Process(pid, Tags.of("pid.file", pidFile.toFile().getAbsolutePath()), meta);
+        return new Process(null, pid, Tags.of("pid.file", pidFile.toFile().getAbsolutePath()), meta);
     }
 }

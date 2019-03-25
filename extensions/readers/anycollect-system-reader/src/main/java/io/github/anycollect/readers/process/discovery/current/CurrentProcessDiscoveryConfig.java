@@ -14,6 +14,9 @@ public interface CurrentProcessDiscoveryConfig {
         return ImmutableCurrentProcessDiscoveryConfig.builder();
     }
 
+    @JsonProperty("targetId")
+    String targetId();
+
     @Value.Default
     @JsonProperty("tags")
     default Tags tags() {

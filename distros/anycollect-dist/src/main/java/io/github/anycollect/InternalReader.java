@@ -83,7 +83,7 @@ public final class InternalReader implements Reader, Lifecycle {
                 period = jvm.period();
             }
             CurrentApp currentJvmDiscovery = new CurrentApp(registry,
-                    new CurrentApp.Config("anycollect", config.tags(), config.meta()));
+                    new CurrentApp.Config("anycollect-jvm", config.tags(), config.meta()));
             JmxReader jmxReader = new JmxReader(
                     pullManager,
                     Collections.singletonList(currentJvmDiscovery),
@@ -116,6 +116,7 @@ public final class InternalReader implements Reader, Lifecycle {
                 pullManager,
                 new CurrentProcessDiscovery(
                         CurrentProcessDiscoveryConfig.builder()
+                                .targetId("anycollect-process")
                                 .tags(config.tags())
                                 .meta(config.meta())
                                 .build()),

@@ -45,17 +45,14 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
                 .meta(this.getClass())
                 .register(registry);
         failedJobsCounter = Counter.key(prefix, "scheduler.jobs.failed")
-                .unit("jobs")
                 .concatTags(tags)
                 .meta(this.getClass())
                 .register(registry);
         succeededJobsCounter = Counter.key(prefix, "scheduler.jobs.succeeded")
-                .unit("jobs")
                 .concatTags(tags)
                 .meta(this.getClass())
                 .register(registry);
         Gauge.make(this, executor -> executor.getQueue().size(), prefix, "scheduler.queue.size")
-                .unit("jobs")
                 .concatTags(tags)
                 .register(registry);
         Gauge.make(this, executor -> getPoolSize(), prefix, "scheduler.threads.live");

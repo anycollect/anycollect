@@ -24,7 +24,7 @@ public class Slf4jWriter implements Writer {
     private final String id;
 
     @ExtCreator
-    public Slf4jWriter(@ExtDependency(qualifier = "format", optional = true) @Nullable final Serializer serializer,
+    public Slf4jWriter(@ExtDependency(qualifier = "serializer", optional = true) @Nullable final Serializer serializer,
                        @InstanceId @Nonnull final String id) {
         if (serializer != null) {
             this.serializer = serializer;

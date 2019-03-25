@@ -5,8 +5,6 @@ import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.core.api.job.TaggingJob;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.ImmutableTags;
-import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.query.operations.QueryAttributes;
@@ -84,13 +82,13 @@ public final class JvmMemory extends JmxQuery {
                 CompositeData usage = (CompositeData) attributes.get(1).getValue();
                 long used = (Long) usage.get(USED);
                 String type = HEAP_TYPE.equals(attributes.get(2).getValue()) ? "heap" : "nonheap";
-                ImmutableTags tags = Tags.builder()
+                metrics.add(Metric.builder()
+                        .key("jvm.memory.used")
                         .tag("pool", name)
                         .tag("type", type)
-                        .build();
-                Metric metric = Metric.of("jvm.memory.used", tags, Tags.empty(),
-                        Measurement.gauge(used, "bytes"), timestamp);
-                metrics.add(metric);
+                        .at(timestamp)
+                        .gauge("bytes", used)
+                        .build());
             }
             return metrics;
         }

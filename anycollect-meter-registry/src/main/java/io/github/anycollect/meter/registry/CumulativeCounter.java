@@ -29,7 +29,7 @@ public class CumulativeCounter extends AbstractMeter implements Counter, Meter {
                 .concatTags(id.getTags())
                 .concatMeta(meta)
                 .concatMeta(id.getMetaTags())
-                .measurement(Stat.value(), Type.GAUGE, id.getUnit())
+                .counter(id.getUnit())
                 .build();
     }
 
