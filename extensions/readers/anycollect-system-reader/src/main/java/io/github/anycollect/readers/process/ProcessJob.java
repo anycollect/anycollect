@@ -27,6 +27,9 @@ public final class ProcessJob implements Job {
 
     // we need to make a copy of important fields because oshi can modify this object
     private OSProcess copy(final OSProcess source) {
+        if (source == null) {
+            return null;
+        }
         OSProcess copy = new OSProcess();
         copy.setUserTime(source.getUserTime());
         copy.setKernelTime(source.getKernelTime());
