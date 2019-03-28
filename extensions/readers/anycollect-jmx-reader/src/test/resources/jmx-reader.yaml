@@ -21,7 +21,7 @@ extensions:
   extension: CurrentApp
   instance: discovery
   config:
-    name: test
+    targetId: test
 - !load
   extension: StaticJmxQueryProvider
   instance: queries

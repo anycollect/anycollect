@@ -39,7 +39,7 @@ class MonitoredScheduledThreadPoolExecutorTest {
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         future.cancel(true);
         Thread.sleep(1000);
-        verify(registry, times(1)).counter(MeterId.key("scheduler.jobs.failed").unit("jobs").build());
+        verify(registry, times(1)).counter(MeterId.key("scheduler.jobs.failed").build());
     }
 
     @Test
@@ -53,6 +53,6 @@ class MonitoredScheduledThreadPoolExecutorTest {
             }
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
-        verify(registry, times(1)).counter(MeterId.key("scheduler.jobs.failed").unit("jobs").build());
+        verify(registry, times(1)).counter(MeterId.key("scheduler.jobs.failed").build());
     }
 }

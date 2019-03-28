@@ -46,15 +46,15 @@ class JvmThreadsTest {
         List<Metric> families = new MockJavaApp(server).bind(jvmThreads).execute();
         assertThatFamilies(families)
                 .contains("jvm.threads.live", Tags.of("type", "daemon"))
-                .hasMeasurement(Stat.value(), Type.GAUGE, "threads", 1);
+                .hasMeasurement(Stat.value(), Type.GAUGE, "", 1);
         assertThatFamilies(families)
                 .contains("jvm.threads.live", Tags.of("type", "nondaemon"))
-                .hasMeasurement(Stat.value(), Type.GAUGE, "threads", 2);
+                .hasMeasurement(Stat.value(), Type.GAUGE, "", 2);
         assertThatFamilies(families)
                 .contains("jvm.threads.started")
-                .hasMeasurement(Stat.value(), Type.COUNTER, "threads", 5);
+                .hasMeasurement(Stat.value(), Type.COUNTER, "", 5);
         assertThatFamilies(families)
                 .contains("jvm.threads.states", Tags.of("state", "RUNNABLE"))
-                .hasMeasurement(Stat.value(), Type.GAUGE, "threads", 1);
+                .hasMeasurement(Stat.value(), Type.GAUGE, "", 1);
     }
 }

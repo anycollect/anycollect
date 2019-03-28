@@ -6,7 +6,7 @@ import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @Extension(name = StdSelfDiscovery.NAME, point = SelfDiscovery.class)
 public class StdSelfDiscovery implements SelfDiscovery {
@@ -14,7 +14,8 @@ public class StdSelfDiscovery implements SelfDiscovery {
     private final SelfTarget self;
 
     @ExtCreator
-    public StdSelfDiscovery(@ExtConfig @Nonnull final SelfDiscoveryConfig config) {
+    public StdSelfDiscovery(@ExtConfig(optional = true) @Nullable final SelfDiscoveryConfig optConfig) {
+        SelfDiscoveryConfig config = optConfig != null ? optConfig : SelfDiscoveryConfig.DEFAULT;
         this.self = new SelfTarget(config.targetId());
     }
 

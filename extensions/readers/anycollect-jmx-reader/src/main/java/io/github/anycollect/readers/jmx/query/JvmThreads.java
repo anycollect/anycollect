@@ -130,7 +130,7 @@ public final class JvmThreads extends JmxQuery {
                         .key(THREADS_BY_STATE_KEY)
                         .tag("state", state)
                         .at(timestamp)
-                        .gauge(THREADS_UNIT, numberOfThreadsByState.count(state))
+                        .gauge(numberOfThreadsByState.count(state))
                         .build());
             }
             return metrics;

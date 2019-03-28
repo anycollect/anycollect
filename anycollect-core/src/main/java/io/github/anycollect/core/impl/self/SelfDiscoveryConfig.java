@@ -9,6 +9,8 @@ import org.immutables.value.Value;
 @JsonSerialize(as = ImmutableSelfDiscoveryConfig.class)
 @JsonDeserialize(as = ImmutableSelfDiscoveryConfig.class)
 public interface SelfDiscoveryConfig {
+    SelfDiscoveryConfig DEFAULT = new SelfDiscoveryConfig() { };
+
     static ImmutableSelfDiscoveryConfig.Builder builder() {
         return ImmutableSelfDiscoveryConfig.builder();
     }
