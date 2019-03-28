@@ -128,7 +128,8 @@ public final class CoreLoader implements InstanceLoader {
                 }
                 if (current != null) {
                     File parentLoaderFile = ((FileScope) current).getFile();
-                    includeConfigFile = FileUtils.getFile(parentLoaderFile.getParentFile(), configName);
+                    includeConfigFile = FileUtils.getFile(parentLoaderFile.getAbsoluteFile().getParentFile(),
+                            configName);
                 } else {
                     throw new ConfigurationException("relative path is not supported, could not find " + configName);
                 }
