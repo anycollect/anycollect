@@ -2,6 +2,7 @@ package io.github.anycollect.core.impl.writers.slf4j;
 
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.api.Writer;
+import io.github.anycollect.core.exceptions.SerialisationException;
 import io.github.anycollect.core.impl.serializers.AnyCollectSerializer;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
@@ -36,8 +37,12 @@ public class Slf4jWriter implements Writer {
 
     @Override
     public void write(@Nonnull final List<? extends Metric> metrics) {
-        for (Metric family : metrics) {
-            LOG.info("{}", serializer.serialize(family));
+        for (Metric metric : metrics) {
+            try {
+                LOG.info("{}", serializer.serialize(metric));
+            } catch (SerialisationException e) {
+                LOG.debug("could not serialize metric {}", metric);
+            }
         }
     }
 

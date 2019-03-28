@@ -4,6 +4,7 @@ import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.api.Writer;
 import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.exceptions.ConfigurationException;
+import io.github.anycollect.core.exceptions.SerialisationException;
 import io.github.anycollect.extensions.annotations.*;
 import io.github.anycollect.metric.Metric;
 import org.slf4j.Logger;
@@ -47,7 +48,13 @@ public final class SocketWriter implements Writer, Lifecycle {
     }
 
     private void write(@Nonnull final Metric metric) {
-        String data = serializer.serialize(metric);
+        String data;
+        try {
+            data = serializer.serialize(metric);
+        } catch (SerialisationException e) {
+            LOG.debug("could not serialize metric {}", metric);
+            return;
+        }
         try {
             sender.connected();
             sender.send(data);
