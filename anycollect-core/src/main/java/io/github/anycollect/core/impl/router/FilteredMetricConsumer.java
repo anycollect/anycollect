@@ -23,7 +23,6 @@ public final class FilteredMetricConsumer implements MetricConsumer {
     public void consume(@Nonnull final List<? extends Metric> metrics) {
         List<? extends Metric> filtered = metrics.stream()
                 .filter(metric -> filter.accept(metric) != FilterReply.DENY)
-                .map(filter::map)
                 .collect(toList());
         delegate.consume(filtered);
     }

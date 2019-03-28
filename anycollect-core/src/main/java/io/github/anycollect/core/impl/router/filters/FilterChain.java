@@ -13,15 +13,6 @@ public final class FilterChain implements Filter {
     }
 
     @Override
-    public Metric map(@Nonnull final Metric metric) {
-        Metric result = metric;
-        for (Filter filter : chain) {
-            result = filter.map(metric);
-        }
-        return result;
-    }
-
-    @Override
     public FilterReply accept(@Nonnull final Metric metric) {
         for (Filter filter : chain) {
             if (filter.accept(metric) == FilterReply.ACCEPT) {

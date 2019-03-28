@@ -17,9 +17,5 @@ import javax.annotation.Nonnull;
         @JsonSubTypes.Type(value = AcceptAllFilter.class, name = "accept")
 })
 public interface Filter {
-    default Metric map(@Nonnull Metric metric) {
-        return metric;
-    }
-
     FilterReply accept(@Nonnull Metric metric);
 }
