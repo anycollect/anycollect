@@ -12,7 +12,7 @@ class StatTest {
         assertThat(Stat.parse("max")).isSameAs(Stat.max());
         assertThat(Stat.parse("mean")).isSameAs(Stat.mean());
         assertThat(Stat.parse("std")).isSameAs(Stat.std());
-        assertThat(Stat.parse("max_99")).isEqualTo(new Percentile(Stat.max(), 99));
+        assertThat(Stat.parse("max_99")).isEqualTo(Percentile.of(Stat.max(), 99));
         assertThat(Stat.parse("le_Infinity")).isInstanceOf(LeBucket.class)
                 .extracting(stat -> ((LeBucket) stat).getMax())
                 .isEqualTo(Double.POSITIVE_INFINITY);
@@ -57,7 +57,7 @@ class StatTest {
         assertThat(Stat.isValid(Stat.max())).isTrue();
         assertThat(Stat.isValid(Stat.mean())).isTrue();
         assertThat(Stat.isValid(Stat.std())).isTrue();
-        assertThat(Stat.isValid(new Percentile(Stat.max(), 75))).isTrue();
+        assertThat(Stat.isValid(Percentile.of(Stat.max(), 75))).isTrue();
         assertThat(Stat.isValid(LeBucket.inf())).isTrue();
         assertThat(Stat.isValid(LeBucket.of(100))).isTrue();
         assertThat(Stat.isValid(LeBucket.of(0.6))).isTrue();

@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PercentileTest {
     @Test
     void percentileValueMustBePositive() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Percentile(Stat.max(), 0));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Percentile.of(Stat.max(), 0));
     }
 
     @Test
