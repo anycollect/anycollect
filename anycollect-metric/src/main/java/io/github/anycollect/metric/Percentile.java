@@ -9,7 +9,7 @@ public final class Percentile implements Stat, Comparable<Percentile> {
     private final Stat stat;
     private final int num;
 
-    public Percentile(final Stat stat, final double percentile) {
+    Percentile(final Stat stat, final double percentile) {
         Objects.requireNonNull(stat, "stat must not be null");
         if (percentile <= 0) {
             throw new IllegalArgumentException("percentile must be positive");
@@ -18,7 +18,7 @@ public final class Percentile implements Stat, Comparable<Percentile> {
         this.num = (int) ((int) (percentile * 1000) % 10 == 0 ? percentile * 100 : percentile * 1000);
     }
 
-    public Percentile(final Stat stat, final int num) {
+    Percentile(final Stat stat, final int num) {
         Objects.requireNonNull(stat, "stat must not be null");
         if (num <= 0) {
             throw new IllegalArgumentException("percentile must be positive");

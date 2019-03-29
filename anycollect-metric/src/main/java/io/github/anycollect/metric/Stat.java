@@ -1,6 +1,13 @@
 package io.github.anycollect.metric;
 
 public interface Stat {
+    Percentile PERCENTILE_50 = new Percentile(Stat.MAX, 50);
+    Percentile PERCENTILE_75 = new Percentile(Stat.MAX, 75);
+    Percentile PERCENTILE_90 = new Percentile(Stat.MAX, 90);
+    Percentile PERCENTILE_95 = new Percentile(Stat.MAX, 95);
+    Percentile PERCENTILE_99 = new Percentile(Stat.MAX, 99);
+    Percentile PERCENTILE_999 = new Percentile(Stat.MAX, 999);
+
     static Stat min() {
         return MIN;
     }
@@ -22,6 +29,19 @@ public interface Stat {
     }
 
     static Percentile percentile(double percentile) {
+        if (percentile == 0.5) {
+            return PERCENTILE_50;
+        } else if (percentile == 0.75) {
+            return PERCENTILE_75;
+        } else if (percentile == 0.9) {
+            return PERCENTILE_90;
+        } else if (percentile == 0.95) {
+            return PERCENTILE_95;
+        } else if (percentile == 0.99) {
+            return PERCENTILE_99;
+        } else if (percentile == 0.999) {
+            return PERCENTILE_999;
+        }
         return new Percentile(max(), percentile);
     }
 
@@ -30,6 +50,20 @@ public interface Stat {
     }
 
     static Percentile percentile(int num) {
+        switch (num) {
+            case 50:
+                return PERCENTILE_50;
+            case 75:
+                return PERCENTILE_75;
+            case 90:
+                return PERCENTILE_90;
+            case 95:
+                return PERCENTILE_95;
+            case 99:
+                return PERCENTILE_99;
+            case 999:
+                return PERCENTILE_999;
+        }
         return new Percentile(max(), num);
     }
 
