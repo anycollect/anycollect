@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.filters;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.frame.MetricFrame;
 
 import javax.annotation.Nonnull;
 
@@ -17,5 +17,5 @@ import javax.annotation.Nonnull;
         @JsonSubTypes.Type(value = AcceptAllFilter.class, name = "accept")
 })
 public interface Filter {
-    FilterReply accept(@Nonnull Metric metric);
+    FilterReply accept(@Nonnull MetricFrame frame);
 }

@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.filters;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.frame.MetricFrame;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,7 +19,7 @@ public final class DenyKeyFilter implements Filter {
     }
 
     @Override
-    public FilterReply accept(@Nonnull final Metric metric) {
-        return deny.accept(metric);
+    public FilterReply accept(@Nonnull final MetricFrame frame) {
+        return deny.accept(frame);
     }
 }
