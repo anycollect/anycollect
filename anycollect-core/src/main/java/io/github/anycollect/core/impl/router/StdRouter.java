@@ -11,7 +11,7 @@ import io.github.anycollect.core.impl.router.adapters.ReaderAdapter;
 import io.github.anycollect.core.impl.router.adapters.WriterAdapter;
 import io.github.anycollect.core.impl.router.config.RouterConfig;
 import io.github.anycollect.core.impl.router.config.TopologyItem;
-import io.github.anycollect.core.impl.router.filters.FilterChain;
+import io.github.anycollect.core.impl.filters.FilterChain;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;

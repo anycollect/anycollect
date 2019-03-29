@@ -1,4 +1,4 @@
-package io.github.anycollect.core.impl.router.filters;
+package io.github.anycollect.core.impl.filters;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

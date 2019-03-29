@@ -2,8 +2,8 @@ package io.github.anycollect.core.impl.router.config;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.github.anycollect.core.impl.router.filters.AcceptAllFilter;
-import io.github.anycollect.core.impl.router.filters.Filter;
+import io.github.anycollect.core.impl.filters.AcceptAllFilter;
+import io.github.anycollect.core.impl.filters.Filter;
 import org.immutables.value.Value;
 
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package io.github.anycollect.core.impl.router.filters;
+package io.github.anycollect.core.impl.filters;
 
 import io.github.anycollect.metric.Metric;
 
