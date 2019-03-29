@@ -1,5 +1,7 @@
 package io.github.anycollect.metric;
 
+import io.github.anycollect.metric.frame.MeasurementFrame;
+
 import javax.annotation.Nonnull;
 
 public interface Measurement {
@@ -32,13 +34,22 @@ public interface Measurement {
     }
 
     @Nonnull
-    Stat getStat();
+    MeasurementFrame getFrame();
 
     @Nonnull
-    Type getType();
+    default Stat getStat() {
+        return getFrame().getStat();
+    }
 
     @Nonnull
-    String getUnit();
+    default Type getType() {
+        return getFrame().getType();
+    }
+
+    @Nonnull
+    default String getUnit() {
+        return getFrame().getUnit();
+    }
 
     double getValue();
 }

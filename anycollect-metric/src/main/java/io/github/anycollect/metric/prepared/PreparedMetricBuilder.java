@@ -3,6 +3,8 @@ package io.github.anycollect.metric.prepared;
 import io.github.anycollect.metric.BaseBuilder;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
+import io.github.anycollect.metric.frame.ImmutableMeasurementFrame;
+import io.github.anycollect.metric.frame.ImmutableMetricFrame;
 import io.github.anycollect.metric.frame.MeasurementFrame;
 import io.github.anycollect.metric.frame.MetricFrame;
 
@@ -38,15 +40,14 @@ public final class PreparedMetricBuilder extends BaseBuilder<PreparedMetricBuild
     public PreparedMetricBuilder measurement(@Nonnull final Stat stat,
                                              @Nonnull final Type type,
                                              @Nonnull final String unit) {
-        measurements.add(new MeasurementFrame(stat, type, unit));
+        measurements.add(new ImmutableMeasurementFrame(stat, type, unit));
         return this;
     }
 
     public PreparedMetric build() {
-        MetricFrame data = new MetricFrame(getKey(),
+        MetricFrame data = new ImmutableMetricFrame(getKey(),
                 getTagsBuilder().build(),
-                getMetaBuilder().build(),
-                measurements);
-        return new ImmutablePreparedMetric(data);
+                getMetaBuilder().build());
+        return new ImmutablePreparedMetric(data, measurements);
     }
 }

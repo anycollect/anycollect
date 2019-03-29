@@ -1,46 +1,45 @@
 package io.github.anycollect.metric.prepared;
 
-import io.github.anycollect.metric.Measurement;
 import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.frame.MeasurementFrame;
 import io.github.anycollect.metric.frame.MetricFrame;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 final class ImmutablePreparedMetric implements PreparedMetric {
-    private final MetricFrame data;
-    private final List<PreparedMeasurement> preparedMeasurements;
+    private final MetricFrame frame;
+    private final List<MeasurementFrame> measurementFrames;
 
-    ImmutablePreparedMetric(@Nonnull final MetricFrame data) {
-        this.data = data;
-        this.preparedMeasurements = data.getMeasurements().stream()
-                .map(ImmutablePreparedMeasurement::new)
-                .collect(Collectors.toList());
+    ImmutablePreparedMetric(@Nonnull final MetricFrame frame,
+                            @Nonnull final List<MeasurementFrame> measurementFrames) {
+        this.frame = frame;
+        this.measurementFrames = measurementFrames;
     }
 
     @Override
     public Metric compile(final long timestamp, final double value) {
-        if (preparedMeasurements.size() != 1) {
-            throw new IllegalArgumentException("expected " + preparedMeasurements.size() + " values");
+        if (measurementFrames.size() != 1) {
+            throw new IllegalArgumentException("expected " + measurementFrames.size() + " values");
         }
-        List<Measurement> measurements = Collections.singletonList(preparedMeasurements.get(0).compile(value));
-        return new CompiledMetric(data, measurements, timestamp);
+        List<CompiledMeasurement> measurements = Collections.singletonList(
+                new CompiledMeasurement(measurementFrames.get(0), value));
+        return new CompiledMetric(frame, measurements, timestamp);
     }
 
     @Override
     public Metric compile(final long timestamp, final double... values) {
-        if (preparedMeasurements.size() != values.length) {
-            throw new IllegalArgumentException("expected " + preparedMeasurements.size() + " values, "
+        if (measurementFrames.size() != values.length) {
+            throw new IllegalArgumentException("expected " + measurementFrames.size() + " values, "
                     + "given: " + values.length);
         }
-        List<Measurement> measurements = new ArrayList<>(preparedMeasurements.size());
-        for (int i = 0; i < preparedMeasurements.size(); i++) {
-            Measurement measurement = preparedMeasurements.get(i).compile(values[i]);
+        List<CompiledMeasurement> measurements = new ArrayList<>(measurementFrames.size());
+        for (int i = 0; i < measurementFrames.size(); i++) {
+            CompiledMeasurement measurement = new CompiledMeasurement(measurementFrames.get(i), values[i]);
             measurements.add(measurement);
         }
-        return new CompiledMetric(data, measurements, timestamp);
+        return new CompiledMetric(frame, measurements, timestamp);
     }
 }

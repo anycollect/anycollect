@@ -1,5 +1,6 @@
 package io.github.anycollect.metric;
 
+import io.github.anycollect.metric.frame.MetricFrame;
 import io.github.anycollect.metric.prepared.PreparedMetricBuilder;
 
 import javax.annotation.Nonnull;
@@ -48,26 +49,29 @@ public interface Metric {
     }
 
     @Nonnull
-    String getKey();
-
-    long getTimestamp();
-
-    @Nonnull
     List<? extends Measurement> getMeasurements();
 
     @Nonnull
-    Tags getTags();
+    default String getKey() {
+        return getFrame().getKey();
+    }
 
     @Nonnull
-    Tags getMeta();
-
-    default boolean isEmpty() {
-        return getMeasurements().isEmpty();
+    default Tags getTags() {
+        return getFrame().getTags();
     }
 
-    default int size() {
-        return getMeasurements().size();
+    @Nonnull
+    default Tags getMeta() {
+        return getFrame().getMeta();
     }
+
+    @Nonnull
+    MetricFrame getFrame();
+
+    long getTimestamp();
+
+    int size();
 
     class Builder extends BaseBuilder<Builder> {
         private long timestamp = -1;

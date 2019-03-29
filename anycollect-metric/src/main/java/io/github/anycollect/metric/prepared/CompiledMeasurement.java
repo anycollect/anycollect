@@ -8,30 +8,35 @@ import io.github.anycollect.metric.frame.MeasurementFrame;
 import javax.annotation.Nonnull;
 
 final class CompiledMeasurement implements Measurement {
-    private final MeasurementFrame data;
+    private final MeasurementFrame frame;
     private final double value;
 
-    CompiledMeasurement(@Nonnull final MeasurementFrame data, final double value) {
-        this.data = data;
+    CompiledMeasurement(@Nonnull final MeasurementFrame frame, final double value) {
+        this.frame = frame;
         this.value = value;
+    }
+
+    @Nonnull
+    public MeasurementFrame getFrame() {
+        return frame;
     }
 
     @Nonnull
     @Override
     public Stat getStat() {
-        return data.getStat();
+        return frame.getStat();
     }
 
     @Nonnull
     @Override
     public Type getType() {
-        return data.getType();
+        return frame.getType();
     }
 
     @Nonnull
     @Override
     public String getUnit() {
-        return data.getUnit();
+        return frame.getUnit();
     }
 
     @Override
