@@ -19,8 +19,8 @@ class ImmutableTagsTest {
 
     @Test
     void singletonTagTest() {
-        ImmutableTags tags = Tags.of("test", "valeu");
-        assertThat(tags.getTagKeys()).containsExactly("test");
+        Tags tags = Tags.of("test", "value");
+        assertThat(tags).containsExactly(Tag.of("test", "value"));
     }
 
     @Test

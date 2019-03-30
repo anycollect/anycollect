@@ -26,6 +26,7 @@ import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import java.lang.management.MemoryUsage;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class JvmGc extends JmxQuery {
     private static final Logger LOG = LoggerFactory.getLogger(JvmGc.class);
@@ -52,11 +53,7 @@ public final class JvmGc extends JmxQuery {
     @Nonnull
     @Override
     public Job bind(@Nonnull final JavaApp app) {
-        return new TaggingJob(
-                prefix,
-                Tags.concat(app.getTags(), getTags()),
-                Tags.concat(app.getMeta(), getTags()),
-                new JvmGcJob(app));
+        return new TaggingJob(prefix, app, this, new JvmGcJob(app));
     }
 
     private final class JvmGcJob implements Job, NotificationListener {
@@ -65,6 +62,7 @@ public final class JvmGc extends JmxQuery {
         private List<GarbageCollectionNotificationInfo> accumulated = new ArrayList<>();
         private final Object lock = new Object();
         private Subscription subscription;
+        private final Set<GcId> ids = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
         private JvmGcJob(final JavaApp app) {
             this.app = app;
@@ -80,10 +78,7 @@ public final class JvmGc extends JmxQuery {
                 this.subscription = app.operate(subscribe);
             }
             // aggregate accumulated info and purge accumulator
-            synchronized (lock) {
-                List<Metric> metrics = aggregate();
-                return metrics;
-            }
+            return aggregate();
         }
 
         @Override
@@ -122,18 +117,19 @@ public final class JvmGc extends JmxQuery {
                     totalUsedBefore += usedBefore;
                     totalUsedAfter += usedAfter;
                 }
-                GcData gcData = accumulator.computeIfAbsent(new GcId(gcName, gcCause), id -> new GcData());
+                GcId id = new GcId(gcName, gcCause);
+                ids.add(id);
+                GcData gcData = accumulator.computeIfAbsent(id, gcId -> new GcData());
                 long totalFreed = totalUsedBefore - totalUsedAfter;
                 gcData.freed += totalFreed;
                 gcData.duration += duration;
             }
             List<Metric> metrics = new ArrayList<>();
-            for (Map.Entry<GcId, GcData> entry : accumulator.entrySet()) {
-                GcId id = entry.getKey();
-                GcData data = entry.getValue();
+            for (GcId id : ids) {
+                GcData data = accumulator.get(id);
                 String gcName = id.gcName;
-                long duration = data.duration;
-                long freed = data.freed;
+                long duration = data != null ? data.duration : 0;
+                long freed = data != null ? data.freed : 0;
                 metrics.add(Metric.builder()
                         .key(id.concurrent ? "jvm.gc.concurrent.phase.duration" : "jvm.gc.pause")
                         .at(timestamp)

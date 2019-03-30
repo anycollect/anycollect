@@ -27,6 +27,14 @@ public final class ImmutableMetric implements Metric {
         this.measurements = Collections.unmodifiableList(new ArrayList<>(measurements));
     }
 
+    private ImmutableMetric(@Nonnull final MetricFrame frame,
+                            final long timestamp,
+                            @Nonnull final List<? extends Measurement> measurements) {
+        this.frame = frame;
+        this.timestamp = timestamp;
+        this.measurements = Collections.unmodifiableList(new ArrayList<>(measurements));
+    }
+
     @Override
     public String toString() {
         return frame.getKey() + ";" + (!frame.getTags().isEmpty() ? frame.getTags() + ";" : "") + measurements.stream()
@@ -43,5 +51,11 @@ public final class ImmutableMetric implements Metric {
     @Override
     public int size() {
         return measurements.size();
+    }
+
+    @Nonnull
+    @Override
+    public Metric reframe(@Nonnull final MetricFrame frame) {
+        return new ImmutableMetric(frame, timestamp, measurements);
     }
 }

@@ -1,45 +1,46 @@
 package io.github.anycollect.core.api.job;
 
+import io.github.anycollect.core.api.query.Query;
+import io.github.anycollect.core.api.reframe.Enricher;
+import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.ImmutableMetric;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
+import io.github.anycollect.metric.frame.Reframer;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class TaggingJob implements Job {
-    private final String prefix;
-    private final Tags tags;
-    private final Tags meta;
+    private final Reframer reframer;
     private final Job delegate;
 
-    public TaggingJob(@Nonnull final String prefix,
-                      @Nonnull final Tags tags,
-                      @Nonnull final Tags meta,
+    public TaggingJob(@Nonnull final Target target, @Nonnull final Query query,
                       @Nonnull final Job delegate) {
-        this.prefix = prefix;
-        this.tags = tags;
-        this.meta = meta;
+        this(null, target, query, delegate);
+    }
+
+    public TaggingJob(@Nullable final String prefix,
+                      @Nonnull final Target target, @Nonnull final Query query,
+                      @Nonnull final Job delegate) {
+        this(prefix, Tags.empty(), Tags.empty(), target, query, delegate);
+    }
+
+    public TaggingJob(@Nullable final String prefix,
+                      @Nonnull final Tags tags, @Nonnull final Tags meta,
+                      @Nonnull final Target target, @Nonnull final Query query,
+                      @Nonnull final Job delegate) {
+        this.reframer = new Enricher(prefix, tags, meta, target, query);
         this.delegate = delegate;
     }
 
     @Override
     public List<Metric> execute() throws QueryException, ConnectionException {
-        List<Metric> metrics = delegate.execute();
-        List<Metric> taggedMetrics = new ArrayList<>(metrics.size());
-        for (Metric metric : metrics) {
-            ImmutableMetric tagged = new ImmutableMetric(
-                    prefix.isEmpty() ? metric.getKey() : prefix + "." + metric.getKey(),
-                    metric.getTimestamp(),
-                    metric.getMeasurements(),
-                    tags.isEmpty() ? metric.getTags() : Tags.concat(tags, metric.getTags()),
-                    meta.isEmpty() ? metric.getMeta() : Tags.concat(meta, metric.getMeta())
-            );
-            taggedMetrics.add(tagged);
-        }
-        return taggedMetrics;
+        return delegate.execute().stream()
+                .map(metric -> metric.reframe(reframer))
+                .collect(Collectors.toList());
     }
 }

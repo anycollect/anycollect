@@ -8,6 +8,6 @@ public final class Subscription {
     }
 
     public void invalidate() {
-        this.valid = true;
+        this.valid = false;
     }
 }

@@ -36,6 +36,6 @@ public final class Process extends AbstractTarget<ProcessQuery> {
     @Nonnull
     @Override
     public Job bind(@Nonnull final ProcessQuery query) {
-        return new TaggingJob("", getTags(), getMeta(), new ProcessJob(this, query));
+        return new TaggingJob(null, this, query, new ProcessJob(this, query));
     }
 }

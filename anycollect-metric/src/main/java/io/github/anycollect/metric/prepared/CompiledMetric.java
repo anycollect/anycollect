@@ -52,6 +52,12 @@ final class CompiledMetric implements Metric {
 
     @Nonnull
     @Override
+    public Metric reframe(@Nonnull final MetricFrame frame) {
+        return new CompiledMetric(frame, measurements, timestamp);
+    }
+
+    @Nonnull
+    @Override
     public List<? extends Measurement> getMeasurements() {
         return measurements;
     }

@@ -1,5 +1,6 @@
 package io.github.anycollect.assertj;
 
+import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
 import org.assertj.core.api.AbstractAssert;
 
@@ -17,7 +18,10 @@ public final class TagsAssert extends AbstractAssert<TagsAssert, Tags> {
             throw new IllegalArgumentException("tags length must be even");
         }
 
-        int actualNumberOfTags = actual.getTagKeys().size();
+        int actualNumberOfTags = 0;
+        for (Tag tag : actual) {
+            ++actualNumberOfTags;
+        }
         int expectedNumberOfTags = tags.length / 2;
         if (actualNumberOfTags != expectedNumberOfTags) {
             failWithMessage("Expected <%s> tags but was <%s>: %s",

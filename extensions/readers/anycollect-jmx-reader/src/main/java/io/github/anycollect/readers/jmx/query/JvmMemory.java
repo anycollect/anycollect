@@ -56,11 +56,7 @@ public final class JvmMemory extends JmxQuery {
     @Nonnull
     @Override
     public Job bind(@Nonnull final JavaApp app) {
-        return new TaggingJob(
-                prefix,
-                Tags.concat(app.getTags(), getTags()),
-                Tags.concat(app.getMeta(), getTags()),
-                new JvmMemoryJob(app));
+        return new TaggingJob(prefix, app, this, new JvmMemoryJob(app));
     }
 
     private final class JvmMemoryJob implements Job {

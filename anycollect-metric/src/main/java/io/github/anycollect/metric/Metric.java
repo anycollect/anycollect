@@ -1,9 +1,11 @@
 package io.github.anycollect.metric;
 
 import io.github.anycollect.metric.frame.MetricFrame;
+import io.github.anycollect.metric.frame.Reframer;
 import io.github.anycollect.metric.prepared.PreparedMetricBuilder;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,6 +74,39 @@ public interface Metric {
     long getTimestamp();
 
     int size();
+
+    @Nonnull
+    Metric reframe(@Nonnull MetricFrame frame);
+
+    @Nonnull
+    default Metric reframe(@Nonnull Reframer reframer) {
+        return reframe(reframer.reframe(getFrame()));
+    }
+
+    @Nonnull
+    default Metric prefix(@Nullable final String prefix) {
+        return reframe(getFrame().prefix(prefix));
+    }
+
+    @Nonnull
+    default Metric frontTags(@Nonnull final Tags tags) {
+        return reframe(getFrame().frontTags(tags));
+    }
+
+    @Nonnull
+    default Metric backTags(@Nonnull final Tags tags) {
+        return reframe(getFrame().backTags(tags));
+    }
+
+    @Nonnull
+    default Metric frontMeta(@Nonnull final Tags meta) {
+        return reframe(getFrame().frontMeta(meta));
+    }
+
+    @Nonnull
+    default Metric backMeta(@Nonnull final Tags meta) {
+        return reframe(getFrame().backMeta(meta));
+    }
 
     class Builder extends BaseBuilder<Builder> {
         private long timestamp = -1;

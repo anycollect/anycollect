@@ -44,6 +44,7 @@
         <!-- UTILS -->
         <commons-pool2.version>2.6.0</commons-pool2.version>
         <guava.version>27.0-jre</guava.version>
+        <commons-lang.version>3.8.1</commons-lang.version>
 
         <!-- CODE ANALYSIS-->
         <findbugs-annotations.version>3.0.1</findbugs-annotations.version>
@@ -54,6 +55,7 @@
         <mockito.version>2.23.4</mockito.version>
         <awaitility.version>3.1.5</awaitility.version>
         <commons-io.version>2.6</commons-io.version>
+        <jmh.version>1.21</jmh.version>
 
         <!-- PLUGINS -->
         <compiler.version>3.6.1</compiler.version>
@@ -67,6 +69,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- DATA STRUCTURES-->
+            <dependency>
+                <groupId>org.pcollections</groupId>
+                <artifactId>pcollections</artifactId>
+                <version>${pcollections.version}</version>
+            </dependency>
+
             <!-- INTERNAL MONITORING -->
             <dependency>
                 <groupId>io.micrometer</groupId>
@@ -157,6 +166,11 @@
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
 
             <!-- LOGGING -->
             <dependency>
@@ -208,6 +222,18 @@
                 <groupId>org.awaitility</groupId>
                 <artifactId>awaitility</artifactId>
                 <version>${awaitility.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>${jmh.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>${jmh.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

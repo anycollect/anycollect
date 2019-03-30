@@ -16,7 +16,7 @@ final class ImmutablePreparedMetric implements PreparedMetric {
     ImmutablePreparedMetric(@Nonnull final MetricFrame frame,
                             @Nonnull final List<MeasurementFrame> measurementFrames) {
         this.frame = frame;
-        this.measurementFrames = measurementFrames;
+        this.measurementFrames = Collections.unmodifiableList(new ArrayList<>(measurementFrames));
     }
 
     @Override

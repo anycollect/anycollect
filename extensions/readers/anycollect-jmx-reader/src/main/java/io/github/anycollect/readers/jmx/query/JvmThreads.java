@@ -51,7 +51,6 @@ public final class JvmThreads extends JmxQuery {
     private static final String LIVE_THREADS_KEY = "jvm.threads.live";
     private static final String THREADS_STARTED_KEY = "jvm.threads.started";
     private static final String THREADS_BY_STATE_KEY = "jvm.threads.states";
-    private static final String THREADS_UNIT = "threads";
 
     private final String prefix;
     private final Clock clock;
@@ -71,11 +70,7 @@ public final class JvmThreads extends JmxQuery {
     @Nonnull
     @Override
     public Job bind(@Nonnull final JavaApp app) {
-        return new TaggingJob(
-                prefix,
-                Tags.concat(app.getTags(), getTags()),
-                Tags.concat(app.getMeta(), getMeta()),
-                new JvmThreadsJob(app));
+        return new TaggingJob(prefix, app, this, new JvmThreadsJob(app));
     }
 
     private final class JvmThreadsJob implements Job {

@@ -13,6 +13,10 @@ public final class ImmutableTags implements Tags {
     private final Map<String, String> tags;
     private final List<Tag> tagList;
 
+    public static ImmutableTags singleton(final String key, final String value) {
+        return new ImmutableTags(key, value);
+    }
+
     private ImmutableTags(final Builder builder) {
         Map<String, String> tmpTagMap = new LinkedHashMap<>(builder.tags);
         List<Tag> tmpTagList = new ArrayList<>();
@@ -23,10 +27,21 @@ public final class ImmutableTags implements Tags {
         this.tagList = Collections.unmodifiableList(tmpTagList);
     }
 
+    private ImmutableTags(final String key, final String value) {
+        this.tagList = Collections.singletonList(Tag.of(key, value));
+        this.tags = Collections.singletonMap(key, value);
+    }
+
     @Override
     public boolean hasTagKey(final String key) {
         Objects.requireNonNull(key, "tag key must not be null");
         return tags.containsKey(key);
+    }
+
+    @Nonnull
+    @Override
+    public Tag getTag(final String key) {
+        return Tag.of(key, getTagValue(key));
     }
 
     @Nonnull
@@ -38,12 +53,6 @@ public final class ImmutableTags implements Tags {
             throw new IllegalArgumentException("there is no tag value associated with " + key + " key");
         }
         return value;
-    }
-
-    @Nonnull
-    @Override
-    public Set<String> getTagKeys() {
-        return Collections.unmodifiableSet(tags.keySet());
     }
 
     @Nonnull

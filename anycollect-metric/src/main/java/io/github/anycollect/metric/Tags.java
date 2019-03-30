@@ -1,5 +1,8 @@
 package io.github.anycollect.metric;
 
+import io.github.anycollect.tags.ConcatTags;
+import io.github.anycollect.tags.RemoveTags;
+
 import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.Set;
@@ -13,29 +16,58 @@ public interface Tags extends Iterable<Tag> {
         return ImmutableTags.EMPTY;
     }
 
-    static ImmutableTags of(@Nonnull String key, int value) {
+    static Tags of(@Nonnull String key, int value) {
         return builder().tag(key, Integer.toString(value)).build();
     }
 
-    static ImmutableTags of(@Nonnull String key, @Nonnull String value) {
-        return builder().tag(key, value).build();
-    }
-
-    static ImmutableTags concat(@Nonnull Tags left, @Nonnull Tags right) {
-        return builder().concat(left).concat(right).build();
+    static Tags of(@Nonnull String key, @Nonnull String value) {
+        return ImmutableTags.singleton(key, value);
     }
 
     boolean hasTagKey(String key);
 
     @Nonnull
-    String getTagValue(String key);
+    Tag getTag(String key);
 
     @Nonnull
-    Set<String> getTagKeys();
+    default String getTagValue(String key) {
+        return getTag(key).getValue();
+    }
 
     @Nonnull
     @Override
     Iterator<Tag> iterator();
 
     boolean isEmpty();
+
+    default Tags concat(Tags tags) {
+        return ConcatTags.of(this, tags);
+    }
+
+    default Tags remove(String key) {
+        return RemoveTags.of(this, key);
+    }
+
+    default Tags remove(Set<String> keys) {
+        return RemoveTags.of(this, keys);
+    }
+
+    default boolean contains(Tags tags) {
+        for (Tag tag : tags) {
+            if (!hasTagKey(tag.getKey())) {
+                return false;
+            }
+            if (!getTag(tag.getKey()).equals(tag)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static boolean equals(final Tags left, final Tags right) {
+        if (left == right) {
+            return true;
+        }
+        return left.contains(right) && right.contains(left);
+    }
 }

@@ -1,7 +1,6 @@
 package io.github.anycollect.metric;
 
 import javax.annotation.Nonnull;
-import java.util.Set;
 
 public interface Id {
     Tags getTags();
@@ -14,10 +13,6 @@ public interface Id {
         return getTags().getTagValue(key);
     }
 
-    default Set<String> getTagKeys() {
-        return getTags().getTagKeys();
-    }
-
     Tags getMetaTags();
 
     default boolean hasMetaTagKey(@Nonnull String key) {
@@ -26,9 +21,5 @@ public interface Id {
 
     default String getMetaTagValue(@Nonnull String key) {
         return getMetaTags().getTagValue(key);
-    }
-
-    default Set<String> getMetaTagKeys() {
-        return getMetaTags().getTagKeys();
     }
 }

@@ -85,8 +85,6 @@ class ImmutableMetricIdTest {
                 .tag("key2", "value2")
                 .meta("metaKey1", "metaValue1")
                 .build();
-        assertThat(id.getTagKeys()).containsExactly("key1", "key2");
-        assertThat(id.getMetaTagKeys()).containsExactly("metaKey1");
         assertThat(id.getTagValue("key1")).isEqualTo("value1");
         assertThat(id.getTagValue("key2")).isEqualTo("value2");
         assertThat(id.getMetaTagValue("metaKey1")).isEqualTo("metaValue1");
@@ -129,7 +127,7 @@ class ImmutableMetricIdTest {
                 .concatTags(commonTags)
                 .concatMeta(meta)
                 .build();
-        assertThat(id.getTagKeys()).containsExactly("host", "service");
-        assertThat(id.getMetaTagKeys()).containsExactly("agent");
+        assertThat(id.getTags()).containsExactly(Tag.of("host", "localhost"), Tag.of("service", "service"));
+        assertThat(id.getMetaTags()).containsExactly(Tag.of("agent", "anycollect"));
     }
 }

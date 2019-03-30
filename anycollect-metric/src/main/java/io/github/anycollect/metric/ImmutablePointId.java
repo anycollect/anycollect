@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 import javax.annotation.Nonnull;
-import java.util.Set;
 
 @Deprecated
 @Getter
@@ -30,11 +29,6 @@ public final class ImmutablePointId implements PointId {
         this.type = builder.getType();
         this.tags = builder.getTagsBuilder().build();
         this.metaTags = builder.getMetaBuilder().build();
-    }
-
-    @Override
-    public Set<String> getMetaTagKeys() {
-        return metaTags.getTagKeys();
     }
 
     public static final class Builder extends BaseBuilder<Builder> {

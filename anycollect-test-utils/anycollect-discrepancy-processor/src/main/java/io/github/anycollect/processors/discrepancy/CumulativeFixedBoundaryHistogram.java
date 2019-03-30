@@ -38,7 +38,7 @@ public final class CumulativeFixedBoundaryHistogram {
         List<Measurement> measurements = new ArrayList<>();
         for (int bucket = 0; bucket < buckets.length; bucket++) {
             Measurement measurement
-                    = new ImmutableMeasurement(Stat.le(buckets[bucket]), Type.COUNTER, "hits", counts.get(bucket));
+                    = new ImmutableMeasurement(Stat.le(buckets[bucket]), Type.COUNTER, "", counts.get(bucket));
             measurements.add(measurement);
         }
         return Metric.of(key, tags, meta, measurements, Clock.getDefault().wallTime());
