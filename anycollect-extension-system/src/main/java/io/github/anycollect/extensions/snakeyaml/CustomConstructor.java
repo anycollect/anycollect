@@ -1,6 +1,7 @@
 package io.github.anycollect.extensions.snakeyaml;
 
 import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
@@ -45,6 +46,7 @@ final class CustomConstructor extends Constructor {
     static {
         MAPPER.registerModule(new AnyCollectModule());
         MAPPER.registerModule(new GuavaModule());
+        MAPPER.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
         VALUES = new InjectableValues.Std();
         MAPPER.setInjectableValues(VALUES);
     }
