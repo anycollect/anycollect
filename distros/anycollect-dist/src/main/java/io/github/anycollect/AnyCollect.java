@@ -13,13 +13,18 @@ import io.github.anycollect.extensions.InstanceLoader;
 import io.github.anycollect.extensions.VarSubstitutor;
 import io.github.anycollect.extensions.definitions.*;
 import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
+import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import oshi.SystemInfo;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -73,7 +78,34 @@ public final class AnyCollect {
     }
 
     public static void main(final String... args) throws Exception {
-        File config = new File(args[0]);
+        Option confOpt = new Option("c", "conf", true,
+                "This is the path to configuration");
+        confOpt.setArgs(1);
+        confOpt.setOptionalArg(false);
+        confOpt.setArgName("config file");
+        confOpt.setRequired(true);
+
+        Option pidFileOpt = new Option("p", "pid-file", true,
+                "This is the path to store a PID file "
+                        + "which will contain the process ID of the anycollect process.");
+        pidFileOpt.setArgs(1);
+        pidFileOpt.setOptionalArg(false);
+        pidFileOpt.setArgName("pid file");
+        confOpt.setRequired(false);
+
+        Options options = new Options();
+        options.addOption(confOpt);
+        options.addOption(pidFileOpt);
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse(options, args);
+
+        File config = new File(cmd.getOptionValue(confOpt.getOpt()));
+        if (cmd.hasOption(pidFileOpt.getOpt())) {
+            String pidFile = cmd.getOptionValue(pidFileOpt.getOpt());
+            int pid = new SystemInfo().getOperatingSystem().getProcessId();
+            Files.write(Paths.get(pidFile), Collections.singletonList(Integer.toString(pid)),
+                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        }
         new AnyCollect(config).run();
     }
 
