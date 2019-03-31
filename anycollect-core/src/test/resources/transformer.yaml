@@ -1,0 +1,19 @@
+extensions:
+  - !load
+    extension: Transformer
+    instance: transformer
+    config:
+      source: drop
+      filters:
+        - type: tag
+          state: present
+          key: pid.file
+      transformations:
+        - transform: tag
+          source: drop
+          key:
+            source: pid.file
+            target: process
+          values:
+            - source: ".*/(.*)\\.pid"
+              target: $1
