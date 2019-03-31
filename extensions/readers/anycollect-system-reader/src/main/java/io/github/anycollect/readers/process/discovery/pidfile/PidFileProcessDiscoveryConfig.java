@@ -13,7 +13,7 @@ import java.util.List;
 @JsonDeserialize(as = ImmutablePidFileProcessDiscoveryConfig.class)
 public interface PidFileProcessDiscoveryConfig {
     @Value.Default
-    @JsonProperty("pidFiles")
+    @JsonProperty("watch")
     default List<String> pidFiles() {
         return Collections.emptyList();
     }
