@@ -108,6 +108,11 @@ public interface Metric {
         return reframe(getFrame().backMeta(meta));
     }
 
+    @Nonnull
+    default Metric removeTag(@Nonnull final String key) {
+        return reframe(getFrame().removeTag(key));
+    }
+
     class Builder extends BaseBuilder<Builder> {
         private long timestamp = -1;
         private final List<Measurement> measurements = new ArrayList<>();

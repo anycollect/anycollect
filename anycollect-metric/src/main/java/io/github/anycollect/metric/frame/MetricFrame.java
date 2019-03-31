@@ -2,6 +2,7 @@ package io.github.anycollect.metric.frame;
 
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.tags.ConcatTags;
+import io.github.anycollect.tags.RemoveTags;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,6 +62,15 @@ public interface MetricFrame {
                 getKey(),
                 getTags(),
                 ConcatTags.of(getMeta(), meta)
+        );
+    }
+
+    @Nonnull
+    default MetricFrame removeTag(@Nonnull String key) {
+        return new ImmutableMetricFrame(
+                getKey(),
+                RemoveTags.of(getTags(), key),
+                getMeta()
         );
     }
 }

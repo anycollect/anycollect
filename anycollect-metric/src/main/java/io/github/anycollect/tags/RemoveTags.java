@@ -4,14 +4,12 @@ import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 public final class RemoveTags implements Tags {
     private final Tags base;
     private final Set<String> removed;
+    private final int hash;
 
     public static Tags of(final Tags base, final String removed) {
         return of(base, Collections.singleton(removed));
@@ -39,6 +37,7 @@ public final class RemoveTags implements Tags {
     private RemoveTags(final Tags base, final Set<String> removed) {
         this.base = base;
         this.removed = removed;
+        this.hash = Objects.hash(base, removed);
     }
 
     @Override
@@ -80,6 +79,22 @@ public final class RemoveTags implements Tags {
     @Override
     public Tags remove(final String key) {
         return RemoveTags.of(this, key);
+    }
+
+    @Override
+    public int hashCode() {
+        return hash;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Tags)) {
+            return false;
+        }
+        return Tags.equals(this, (Tags) obj);
     }
 
     private class SkipRemovedIterator implements Iterator<Tag> {

@@ -6,10 +6,12 @@ import io.github.anycollect.metric.Tags;
 import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public final class ConcatTags implements Tags {
     private final Tags base;
     private final Tags delta;
+    private final int hash;
 
     public static Tags of(final Tags base, final Tags delta) {
         if (base.isEmpty()) {
@@ -23,6 +25,7 @@ public final class ConcatTags implements Tags {
     private ConcatTags(final Tags base, final Tags delta) {
         this.base = base;
         this.delta = delta;
+        this.hash = Objects.hash(base, delta);
     }
 
     @Override
@@ -45,6 +48,22 @@ public final class ConcatTags implements Tags {
     @Override
     public boolean isEmpty() {
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return hash;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Tags)) {
+            return false;
+        }
+        return Tags.equals(this, (Tags) obj);
     }
 
     private class ConcatIterator implements Iterator<Tag> {

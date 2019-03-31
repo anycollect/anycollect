@@ -1,17 +1,15 @@
 package io.github.anycollect.metric;
 
-import lombok.EqualsAndHashCode;
-
 import javax.annotation.Nonnull;
 import java.util.*;
 
 import static java.util.stream.Collectors.joining;
 
-@EqualsAndHashCode(of = "tags")
 public final class ImmutableTags implements Tags {
     public static final ImmutableTags EMPTY = new ImmutableTags.Builder().build();
     private final Map<String, String> tags;
     private final List<Tag> tagList;
+    private final int hash;
 
     public static ImmutableTags singleton(final String key, final String value) {
         return new ImmutableTags(key, value);
@@ -25,11 +23,13 @@ public final class ImmutableTags implements Tags {
         }
         this.tags = Collections.unmodifiableMap(tmpTagMap);
         this.tagList = Collections.unmodifiableList(tmpTagList);
+        this.hash = Objects.hash(this.tags, this.tagList);
     }
 
     private ImmutableTags(final String key, final String value) {
         this.tagList = Collections.singletonList(Tag.of(key, value));
         this.tags = Collections.singletonMap(key, value);
+        this.hash = Objects.hash(this.tags, this.tagList);
     }
 
     @Override
@@ -69,6 +69,22 @@ public final class ImmutableTags implements Tags {
     @Override
     public String toString() {
         return tagList.stream().map(Tag::toString).collect(joining(","));
+    }
+
+    @Override
+    public int hashCode() {
+        return hash;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Tags)) {
+            return false;
+        }
+        return Tags.equals(this, (Tags) obj);
     }
 
     public static final class Builder {
