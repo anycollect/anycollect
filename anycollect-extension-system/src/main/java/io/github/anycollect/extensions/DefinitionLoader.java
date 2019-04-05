@@ -13,4 +13,8 @@ public interface DefinitionLoader {
      * @return                            list of {@link Definition}
      */
     Collection<Definition> load();
+
+    static DefinitionLoader composite(DefinitionLoader... loaders) {
+        return new CompositeDefinitionLoader(loaders);
+    }
 }
