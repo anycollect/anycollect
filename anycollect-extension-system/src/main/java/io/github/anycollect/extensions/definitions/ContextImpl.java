@@ -60,13 +60,6 @@ public final class ContextImpl implements ExtendableContext {
                         candidate = instance;
                         continue;
                     }
-                    Priority priority = instance.getPriority();
-                    if (priority.isHigherThan(candidate.getPriority())) {
-                        candidate = instance;
-                    }
-                    if (priority.isLowerThan(candidate.getPriority())) {
-                        continue;
-                    }
                     if (instance.getScope().distance(scope) < candidate.getScope().distance(scope)) {
                         candidate = instance;
                     }

@@ -83,13 +83,9 @@ final class CustomConstructor extends Constructor {
             Map<String, Instance> singleDependencies = getSingleDependencies();
             Map<String, List<Instance>> multiDependencies = getMultiDependencies();
 
-//            if (definition.getExtensionPointClass().equals(InstanceLoader.class)) {
-//                singleDependencies.put("parentLoader", loader);
-//            }
-
             Instance instance = definition.createInstance(
                     instanceName, config, singleDependencies, multiDependencies,
-                    context, getInjectMode(), getPriority(), scope);
+                    context, getInjectMode(), scope);
             context.addInstance(instance);
             Object resolved = instance.resolve();
             // TODO
@@ -128,12 +124,6 @@ final class CustomConstructor extends Constructor {
             return values.containsKey(INJECT_MODE)
                     ? InjectMode.valueOf(((String) values.get(INJECT_MODE)).toUpperCase())
                     : InjectMode.MANUAL;
-        }
-
-        private Priority getPriority() {
-            return values.containsKey(PRIORITY)
-                    ? Priority.valueOf(((String) values.get(PRIORITY)).toUpperCase())
-                    : Priority.DEFAULT;
         }
 
         private Map<String, Instance> getSingleDependencies() {

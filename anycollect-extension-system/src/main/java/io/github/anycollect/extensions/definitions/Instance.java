@@ -15,8 +15,6 @@ public final class Instance {
     @Getter
     private final InjectMode injectMode;
     @Getter
-    private final Priority priority;
-    @Getter
     private final Scope scope;
     @Getter
     private final boolean copy;
@@ -25,23 +23,20 @@ public final class Instance {
                     final String instanceName,
                     final Object resolved,
                     final InjectMode injectMode,
-                    final Priority priority,
                     final Scope scope) {
-        this(definition, instanceName, resolved, injectMode, priority, scope, false);
+        this(definition, instanceName, resolved, injectMode, scope, false);
     }
 
     public Instance(final Definition definition,
                     final String instanceName,
                     final Object resolved,
                     final InjectMode injectMode,
-                    final Priority priority,
                     final Scope scope,
                     final boolean copy) {
         this.definition = definition;
         this.instanceName = instanceName;
         this.resolved = resolved;
         this.injectMode = injectMode;
-        this.priority = priority;
         this.scope = scope;
         this.copy = copy;
     }
@@ -51,6 +46,6 @@ public final class Instance {
     }
 
     public Instance copy(@Nonnull final Scope scope) {
-        return new Instance(definition, instanceName, resolved, injectMode, priority, scope, true);
+        return new Instance(definition, instanceName, resolved, injectMode, scope, true);
     }
 }

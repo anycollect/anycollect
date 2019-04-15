@@ -40,7 +40,7 @@ public final class AnyCollect {
         InstanceLoader instanceLoader
                 = new YamlInstanceLoader(scope, new FileReader(configFile), substitutor);
         Instance rootLoader = new Instance(context.getDefinition(YamlInstanceLoader.NAME),
-                "root", instanceLoader, InjectMode.AUTO, Priority.DEFAULT, scope);
+                "root", instanceLoader, InjectMode.AUTO, scope);
         context.addInstance(rootLoader);
         instanceLoader.load(context);
         this.instances = new ArrayList<>(context.getInstances());

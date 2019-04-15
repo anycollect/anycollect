@@ -70,7 +70,7 @@ public final class Definition {
                                    final Map<String, Instance> singleDependencies,
                                    final Map<String, List<Instance>> multiDependencies) {
         return createInstance(instanceName, config, singleDependencies, multiDependencies,
-                Context.EMPTY, InjectMode.MANUAL, Priority.DEFAULT, new SimpleScope(null, "default"));
+                Context.EMPTY, InjectMode.MANUAL, new SimpleScope(null, "default"));
     }
 
     public Instance createInstance(final String instanceName,
@@ -79,7 +79,6 @@ public final class Definition {
                                    final Map<String, List<Instance>> multiDependencies,
                                    final Context context,
                                    final InjectMode injectMode,
-                                   final Priority priority,
                                    final Scope scope) {
         List<Dependency> dependencies = new ArrayList<>();
         if (configDefinition != null) {
@@ -115,7 +114,7 @@ public final class Definition {
         }
         try {
             Object resolved = instantiator.instantiate(dependencies);
-            return new Instance(this, instanceName, resolved, injectMode, priority, scope);
+            return new Instance(this, instanceName, resolved, injectMode, scope);
         } catch (IllegalAccessException | InstantiationException e) {
             throw new IllegalStateException("could not instantiate extension from " + instantiator
                     + " using " + dependencies, e);

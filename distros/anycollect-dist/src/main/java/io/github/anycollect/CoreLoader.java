@@ -87,7 +87,6 @@ public final class CoreLoader implements InstanceLoader {
                 "meterRegistry",
                 meterRegistry,
                 InjectMode.AUTO,
-                Priority.DEFAULT,
                 scope
         );
 
@@ -102,7 +101,6 @@ public final class CoreLoader implements InstanceLoader {
                 "internal",
                 internalReader,
                 InjectMode.AUTO,
-                Priority.DEFAULT,
                 scope
         );
 
@@ -111,7 +109,6 @@ public final class CoreLoader implements InstanceLoader {
                 "pullManager",
                 pullManager,
                 InjectMode.AUTO,
-                Priority.DEFAULT,
                 scope
         );
 
@@ -145,7 +142,7 @@ public final class CoreLoader implements InstanceLoader {
                         + "is not found", e);
             }
             context.addInstance(new Instance(context.getDefinition(YamlInstanceLoader.NAME),
-                    configName, loader, InjectMode.AUTO, Priority.DEFAULT, scope));
+                    configName, loader, InjectMode.AUTO, scope));
             LOG.info("Start child instance loader {}", loader);
             loader.load(context);
             for (String instance : export.instances()) {
@@ -177,6 +174,6 @@ public final class CoreLoader implements InstanceLoader {
         ImmutableRouterConfig routerConfig = RouterConfig.builder().addAllTopology(config.topology()).build();
         StdRouter router = new StdRouter(readers, processors, writers, meterRegistry, routerConfig);
         context.addInstance(new Instance(context.getDefinition(StdRouter.NAME),
-                "router", router, InjectMode.MANUAL, Priority.DEFAULT, scope));
+                "router", router, InjectMode.MANUAL, scope));
     }
 }
