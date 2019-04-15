@@ -88,7 +88,7 @@ class ServiceAvailabilityCheckTest {
         }
 
         @Override
-        public <T extends Target<Q>, Q extends Query> Cancellation schedulePull(T target, Q query, Dispatcher dispatcher, int periodInSeconds) {
+        public <T extends Target<Q>, Q extends Query> Cancellation schedulePull(@Nonnull T target, @Nonnull Q query, @Nonnull Dispatcher dispatcher, int periodInSeconds) {
             return null;
         }
 

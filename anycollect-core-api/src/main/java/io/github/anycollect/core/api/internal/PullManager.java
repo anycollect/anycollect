@@ -34,6 +34,6 @@ public interface PullManager {
 
     <T extends Target<Q>, Q extends Query> void start(@Nonnull DesiredStateProvider<T, Q> stateProvider,
                                                       @Nonnull Dispatcher dispatcher,
-                                                      @Nonnull Q healthCheck);
+                                                      @Nullable Q healthCheck);
 
 }

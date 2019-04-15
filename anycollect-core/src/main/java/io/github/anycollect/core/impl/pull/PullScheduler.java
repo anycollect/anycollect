@@ -23,7 +23,7 @@ public interface PullScheduler {
      * @return the cancellation to cancel scheduled job
      */
     <T extends Target<Q>, Q extends Query> Cancellation schedulePull(
-            T target, Q query, Dispatcher dispatcher, int periodInSeconds);
+            @Nonnull T target, @Nonnull Q query, @Nonnull Dispatcher dispatcher, int periodInSeconds);
 
     <T extends Target<Q>, Q extends Query> Future<Health> check(HealthCheck<T, Q> check);
 
