@@ -22,6 +22,7 @@ public final class JmxStub {
     private static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper();
     private static final ObjectMapper YAML_OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
     private volatile JmxConfig appliedConfig;
+    private volatile long delay = 0;
 
     static {
         JSON_OBJECT_MAPPER.registerModule(new GuavaModule());
@@ -50,19 +51,27 @@ public final class JmxStub {
         agentClient.register(service);
 
         KeyValueClient kvs = client.keyValueClient();
-        KVCache kvCache = KVCache.newCache(kvs, "jmx-stub/conf");
+        KVCache kvCache = KVCache.newCache(kvs, "jmx-stub/");
         JmxStub jmxStub = new JmxStub();
         kvCache.addListener(map -> {
-            Value value = map.get("");
-            JmxConfig conf = value.getValueAsString().map(str -> {
-                try {
-                    return YAML_OBJECT_MAPPER.readValue(str, JmxConfig.class);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }).orElse(JmxConfig.empty());
-            jmxStub.configure(conf);
+            Value confValue = map.get("conf");
+            JmxConfig conf = JmxConfig.empty();
+            if (confValue != null) {
+                 conf = confValue.getValueAsString().map(str -> {
+                    try {
+                        return YAML_OBJECT_MAPPER.readValue(str, JmxConfig.class);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }).orElse(JmxConfig.empty());
+            }
+            Value delayValue = map.get(serviceId + "/delay");
+            long delay = 0L;
+            if (delayValue != null) {
+                delay = delayValue.getValueAsString().map(Long::parseLong).orElse(0L);
+            }
+            jmxStub.configure(conf, delay);
         });
         kvCache.start();
         ImmutableJmxRegistration jmxRegistration = JmxRegistration.builder()
@@ -104,9 +113,9 @@ public final class JmxStub {
         }));
     }
 
-    private void configure(final JmxConfig config) {
-        System.out.println("configure: " + config);
-        if (config.equals(appliedConfig)) {
+    private void configure(final JmxConfig config, final long delay) {
+        System.out.println("configure: " + config + " " + delay);
+        if (config.equals(appliedConfig) && this.delay == delay) {
             System.out.println("no changes");
             return;
         }
@@ -125,17 +134,18 @@ public final class JmxStub {
                 for (ObjectName objectName : objectNames) {
                     System.out.println("register " + objectName);
                     if (mBeanDefinition.type() == MBeanType.HISTOGRAM) {
-                        server.registerMBean(new Histogram(), objectName);
+                        server.registerMBean(new Histogram(delay), objectName);
                     }
                     if (mBeanDefinition.type() == MBeanType.COUNTER) {
-                        server.registerMBean(new Counter(), objectName);
+                        server.registerMBean(new Counter(delay), objectName);
                     }
                     if (mBeanDefinition.type() == MBeanType.GAUGE) {
-                        server.registerMBean(new Gauge(), objectName);
+                        server.registerMBean(new Gauge(delay), objectName);
                     }
                 }
             }
-            appliedConfig = config;
+            this.appliedConfig = config;
+            this.delay = delay;
         } catch (Exception e) {
             e.printStackTrace();
         }
