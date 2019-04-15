@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.writers.socket;
 
+import io.github.anycollect.core.api.serialization.RoundRobinSerializer;
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.api.Writer;
 import io.github.anycollect.core.api.common.Lifecycle;
@@ -30,9 +31,11 @@ public final class SocketWriter implements Writer, Lifecycle {
                         @ExtConfig @Nonnull final SocketConfig config) {
         this.serializer = serializer;
         if (config.getProtocol() == Protocol.TCP) {
-            this.sender = new TcpSender(config.getHost(), config.getPort());
+            this.sender = new TcpSender(config.getHost(), config.getPort(),
+                    RoundRobinSerializer.toStringBuilder(serializer));
         } else if (config.getProtocol() == Protocol.UDP) {
-            this.sender = new UdpSender(config.getHost(), config.getPort());
+            this.sender = new UdpSender(config.getHost(), config.getPort(),
+                    RoundRobinSerializer.toByteBuffer(serializer));
         } else {
             LOG.error("protocol {} is not supported", config.getProtocol());
             throw new ConfigurationException("protocol " + config.getProtocol() + " is not supported");
@@ -48,18 +51,13 @@ public final class SocketWriter implements Writer, Lifecycle {
     }
 
     private void write(@Nonnull final Metric metric) {
-        String data;
-        try {
-            data = serializer.serialize(metric);
-        } catch (SerialisationException e) {
-            LOG.debug("could not serialize metric {}", metric);
-            return;
-        }
         try {
             sender.connected();
-            sender.send(data);
+            sender.send(metric);
             // TODO schedule flush
             sender.flush();
+        } catch (SerialisationException e) {
+            LOG.debug("could not serialize metric {}", metric);
         } catch (IOException e) {
             LOG.trace("fail to send metric family: {}", metric);
             sender.closed();

@@ -1,5 +1,8 @@
 package io.github.anycollect.core.impl.writers.socket;
 
+import io.github.anycollect.core.api.serialization.RoundRobinSerializer;
+import io.github.anycollect.core.exceptions.SerialisationException;
+import io.github.anycollect.metric.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +22,19 @@ public final class TcpSender implements Sender {
     private final InetSocketAddress address;
     private final SocketFactory socketFactory;
     private final Charset charset = StandardCharsets.UTF_8;
+    private final RoundRobinSerializer<StringBuilder> serializer;
+    private final StringBuilder builder;
+    private char[] carrier;
     private volatile Socket socket;
     private volatile Writer writer;
 
-    public TcpSender(final String host, final int port) {
-        socketFactory = SocketFactory.getDefault();
-        address = new InetSocketAddress(host, port);
+    public TcpSender(final String host, final int port,
+                     final RoundRobinSerializer<StringBuilder> serializer) {
+        this.socketFactory = SocketFactory.getDefault();
+        this.address = new InetSocketAddress(host, port);
+        this.serializer = serializer;
+        this.builder = new StringBuilder();
+        this.carrier = new char[1024];
     }
 
     @Override
@@ -42,8 +52,13 @@ public final class TcpSender implements Sender {
     }
 
     @Override
-    public void send(@Nonnull final String data) throws IOException {
-        writer.write(data);
+    public void send(@Nonnull final Metric metric) throws SerialisationException, IOException {
+        serializer.serialize(metric, builder);
+        if (carrier.length < builder.length()) {
+            carrier = new char[builder.length()];
+        }
+        builder.getChars(0, builder.length(), carrier, 0);
+        writer.write(carrier, 0, builder.length());
     }
 
     @Override

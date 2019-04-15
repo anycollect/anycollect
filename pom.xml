@@ -33,6 +33,7 @@
         <module>extensions/readers/anycollect-async-socket-reader</module>
         <module>distros/anycollect-dist</module>
         <module>extensions/readers/anycollect-system-reader</module>
+        <module>anycollect-benchmarks</module>
     </modules>
 
     <build>

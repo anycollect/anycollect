@@ -7,5 +7,11 @@ import javax.annotation.Nonnull;
 
 public interface Serializer {
     @Nonnull
-    String serialize(@Nonnull Metric metric) throws SerialisationException;
+    default String serialize(@Nonnull Metric metric) throws SerialisationException {
+        StringBuilder builder = new StringBuilder();
+        serialize(metric, builder);
+        return builder.toString();
+    }
+
+    void serialize(@Nonnull Metric metric, @Nonnull StringBuilder builder) throws SerialisationException;
 }

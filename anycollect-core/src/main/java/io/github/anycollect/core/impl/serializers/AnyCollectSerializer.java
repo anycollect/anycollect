@@ -20,17 +20,15 @@ public final class AnyCollectSerializer implements Serializer {
     public AnyCollectSerializer() {
     }
 
-    @Nonnull
     @Override
-    public String serialize(@Nonnull final Metric metric) {
-        StringBuilder builder = new StringBuilder();
+    public void serialize(@Nonnull final Metric metric, @Nonnull final StringBuilder builder) {
+        builder.setLength(0);
         builder.append(metric.getKey()).append(";");
         serialize(metric.getTags(), builder);
         builder.append(";");
         serialize(metric.getMeta(), builder);
         builder.append(";");
         serialize(metric.getMeasurements(), builder);
-        return builder.toString();
     }
 
     private void serialize(final List<? extends Measurement> measurements, final StringBuilder builder) {

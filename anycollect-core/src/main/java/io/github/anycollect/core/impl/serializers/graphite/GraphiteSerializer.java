@@ -22,55 +22,53 @@ public final class GraphiteSerializer implements Serializer {
         this.config = optConfig != null ? optConfig : GraphiteSerializerConfig.DEFAULT;
     }
 
-    @Nonnull
     @Override
-    public String serialize(@Nonnull final Metric metric) {
-        Tags tags = metric.getTags();
+    public void serialize(@Nonnull final Metric metric, @Nonnull final StringBuilder builder) {
+        Tags tags = config.tags().concat(metric.getTags());
         String key = metric.getKey();
         long timestamp = TimeUnit.MILLISECONDS.toSeconds(metric.getTimestamp());
-        StringBuilder data = new StringBuilder();
+        builder.setLength(0);
         for (Measurement measurement : metric.getMeasurements()) {
-            data.append(config.prefix());
+            builder.append(config.prefix());
             if (Double.isNaN(measurement.getValue())) {
                 continue;
             }
-            data.append(key);
+            builder.append(key);
             if (!measurement.getUnit().isEmpty()) {
-                data.append(".").append(measurement.getUnit());
+                builder.append(".").append(measurement.getUnit());
             }
             if (measurement.getStat().equals(Stat.value())) {
                 if (measurement.getType() == Type.GAUGE) {
-                    data.append(".").append("gauge");
+                    builder.append(".").append("gauge");
                 } else if (measurement.getType() == Type.COUNTER) {
-                    data.append(".").append("counter");
+                    builder.append(".").append("counter");
                 }
             } else {
-                data.append(".").append(measurement.getStat());
+                builder.append(".").append(measurement.getStat());
             }
             if (!tags.isEmpty()) {
                 if (!config.tagSupport()) {
                     for (Tag tag : tags) {
-                        data.append(".")
+                        builder.append(".")
                                 .append(sanitize(tag.getKey()))
                                 .append(".")
                                 .append(sanitize(tag.getValue()));
                     }
                 } else {
                     for (Tag tag : tags) {
-                        data.append(";")
+                        builder.append(";")
                                 .append(sanitize(tag.getKey()))
                                 .append("=")
                                 .append(sanitize(tag.getValue()));
                     }
                 }
             }
-            data.append(" ");
-            data.append(measurement.getValue());
-            data.append(" ");
-            data.append(timestamp);
-            data.append("\n");
+            builder.append(" ");
+            builder.append(measurement.getValue());
+            builder.append(" ");
+            builder.append(timestamp);
+            builder.append("\n");
         }
-        return data.toString();
     }
 
     private String sanitize(final String source) {

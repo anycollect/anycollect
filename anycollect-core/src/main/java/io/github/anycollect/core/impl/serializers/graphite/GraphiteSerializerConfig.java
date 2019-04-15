@@ -3,6 +3,7 @@ package io.github.anycollect.core.impl.serializers.graphite;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.github.anycollect.metric.Tags;
 import org.immutables.value.Value;
 
 @Value.Immutable
@@ -21,5 +22,11 @@ public interface GraphiteSerializerConfig {
     @JsonProperty("tagSupport")
     default boolean tagSupport() {
         return true;
+    }
+
+    @Value.Default
+    @JsonProperty("tags")
+    default Tags tags() {
+        return Tags.empty();
     }
 }
