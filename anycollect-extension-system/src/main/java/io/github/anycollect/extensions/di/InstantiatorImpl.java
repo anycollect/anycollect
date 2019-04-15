@@ -1,6 +1,6 @@
 package io.github.anycollect.extensions.di;
 
-import io.github.anycollect.extensions.definitions.Dependency;
+import io.github.anycollect.extensions.dependencies.Dependency;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 

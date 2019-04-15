@@ -1,13 +1,13 @@
 package io.github.anycollect.core.impl.transform;
 
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
-import io.github.anycollect.extensions.AnnotationDefinitionLoader;
-import io.github.anycollect.extensions.DefinitionLoader;
-import io.github.anycollect.extensions.InstanceLoader;
-import io.github.anycollect.extensions.definitions.ContextImpl;
-import io.github.anycollect.extensions.definitions.Definition;
-import io.github.anycollect.extensions.definitions.Instance;
-import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
+import io.github.anycollect.extensions.loaders.AnnotationDefinitionLoader;
+import io.github.anycollect.extensions.loaders.DefinitionLoader;
+import io.github.anycollect.extensions.loaders.InstanceLoader;
+import io.github.anycollect.extensions.context.ContextImpl;
+import io.github.anycollect.extensions.Definition;
+import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.metric.Metric;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;

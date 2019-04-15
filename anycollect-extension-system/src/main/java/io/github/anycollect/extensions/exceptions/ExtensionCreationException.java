@@ -1,7 +1,7 @@
 package io.github.anycollect.extensions.exceptions;
 
-import io.github.anycollect.extensions.definitions.Definition;
-import io.github.anycollect.extensions.definitions.Dependency;
+import io.github.anycollect.extensions.Definition;
+import io.github.anycollect.extensions.dependencies.Dependency;
 
 import java.util.List;
 

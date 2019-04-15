@@ -1,12 +1,12 @@
 package io.github.anycollect.readers.jmx.discovery;
 
-import io.github.anycollect.extensions.AnnotationDefinitionLoader;
-import io.github.anycollect.extensions.DefinitionLoader;
-import io.github.anycollect.extensions.InstanceLoader;
-import io.github.anycollect.extensions.definitions.ContextImpl;
-import io.github.anycollect.extensions.definitions.Definition;
-import io.github.anycollect.extensions.definitions.Instance;
-import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
+import io.github.anycollect.extensions.loaders.AnnotationDefinitionLoader;
+import io.github.anycollect.extensions.loaders.DefinitionLoader;
+import io.github.anycollect.extensions.loaders.InstanceLoader;
+import io.github.anycollect.extensions.context.ContextImpl;
+import io.github.anycollect.extensions.Definition;
+import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.meter.registry.AnyCollectMeterRegistry;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.server.PooledJavaApp;

@@ -1,5 +1,8 @@
 package io.github.anycollect.extensions.definitions;
 
+import io.github.anycollect.extensions.Definition;
+import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.dependencies.MultiDependencyDefinition;
 import io.github.anycollect.extensions.utils.ConstrictorUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

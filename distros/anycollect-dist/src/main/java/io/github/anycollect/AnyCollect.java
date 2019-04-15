@@ -5,12 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.anycollect.core.api.Router;
 import io.github.anycollect.core.api.common.Lifecycle;
-import io.github.anycollect.extensions.ClassLoaderDefinitionLoader;
-import io.github.anycollect.extensions.DefinitionLoader;
-import io.github.anycollect.extensions.InstanceLoader;
-import io.github.anycollect.extensions.VarSubstitutor;
-import io.github.anycollect.extensions.definitions.*;
-import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
+import io.github.anycollect.extensions.Definition;
+import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.loaders.ClassLoaderDefinitionLoader;
+import io.github.anycollect.extensions.loaders.DefinitionLoader;
+import io.github.anycollect.extensions.loaders.InstanceLoader;
+import io.github.anycollect.extensions.substitution.VarSubstitutor;
+import io.github.anycollect.extensions.context.ContextImpl;
+import io.github.anycollect.extensions.context.ExtendableContext;
+import io.github.anycollect.extensions.scope.FileScope;
+import io.github.anycollect.extensions.scope.Scope;
+import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +45,7 @@ public final class AnyCollect {
         InstanceLoader instanceLoader
                 = new YamlInstanceLoader(scope, new FileReader(configFile), substitutor);
         Instance rootLoader = new Instance(context.getDefinition(YamlInstanceLoader.NAME),
-                "root", instanceLoader, InjectMode.AUTO, scope);
+                "root", instanceLoader, Instance.InjectMode.AUTO, scope);
         context.addInstance(rootLoader);
         instanceLoader.load(context);
         this.instances = new ArrayList<>(context.getInstances());

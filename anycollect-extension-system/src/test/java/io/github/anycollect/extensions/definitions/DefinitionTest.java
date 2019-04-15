@@ -1,6 +1,11 @@
 package io.github.anycollect.extensions.definitions;
 
 import io.github.anycollect.core.exceptions.ConfigurationException;
+import io.github.anycollect.extensions.Definition;
+import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.dependencies.ConfigDefinition;
+import io.github.anycollect.extensions.dependencies.MultiDependencyDefinition;
+import io.github.anycollect.extensions.dependencies.SingleDependencyDefinition;
 import io.github.anycollect.extensions.exceptions.ExtensionCreationException;
 import io.github.anycollect.extensions.utils.ConstrictorUtils;
 import lombok.EqualsAndHashCode;

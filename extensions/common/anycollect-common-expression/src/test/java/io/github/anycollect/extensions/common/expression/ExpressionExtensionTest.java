@@ -1,19 +1,19 @@
 package io.github.anycollect.extensions.common.expression;
 
-import io.github.anycollect.extensions.AnnotationDefinitionLoader;
-import io.github.anycollect.extensions.DefinitionLoader;
-import io.github.anycollect.extensions.InstanceLoader;
+import io.github.anycollect.extensions.loaders.AnnotationDefinitionLoader;
+import io.github.anycollect.extensions.loaders.DefinitionLoader;
+import io.github.anycollect.extensions.loaders.InstanceLoader;
 import io.github.anycollect.extensions.common.expression.filters.JoinFilter;
 import io.github.anycollect.extensions.common.expression.filters.MatchReplaceFilter;
 import io.github.anycollect.extensions.common.expression.filters.TrimFilter;
 import io.github.anycollect.extensions.common.expression.parser.ParseException;
 import io.github.anycollect.extensions.common.expression.parser.TokenType;
 import io.github.anycollect.extensions.common.expression.std.StdExpressionFactory;
-import io.github.anycollect.extensions.definitions.ContextImpl;
-import io.github.anycollect.extensions.definitions.Definition;
-import io.github.anycollect.extensions.definitions.ExtendableContext;
-import io.github.anycollect.extensions.definitions.Instance;
-import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
+import io.github.anycollect.extensions.context.ContextImpl;
+import io.github.anycollect.extensions.Definition;
+import io.github.anycollect.extensions.context.ExtendableContext;
+import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

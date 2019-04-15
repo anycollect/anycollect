@@ -1,3 +1,3 @@
 manifest:
   extensions:
-    - class: io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader
+    - class: io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader

@@ -1,7 +1,7 @@
 package io.github.anycollect;
 
 import ch.qos.logback.classic.util.ContextInitializer;
-import io.github.anycollect.extensions.VarSubstitutor;
+import io.github.anycollect.extensions.substitution.VarSubstitutor;
 import io.github.anycollect.shutdown.RemoveFileShutdownTask;
 import io.github.anycollect.shutdown.ShutdownHook;
 import io.github.anycollect.shutdown.ShutdownTask;

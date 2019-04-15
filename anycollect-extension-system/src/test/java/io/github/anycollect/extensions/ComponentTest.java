@@ -1,11 +1,10 @@
 package io.github.anycollect.extensions;
 
-import io.github.anycollect.extensions.definitions.ContextImpl;
-import io.github.anycollect.extensions.definitions.Definition;
-import io.github.anycollect.extensions.definitions.Instance;
+import io.github.anycollect.extensions.context.ContextImpl;
+import io.github.anycollect.extensions.loaders.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.samples.Configs;
 import io.github.anycollect.extensions.samples.ExtensionPointWithId;
-import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
+import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.extensions.utils.TestConfigUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -12,14 +12,19 @@ import io.github.anycollect.core.impl.router.config.ImmutableRouterConfig;
 import io.github.anycollect.core.impl.router.config.RouterConfig;
 import io.github.anycollect.core.impl.self.SelfDiscoveryConfig;
 import io.github.anycollect.core.impl.self.StdSelfDiscovery;
-import io.github.anycollect.extensions.EnvVarSubstitutor;
-import io.github.anycollect.extensions.InstanceLoader;
+import io.github.anycollect.extensions.Definition;
+import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.substitution.EnvVarSubstitutor;
+import io.github.anycollect.extensions.loaders.InstanceLoader;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
-import io.github.anycollect.extensions.definitions.*;
-import io.github.anycollect.extensions.snakeyaml.YamlInstanceLoader;
+import io.github.anycollect.extensions.context.ExtendableContext;
+import io.github.anycollect.extensions.scope.FileScope;
+import io.github.anycollect.extensions.scope.Scope;
+import io.github.anycollect.extensions.scope.SimpleScope;
+import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.meter.registry.AnyCollectMeterRegistry;
 import io.github.anycollect.meter.registry.AnyCollectMeterRegistryConfig;
 import io.github.anycollect.metric.MeterRegistry;
@@ -86,7 +91,7 @@ public final class CoreLoader implements InstanceLoader {
                 meterRegistryDefinition,
                 "meterRegistry",
                 meterRegistry,
-                InjectMode.AUTO,
+                Instance.InjectMode.AUTO,
                 scope
         );
 
@@ -100,7 +105,7 @@ public final class CoreLoader implements InstanceLoader {
                 context.getDefinition(InternalReader.NAME),
                 "internal",
                 internalReader,
-                InjectMode.AUTO,
+                Instance.InjectMode.AUTO,
                 scope
         );
 
@@ -108,7 +113,7 @@ public final class CoreLoader implements InstanceLoader {
                 context.getDefinition(PullManagerImpl.NAME),
                 "pullManager",
                 pullManager,
-                InjectMode.AUTO,
+                Instance.InjectMode.AUTO,
                 scope
         );
 
@@ -142,7 +147,7 @@ public final class CoreLoader implements InstanceLoader {
                         + "is not found", e);
             }
             context.addInstance(new Instance(context.getDefinition(YamlInstanceLoader.NAME),
-                    configName, loader, InjectMode.AUTO, scope));
+                    configName, loader, Instance.InjectMode.AUTO, scope));
             LOG.info("Start child instance loader {}", loader);
             loader.load(context);
             for (String instance : export.instances()) {
@@ -174,6 +179,6 @@ public final class CoreLoader implements InstanceLoader {
         ImmutableRouterConfig routerConfig = RouterConfig.builder().addAllTopology(config.topology()).build();
         StdRouter router = new StdRouter(readers, processors, writers, meterRegistry, routerConfig);
         context.addInstance(new Instance(context.getDefinition(StdRouter.NAME),
-                "router", router, InjectMode.MANUAL, scope));
+                "router", router, Instance.InjectMode.MANUAL, scope));
     }
 }
