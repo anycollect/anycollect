@@ -94,6 +94,11 @@ public final class RemoveTags implements Tags {
         if (!(obj instanceof Tags)) {
             return false;
         }
+        if (obj instanceof RemoveTags) {
+            RemoveTags that = (RemoveTags) obj;
+            return Objects.equals(this.base, that.base)
+                    && Objects.equals(this.removed, that.removed);
+        }
         return Tags.equals(this, (Tags) obj);
     }
 

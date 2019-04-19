@@ -1,6 +1,7 @@
 package io.github.anycollect.readers.process;
 
 import io.github.anycollect.core.api.job.Job;
+import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.metric.Metric;
 import oshi.software.os.OSProcess;
 
@@ -8,17 +9,17 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public final class ProcessJob implements Job {
-    private final Process process;
+    private final LiveProcess process;
     private final ProcessQuery stats;
     private OSProcess last = null;
 
-    public ProcessJob(@Nonnull final Process process, @Nonnull final ProcessQuery stats) {
+    public ProcessJob(@Nonnull final LiveProcess process, @Nonnull final ProcessQuery stats) {
         this.process = process;
         this.stats = stats;
     }
 
     @Override
-    public List<Metric> execute() {
+    public List<Metric> execute() throws ConnectionException {
         OSProcess current = copy(process.snapshot());
         List<Metric> metrics = stats.execute(last, current);
         last = current;

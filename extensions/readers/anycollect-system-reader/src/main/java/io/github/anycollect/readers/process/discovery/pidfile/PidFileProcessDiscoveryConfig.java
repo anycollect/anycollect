@@ -14,7 +14,7 @@ import java.util.List;
 public interface PidFileProcessDiscoveryConfig {
     @Value.Default
     @JsonProperty("watch")
-    default List<String> pidFiles() {
+    default List<PidFileTargetDefinition> watch() {
         return Collections.emptyList();
     }
 }

@@ -1,21 +1,24 @@
 package io.github.anycollect.jmh;
 
-import io.github.anycollect.metric.ImmutableTags;
 import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.tags.ConcatTags;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
+import java.util.concurrent.TimeUnit;
+
+import static io.github.anycollect.jmh.Utils.generate;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 import static org.openjdk.jmh.annotations.Mode.Throughput;
 
 @Fork(1)
 @BenchmarkMode({Throughput, AverageTime})
+@Warmup(iterations = 5, time = 500, timeUnit = TimeUnit.NANOSECONDS)
+@Measurement(iterations = 5, time = 500, timeUnit = TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
 public class Benchmarks {
     private Tags first;
@@ -32,16 +35,6 @@ public class Benchmarks {
                 .concat(first)
                 .concat(second)
                 .build();
-    }
-
-    private Tags generate(final int numberOfTags) {
-        ImmutableTags.Builder builder = Tags.builder();
-        for (int i = 0; i < numberOfTags; i++) {
-            String key = RandomStringUtils.random(5);
-            String value = RandomStringUtils.random(10);
-            builder.tag(key, value);
-        }
-        return builder.build();
     }
 
     @Benchmark

@@ -1,7 +1,6 @@
 manifest:
   extensions:
   - class: io.github.anycollect.readers.system.SystemReader
-  - class: io.github.anycollect.readers.process.discovery.kv.KvProcessDiscovery
   - class: io.github.anycollect.readers.process.discovery.current.CurrentProcessDiscovery
   - class: io.github.anycollect.readers.process.discovery.pidfile.PidFileProcessDiscovery
   - class: io.github.anycollect.readers.process.ProcessReader

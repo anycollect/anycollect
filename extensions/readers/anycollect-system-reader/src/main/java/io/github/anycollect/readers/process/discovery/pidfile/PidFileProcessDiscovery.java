@@ -5,6 +5,8 @@ import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.Tags;
+import io.github.anycollect.readers.process.EphemeralProcess;
+import io.github.anycollect.readers.process.LiveProcess;
 import io.github.anycollect.readers.process.Process;
 import io.github.anycollect.readers.process.discovery.ProcessDiscovery;
 import org.slf4j.Logger;
@@ -14,7 +16,6 @@ import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -28,8 +29,8 @@ public final class PidFileProcessDiscovery extends ProcessDiscovery {
     public static final String NAME = "PidFileProcessDiscovery";
     private static final Logger LOG = LoggerFactory.getLogger(PidFileProcessDiscovery.class);
     private final WatchService watchService;
-    private final Set<Path> pidFiles;
-    private final Map<Path, Process> processes;
+    private final Set<PidFileTargetDefinition> targets;
+    private final Map<PidFileTargetDefinition, Process> processes;
     private final OperatingSystem os;
 
     @ExtCreator
@@ -42,13 +43,13 @@ public final class PidFileProcessDiscovery extends ProcessDiscovery {
         }
         os = new SystemInfo().getOperatingSystem();
         processes = new HashMap<>();
-        pidFiles = new HashSet<>();
-        for (String pidFilePath : config.pidFiles()) {
-            Path pidFile = Paths.get(pidFilePath);
+        targets = new HashSet<>();
+        for (PidFileTargetDefinition target : config.watch()) {
+            Path pidFile = target.file();
             if (pidFile.toFile().isDirectory()) {
                 throw new ConfigurationException("pid file must not be directory");
             }
-            pidFiles.add(pidFile);
+            targets.add(target);
             Path pidDir = pidFile.getParent();
             try {
                 pidDir.register(
@@ -59,23 +60,22 @@ public final class PidFileProcessDiscovery extends ProcessDiscovery {
             } catch (IOException e) {
                 throw new ConfigurationException("could not watch pid file: " + pidFile, e);
             }
-            Process process = createProcess(pidFile);
-            if (process != null) {
-                processes.put(pidFile, process);
-            }
+            Process process = createProcess(target);
+            processes.put(target, process);
         }
     }
 
     @Override
     public Set<Process> discover() {
+        // remove processes whose pid files have been changed to refresh them
         WatchKey watchKey = watchService.poll();
         if (watchKey != null) {
             for (WatchEvent<?> event : watchKey.pollEvents()) {
                 Path pidFile = ((Path) watchKey.watchable()).resolve((Path) event.context());
-                Path found = null;
-                for (Path path : pidFiles) {
-                    if (path.equals(pidFile)) {
-                        found = path;
+                PidFileTargetDefinition found = null;
+                for (PidFileTargetDefinition def : targets) {
+                    if (def.file().equals(pidFile)) {
+                        found = def;
                         break;
                     }
                 }
@@ -88,40 +88,47 @@ public final class PidFileProcessDiscovery extends ProcessDiscovery {
             }
             watchKey.reset();
         }
+        // delete ephemeral processes to refresh them
+        for (PidFileTargetDefinition target : targets) {
+            Process process = processes.get(target);
+            if (process instanceof EphemeralProcess) {
+                processes.remove(target);
+            }
+        }
+        // form result target set
         Set<Process> result = new HashSet<>();
-        for (Path path : pidFiles) {
-            if (!processes.containsKey(path)) {
-                Process process = createProcess(path);
-                if (process != null) {
-                    result.add(process);
-                    processes.put(path, process);
-                }
+        for (PidFileTargetDefinition target : targets) {
+            if (!processes.containsKey(target)) {
+                Process process = createProcess(target);
+                result.add(process);
+                processes.put(target, process);
             } else {
-                result.add(processes.get(path));
+                result.add(processes.get(target));
             }
         }
         return result;
     }
 
-    @Nullable
-    private Process createProcess(final Path pidFile) {
+    @Nonnull
+    private Process createProcess(final PidFileTargetDefinition def) {
+        Path pidFile = def.file();
         if (!pidFile.toFile().exists()) {
             LOG.debug("pid file {} has not been created yet", pidFile);
-            return null;
+            return new EphemeralProcess(def.targetId(), def.tags(), Tags.empty());
         }
         int pid;
         try {
             pid = Integer.parseInt(Files.readAllLines(pidFile, StandardCharsets.UTF_8).get(0));
         } catch (IOException e) {
             LOG.warn("could not read pid from pid file {}", pidFile, e);
-            return null;
+            return new EphemeralProcess(def.targetId(), def.tags(), Tags.empty());
         }
         OSProcess process = os.getProcess(pid);
         if (process == null) {
             LOG.debug("there is no process with pid {} for now", pid);
-            return null;
+            return new EphemeralProcess(def.targetId(), def.tags(), Tags.empty());
         }
         Tags meta = createMeta(process);
-        return new Process("pid@" + pid, pid, Tags.of("pid.file", pidFile.toFile().getAbsolutePath()), meta);
+        return new LiveProcess(def.targetId(), pid, def.tags(), meta.concat(Tags.of("pid.file", pidFile.toFile().getAbsolutePath())));
     }
 }
