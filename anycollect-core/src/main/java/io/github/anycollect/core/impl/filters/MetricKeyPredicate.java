@@ -10,12 +10,14 @@ import java.util.regex.Pattern;
 
 public final class MetricKeyPredicate implements Predicate<MetricFrame> {
     private final Pattern pattern;
+    private final String equals;
     private final String startsWith;
     private final String endsWith;
     private final String contains;
 
     @JsonCreator
     public MetricKeyPredicate(@JsonProperty("regexp") @Nullable final String regexp,
+                              @JsonProperty("equals") @Nullable final String equals,
                               @JsonProperty("starts") @Nullable final String startsWith,
                               @JsonProperty("ends") @Nullable final String endsWith,
                               @JsonProperty("contains") @Nullable final String contains) {
@@ -24,6 +26,7 @@ public final class MetricKeyPredicate implements Predicate<MetricFrame> {
         } else {
             this.pattern = null;
         }
+        this.equals = equals;
         this.startsWith = startsWith;
         this.endsWith = endsWith;
         this.contains = contains;
@@ -31,6 +34,9 @@ public final class MetricKeyPredicate implements Predicate<MetricFrame> {
 
     @Override
     public boolean test(final MetricFrame frame) {
+        if (equals != null && !frame.getKey().equals(equals)) {
+            return false;
+        }
         if (startsWith != null && !frame.getKey().startsWith(startsWith)) {
             return false;
         }

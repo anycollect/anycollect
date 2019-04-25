@@ -33,6 +33,10 @@ public final class PreparedMetricBuilder extends BaseBuilder<PreparedMetricBuild
         return measurement(Stat.VALUE, Type.COUNTER, unit);
     }
 
+    public PreparedMetricBuilder gauge() {
+        return measurement(Stat.VALUE, Type.GAUGE, "");
+    }
+
     public PreparedMetricBuilder gauge(@Nonnull final String unit) {
         return measurement(Stat.VALUE, Type.GAUGE, unit);
     }

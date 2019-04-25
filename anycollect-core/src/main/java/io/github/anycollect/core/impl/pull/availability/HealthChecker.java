@@ -1,6 +1,5 @@
 package io.github.anycollect.core.impl.pull.availability;
 
-import io.github.anycollect.core.api.internal.State;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
 
@@ -10,11 +9,13 @@ public interface HealthChecker<T extends Target<Q>, Q extends Query> {
     @SuppressWarnings("rawtypes")
     HealthChecker NOOP = new HealthChecker() {
         @Override
-        public void stop() {
+        public void add(@Nonnull final CheckingTarget checkingTarget) {
+
         }
 
         @Override
-        public void update(@Nonnull final State state) {
+        public void remove(@Nonnull final CheckingTarget checkingTarget) {
+
         }
     };
 
@@ -23,7 +24,7 @@ public interface HealthChecker<T extends Target<Q>, Q extends Query> {
         return (HealthChecker<T, Q>) NOOP;
     }
 
-    void stop();
+    void add(@Nonnull CheckingTarget<T> checkingTarget);
 
-    void update(@Nonnull State<T, Q> state);
+    void remove(@Nonnull CheckingTarget<T> checkingTarget);
 }

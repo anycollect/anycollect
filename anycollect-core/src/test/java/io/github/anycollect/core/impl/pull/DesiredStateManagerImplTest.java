@@ -1,10 +1,14 @@
 package io.github.anycollect.core.impl.pull;
 
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
+import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.internal.ImmutableState;
 import io.github.anycollect.core.api.internal.State;
+import io.github.anycollect.core.impl.NoopCancelation;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
+import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
+import io.github.anycollect.core.impl.pull.availability.HealthChecker;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,16 +22,22 @@ class DesiredStateManagerImplTest {
     private Dispatcher dispatcher = Dispatcher.noop();
     private DesiredStateManagerImpl<TestTarget, TestQuery> manager;
 
+    @BeforeEach
+    void setUp() {
+        when(pullScheduler.schedulePull(any(), any(), any(), anyInt())).thenReturn(new NoopCancelation());
+    }
+
     @Test
     @DisplayName("is instantiated")
     void isInstantiatedWithNew() {
-        manager = new DesiredStateManagerImpl<>(pullScheduler, dispatcher);
+        new DesiredStateManagerImpl<>(pullScheduler, dispatcher, HealthChecker.noop());
     }
 
     @Nested
     @DisplayName("after target with two queries added")
     class AfterTargetWithTwoQueriesAdded {
         private TestTarget target1 = mock(TestTarget.class);
+        private CheckingTarget<TestTarget> checkingTarget1;
         private TestQuery query11 = new TestQuery("id11");
         private TestQuery query12 = new TestQuery("id12");
         private State<TestTarget, TestQuery> state;
@@ -36,21 +46,24 @@ class DesiredStateManagerImplTest {
 
         @BeforeEach
         void createManager() {
-            manager = new DesiredStateManagerImpl<>(pullScheduler, dispatcher);
+            Clock clock = mock(Clock.class);
+            when(clock.wallTime()).thenReturn(0L);
+            manager = new DesiredStateManagerImpl<>(pullScheduler, dispatcher, clock);
             state = ImmutableState.<TestTarget, TestQuery>builder()
                     .put(target1, query11, 1)
                     .put(target1, query12, 2)
                     .build();
-            when(pullScheduler.schedulePull(eq(target1), eq(query11), any(), anyInt())).thenReturn(query11Cancellation);
-            when(pullScheduler.schedulePull(eq(target1), eq(query12), any(), anyInt())).thenReturn(query12Cancellation);
+            checkingTarget1 = new CheckingTarget<>(target1, 0);
+            when(pullScheduler.schedulePull(eq(checkingTarget1), eq(query11), any(), anyInt())).thenReturn(query11Cancellation);
+            when(pullScheduler.schedulePull(eq(checkingTarget1), eq(query12), any(), anyInt())).thenReturn(query12Cancellation);
             manager.update(state);
         }
 
         @Test
         @DisplayName("pull jobs have been scheduled")
         void pullJobsHaveBeenScheduled() {
-            verify(pullScheduler, times(1)).schedulePull(target1, query11, dispatcher, 1);
-            verify(pullScheduler, times(1)).schedulePull(target1, query12, dispatcher, 2);
+            verify(pullScheduler, times(1)).schedulePull(eq(checkingTarget1), same(query11), same(dispatcher), eq(1));
+            verify(pullScheduler, times(1)).schedulePull(eq(checkingTarget1), same(query12), same(dispatcher), eq(2));
         }
 
         @Nested
@@ -79,8 +92,8 @@ class DesiredStateManagerImplTest {
             @Test
             @DisplayName("new target must be scheduled")
             void newOneMustBeScheduled() {
-                verify(pullScheduler, times(1)).schedulePull(target2, query21, dispatcher, 3);
-                verify(pullScheduler, times(1)).schedulePull(target2, query22, dispatcher, 4);
+                verify(pullScheduler, times(1)).schedulePull(eq(new CheckingTarget<>(target2, 0)), same(query21), same(dispatcher), eq(3));
+                verify(pullScheduler, times(1)).schedulePull(eq(new CheckingTarget<>(target2, 0)), same(query22), same(dispatcher), eq(4));
             }
         }
 
@@ -116,8 +129,8 @@ class DesiredStateManagerImplTest {
             @Test
             @DisplayName("additional queries must be added")
             void additionalQueriesMustBeAdded() {
-                verify(pullScheduler, times(1)).schedulePull(target1, query13, dispatcher, 5);
-                verify(pullScheduler, times(1)).schedulePull(target1, query14, dispatcher, 6);
+                verify(pullScheduler, times(1)).schedulePull(eq(checkingTarget1), same(query13), same(dispatcher), eq(5));
+                verify(pullScheduler, times(1)).schedulePull(eq(checkingTarget1), same(query14), same(dispatcher), eq(6));
             }
         }
 
@@ -150,15 +163,15 @@ class DesiredStateManagerImplTest {
             void previousQueriesMustNotBeRescheduled() {
                 verify(query11Cancellation, times(0)).cancel();
                 verify(query12Cancellation, times(0)).cancel();
-                verify(pullScheduler, times(1)).schedulePull(target1, query11, dispatcher, 1);
-                verify(pullScheduler, times(1)).schedulePull(target1, query12, dispatcher, 2);
+                verify(pullScheduler, times(1)).schedulePull(eq(checkingTarget1), same(query11), same(dispatcher), eq(1));
+                verify(pullScheduler, times(1)).schedulePull(eq(checkingTarget1), same(query12), same(dispatcher), eq(2));
             }
 
             @Test
             @DisplayName("additional queries must be added")
             void additionalQueriesMustBeAdded() {
-                verify(pullScheduler, times(1)).schedulePull(target1, query15, dispatcher, 7);
-                verify(pullScheduler, times(1)).schedulePull(target1, query16, dispatcher, 8);
+                verify(pullScheduler, times(1)).schedulePull(eq(checkingTarget1), same(query15), same(dispatcher), eq(7));
+                verify(pullScheduler, times(1)).schedulePull(eq(checkingTarget1), same(query16), same(dispatcher), eq(8));
             }
         }
 
@@ -192,8 +205,8 @@ class DesiredStateManagerImplTest {
             @Test
             @DisplayName("queries with new period must be added")
             void queriesWithNewPeriodMustBeAdded() {
-                verify(pullScheduler, times(1)).schedulePull(target1, query11, dispatcher, 9);
-                verify(pullScheduler, times(1)).schedulePull(target1, query12, dispatcher, 10);
+                verify(pullScheduler, times(1)).schedulePull(eq(checkingTarget1), same(query11), same(dispatcher), eq(9));
+                verify(pullScheduler, times(1)).schedulePull(eq(checkingTarget1), same(query12), same(dispatcher), eq(10));
             }
         }
 
@@ -219,4 +232,8 @@ class DesiredStateManagerImplTest {
             }
         }
     }
+
+//    private static void verify() {
+//
+//    }
 }

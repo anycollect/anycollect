@@ -54,8 +54,12 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
                 .register(registry);
         Gauge.make(this, executor -> executor.getQueue().size(), prefix, "scheduler.queue.size")
                 .concatTags(tags)
+                .meta(this.getClass())
                 .register(registry);
-        Gauge.make(this, executor -> getPoolSize(), prefix, "scheduler.threads.live");
+        Gauge.make(this, executor -> getPoolSize(), prefix, "scheduler.threads.live")
+                .concatTags(tags)
+                .meta(this.getClass())
+                .register(registry);
     }
 
     @Override

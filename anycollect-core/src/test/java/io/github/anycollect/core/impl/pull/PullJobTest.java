@@ -5,6 +5,7 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
+import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ class PullJobTest {
     void setUp() {
         when(target.getId()).thenReturn("id");
         when(target.bind(any())).thenCallRealMethod();
-        job = new PullJob<>(target, query, dispatcher);
+        job = new PullJob<>(new CheckingTarget<>(target), query, dispatcher);
     }
 
     @Test

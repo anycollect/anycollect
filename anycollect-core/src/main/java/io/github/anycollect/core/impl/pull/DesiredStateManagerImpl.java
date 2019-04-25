@@ -1,10 +1,13 @@
 package io.github.anycollect.core.impl.pull;
 
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
+import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.internal.PeriodicQuery;
 import io.github.anycollect.core.api.internal.State;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
+import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
+import io.github.anycollect.core.impl.pull.availability.HealthChecker;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
 import lombok.EqualsAndHashCode;
 import org.slf4j.Logger;
@@ -24,16 +27,34 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
     private static final Logger LOG = LoggerFactory.getLogger(DesiredStateManagerImpl.class);
     private final PullScheduler puller;
     private final Dispatcher dispatcher;
+    private final Clock clock;
     @GuardedBy("lock")
     private final Map<JobId<T, Q>, Cancellation> cancellations = new HashMap<>();
     @GuardedBy("lock")
+    private final Map<T, CheckingTarget<T>> checks = new HashMap<>();
+    @GuardedBy("lock")
     private State<T, Q> currentState;
+    private final HealthChecker<T, Q> healthChecker;
     private final Lock lock = new ReentrantLock();
 
-    public DesiredStateManagerImpl(@Nonnull final PullScheduler puller, @Nonnull final Dispatcher dispatcher) {
+    public DesiredStateManagerImpl(@Nonnull final PullScheduler puller,
+                                   @Nonnull final Dispatcher dispatcher,
+                                   @Nonnull final HealthChecker<T, Q> healthChecker) {
         this.puller = puller;
         this.dispatcher = dispatcher;
+        this.healthChecker = healthChecker;
         this.currentState = State.empty();
+        this.clock = Clock.getDefault();
+    }
+
+    DesiredStateManagerImpl(@Nonnull final PullScheduler puller,
+                            @Nonnull final Dispatcher dispatcher,
+                            @Nonnull final Clock clock) {
+        this.puller = puller;
+        this.dispatcher = dispatcher;
+        this.healthChecker = HealthChecker.noop();
+        this.currentState = State.empty();
+        this.clock = clock;
     }
 
     @Override
@@ -48,10 +69,20 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
             for (T target : previousTargets) {
                 if (!desiredTargets.contains(target)) {
                     puller.release(target);
+                    checks.remove(target);
                     cancelledQueries += previousState.getQueries(target).size();
+                    healthChecker.remove(checks.get(target));
                 }
             }
             for (T target : desiredTargets) {
+                CheckingTarget<T> checkingTarget;
+                if (!previousTargets.contains(target)) {
+                    checkingTarget = new CheckingTarget<>(target, clock.wallTime());
+                    healthChecker.add(checkingTarget);
+                    checks.put(target, checkingTarget);
+                } else {
+                    checkingTarget = checks.get(target);
+                }
                 Set<PeriodicQuery<Q>> previousQueries = previousState.getQueries(target);
                 Set<PeriodicQuery<Q>> desiredQueries = desiredState.getQueries(target);
                 for (PeriodicQuery<Q> periodicQuery : previousQueries) {
@@ -67,7 +98,7 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
                     if (!previousQueries.contains(periodicQuery)) {
                         Q query = periodicQuery.getQuery();
                         int period = periodicQuery.getPeriodInSeconds();
-                        Cancellation cancellation = puller.schedulePull(target, query, dispatcher, period);
+                        Cancellation cancellation = puller.schedulePull(checkingTarget, query, dispatcher, period);
                         JobId<T, Q> id = new JobId<>(target, query, period);
                         cancellations.put(id, cancellation);
                         newQueries++;
@@ -93,6 +124,7 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
             for (T target : targets) {
                 puller.release(target);
             }
+            checks.clear();
             cancellations.clear();
             currentState = State.empty();
         } finally {

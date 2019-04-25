@@ -95,14 +95,14 @@ public final class ImmutableTags implements Tags {
         }
 
         public Builder tag(@Nonnull final String key, @Nonnull final String value) {
-            Objects.requireNonNull(key, " tag key must not be null");
-            Objects.requireNonNull(value, " tag value must not be null");
+            Objects.requireNonNull(key, "tag key must not be null");
+            Objects.requireNonNull(value, "tag value must not be null");
             tags.put(key, value);
             return this;
         }
 
         public Builder concat(@Nonnull final Tags addition) {
-            Objects.requireNonNull(addition, " tags must not be null");
+            Objects.requireNonNull(addition, "tags must not be null");
             for (Tag tag : addition) {
                 tags.put(tag.getKey(), tag.getValue());
             }

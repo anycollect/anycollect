@@ -6,8 +6,7 @@ import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.pull.PullJob;
 import io.github.anycollect.core.impl.pull.PullScheduler;
-import io.github.anycollect.core.impl.pull.availability.Health;
-import io.github.anycollect.core.impl.pull.availability.HealthCheck;
+import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import io.github.anycollect.metric.MeterRegistry;
@@ -15,7 +14,6 @@ import io.github.anycollect.metric.noop.NoopMeterRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public final class SeparatePullScheduler implements PullScheduler {
@@ -37,21 +35,16 @@ public final class SeparatePullScheduler implements PullScheduler {
         this.clock = clock;
     }
 
+    @Nonnull
     @Override
     public <T extends Target<Q>, Q extends Query> Cancellation schedulePull(
-            @Nonnull final T target,
+            @Nonnull final CheckingTarget<T> target,
             @Nonnull final Q query,
             @Nonnull final Dispatcher dispatcher,
             final int periodInSeconds) {
         PullJob<T, Q> job = new PullJob<>(target, query, dispatcher, registry, clock);
-        Scheduler scheduler = activeSchedulers.computeIfAbsent(target, factory::create);
+        Scheduler scheduler = activeSchedulers.computeIfAbsent(target.get(), factory::create);
         return scheduler.scheduleAtFixedRate(job, periodInSeconds, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public <T extends Target<Q>, Q extends Query> Future<Health> check(@Nonnull final HealthCheck<T, Q> check) {
-        Scheduler scheduler = activeSchedulers.computeIfAbsent(check.getTarget(), factory::create);
-        return scheduler.executeImmediately(check);
     }
 
     @Override

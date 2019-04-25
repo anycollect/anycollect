@@ -26,14 +26,10 @@ public final class DesiredStateUpdateJob<T extends Target<Q>, Q extends Query> i
 
     @Override
     public void run() {
-        LOG.debug("stopping health checker");
-        checker.stop();
         LOG.debug("getting new desired state");
         State<T, Q> state = stateProvider.current();
         LOG.debug("updating state");
         scheduler.update(state);
-        LOG.debug("starting updated health checks");
-        checker.update(state);
         LOG.debug("state has been successfully updated");
     }
 }

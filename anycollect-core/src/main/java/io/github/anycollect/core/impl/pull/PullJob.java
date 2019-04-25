@@ -1,12 +1,14 @@
 package io.github.anycollect.core.impl.pull;
 
-import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.Clock;
+import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.core.impl.pull.availability.Check;
+import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
 import io.github.anycollect.metric.Counter;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.Metric;
@@ -20,7 +22,7 @@ import java.util.Objects;
 
 public final class PullJob<T extends Target<Q>, Q extends Query> implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(PullJob.class);
-    private final T target;
+    private final CheckingTarget<T> target;
     private final Q query;
     private final Job job;
     private final Dispatcher dispatcher;
@@ -28,13 +30,13 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
     private final Counter failed;
     private final Counter succeeded;
 
-    public PullJob(@Nonnull final T target,
+    public PullJob(@Nonnull final CheckingTarget<T> target,
                    @Nonnull final Q query,
                    @Nonnull final Dispatcher dispatcher) {
         this(target, query, dispatcher, new NoopMeterRegistry(), Clock.getDefault());
     }
 
-    public PullJob(@Nonnull final T target,
+    public PullJob(@Nonnull final CheckingTarget<T> target,
                    @Nonnull final Q query,
                    @Nonnull final Dispatcher dispatcher,
                    @Nonnull final MeterRegistry registry,
@@ -46,15 +48,15 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
         Objects.requireNonNull(clock, "clock must not be null");
         this.target = target;
         this.query = query;
-        this.job = target.bind(query);
+        this.job = target.get().bind(query);
         this.dispatcher = dispatcher;
         this.clock = clock;
         this.failed = Counter.key("pull.jobs.failed")
-                .tag("target", target.getId())
+                .tag("target", target.get().getId())
                 .meta(this.getClass())
                 .register(registry);
         this.succeeded = Counter.key("pull.jobs.succeeded")
-                .tag("target", target.getId())
+                .tag("target", target.get().getId())
                 .meta(this.getClass())
                 .register(registry);
     }
@@ -69,12 +71,17 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
             }
             succeeded.increment();
             dispatcher.dispatch(metrics);
-            LOG.debug("success: {}.execute({}) taken {}ms and produces {} metrics", target.getId(), query.getId(),
+            LOG.debug("success: {}.execute({}) taken {}ms and produces {} metrics", target.get().getId(), query.getId(),
                     clock.wallTime() - start, metrics.size());
+            target.update(Check.passed(start));
         } catch (QueryException | ConnectionException | RuntimeException e) {
             failed.increment();
-            LOG.debug("failed: {}.execute({}) taken {}ms and failed", target.getId(), query.getId(),
+            LOG.debug("failed: {}.execute({}) taken {}ms and failed", target.get().getId(), query.getId(),
                     clock.wallTime() - start, e);
+            if (e instanceof ConnectionException) {
+                target.update(Check.failed(start));
+            }
+            target.update(Check.unknown(start));
         }
     }
 }

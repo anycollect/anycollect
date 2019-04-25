@@ -5,7 +5,7 @@ import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
-import io.github.anycollect.core.impl.pull.availability.HealthCheck;
+import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,44 +29,6 @@ class SeparatePullSchedulerTest {
     }
 
     @Nested
-    @DisplayName("when target is not scheduled")
-    class WhenTargetIsNotScheduled {
-        @Test
-        @DisplayName("scheduler must be created")
-        void executor() {
-            HealthCheck<TestTarget, TestQuery> healthCheck = new HealthCheck<>(
-                    mock(TestTarget.class),
-                    mock(TestQuery.class)
-            );
-            puller.check(healthCheck);
-            verify(scheduler, times(1)).executeImmediately(healthCheck);
-        }
-    }
-
-    @Nested
-    @DisplayName("when target is scheduled")
-    class WhenTargetIsScheduled {
-        private TestTarget target;
-
-        @BeforeEach
-        void setUp() {
-            target = mock(TestTarget.class);
-            when(target.getId()).thenReturn("id");
-            puller.schedulePull(target, mock(TestQuery.class), Dispatcher.noop(), 1);
-        }
-
-        @Test
-        @DisplayName("health status must be got from health check")
-        void healthCheckMustBeFailed() {
-            @SuppressWarnings("unchecked")
-            HealthCheck<TestTarget, TestQuery> healthCheck = mock(HealthCheck.class);
-            when(healthCheck.getTarget()).thenReturn(target);
-            puller.check(healthCheck);
-            verify(scheduler, times(1)).executeImmediately(healthCheck);
-        }
-    }
-
-    @Nested
     @DisplayName("after schedule two pull jobs for one target")
     class AfterSchedule {
         TestTarget target = mock(TestTarget.class);
@@ -74,8 +36,8 @@ class SeparatePullSchedulerTest {
         @BeforeEach
         void createPullScheduler() {
             when(target.getId()).thenReturn("id");
-            puller.schedulePull(target, mock(TestQuery.class), Dispatcher.noop(), 1);
-            puller.schedulePull(target, mock(TestQuery.class), Dispatcher.noop(), 2);
+            puller.schedulePull(new CheckingTarget<>(target), mock(TestQuery.class), Dispatcher.noop(), 1);
+            puller.schedulePull(new CheckingTarget<>(target), mock(TestQuery.class), Dispatcher.noop(), 2);
         }
 
         @Test

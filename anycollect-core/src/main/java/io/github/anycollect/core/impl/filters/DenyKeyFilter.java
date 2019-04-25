@@ -12,10 +12,11 @@ public final class DenyKeyFilter implements Filter {
 
     @JsonCreator
     public DenyKeyFilter(@JsonProperty("regexp") @Nullable final String regexp,
+                         @JsonProperty("equals") @Nullable final String equals,
                          @JsonProperty("startsWith") @Nullable final String startsWith,
                          @JsonProperty("endsWith") @Nullable final String endsWith,
                          @JsonProperty("contains") @Nullable final String contains) {
-        deny = new DenyFilter(new MetricKeyPredicate(regexp, startsWith, endsWith, contains));
+        deny = new DenyFilter(new MetricKeyPredicate(regexp, equals, startsWith, endsWith, contains));
     }
 
     @Override

@@ -23,12 +23,6 @@ public final class SchedulerImpl implements Scheduler {
     }
 
     @Override
-    public <V> Future<V> executeImmediately(@Nonnull final Callable<V> callable) {
-        // TODO priority
-        return service.schedule(callable, 0L, TimeUnit.NANOSECONDS);
-    }
-
-    @Override
     public void shutdown() {
         service.shutdown();
     }
