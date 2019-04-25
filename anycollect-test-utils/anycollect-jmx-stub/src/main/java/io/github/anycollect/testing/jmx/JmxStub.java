@@ -16,6 +16,8 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public final class JmxStub {
@@ -43,6 +45,7 @@ public final class JmxStub {
         Consul client = Consul.builder()
                 .withHostAndPort(HostAndPort.fromParts(consulHost, consulPort))
                 .build();
+        String pidFile = args[3];
         Registration service = ImmutableRegistration.builder()
                 .id(serviceId)
                 .name("stub")
@@ -110,6 +113,12 @@ public final class JmxStub {
             kvs.deleteKey("/anycollect/jmx/" + serviceId);
             thread.interrupt();
             System.out.println("service has been successfully deregistered from consul");
+            try {
+                Files.delete(Paths.get(pidFile));
+            } catch (IOException e) {
+                System.out.println("fail to delete pid file " + pidFile);
+            }
+            System.out.println("pid file has been successfully deleted");
         }));
     }
 
