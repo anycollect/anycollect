@@ -119,7 +119,7 @@ public final class PidFileProcessDiscovery extends ProcessDiscovery {
         int pid;
         try {
             pid = Integer.parseInt(Files.readAllLines(pidFile, StandardCharsets.UTF_8).get(0));
-        } catch (IOException e) {
+        } catch (IOException | NumberFormatException e) {
             LOG.warn("could not read pid from pid file {}", pidFile, e);
             return new EphemeralProcess(def.targetId(), def.tags(), Tags.empty());
         }
