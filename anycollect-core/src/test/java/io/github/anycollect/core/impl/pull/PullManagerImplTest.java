@@ -10,6 +10,7 @@ import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
 import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
+import io.github.anycollect.metric.Tags;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -30,6 +31,8 @@ class PullManagerImplTest {
         @SuppressWarnings("unchecked")
         TestTarget target1 = mock(TestTarget.class);
         when(target1.getId()).thenReturn("test");
+        when(target1.getTags()).thenReturn(Tags.empty());
+        when(target1.getMeta()).thenReturn(Tags.empty());
         TestQuery query11 = new TestQuery("id1");
         TestQuery query12 = new TestQuery("id2");
         State<TestTarget, TestQuery> state = ImmutableState.<TestTarget, TestQuery>builder()

@@ -58,6 +58,8 @@ class PullManagerPluginTest {
     @DisplayName("health checking timeseries is generated")
     void healthChecking() {
         TestTarget target1 = mock(TestTarget.class);
+        when(target1.getTags()).thenReturn(Tags.empty());
+        when(target1.getMeta()).thenReturn(Tags.empty());
         when(target1.getId()).thenReturn("app1");
         State<TestTarget, TestQuery> state = ImmutableState.<TestTarget, TestQuery>builder()
                 .put(target1)
@@ -70,7 +72,7 @@ class PullManagerPluginTest {
         await().until(() -> dispatcher.metric != null);
         Metric metric = dispatcher.metric;
         assertThat(metric.getKey()).isEqualTo("health.check");
-        assertThat(metric.getTags()).isEqualTo(Tags.of("target.id", target1.getId()));
+        assertThat(metric.getMeta()).isEqualTo(Tags.of("target.id", target1.getId()));
     }
 
     private static final class FirstDispatch implements Dispatcher {

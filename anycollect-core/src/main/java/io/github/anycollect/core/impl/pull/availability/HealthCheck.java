@@ -19,9 +19,9 @@ public final class HealthCheck implements Runnable {
         Target<?> target = this.checkingTarget.get();
         this.state = Metric.prepare()
                 .key("health.check")
-                .tag("target.id", target.getId())
                 .concatTags(target.getTags())
                 .concatMeta(target.getMeta())
+                .meta("target.id", target.getId())
                 .gauge()
                 .build();
     }
