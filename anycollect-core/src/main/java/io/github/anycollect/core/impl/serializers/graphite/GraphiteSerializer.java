@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.serializers.graphite;
 
+import com.google.common.base.CaseFormat;
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
@@ -50,16 +51,16 @@ public final class GraphiteSerializer implements Serializer {
                 if (!config.tagSupport()) {
                     for (Tag tag : tags) {
                         builder.append(".")
-                                .append(sanitize(tag.getKey()))
+                                .append(normalize(sanitize(tag.getKey())))
                                 .append(".")
-                                .append(sanitize(tag.getValue()));
+                                .append(normalize(sanitize(tag.getValue())));
                     }
                 } else {
                     for (Tag tag : tags) {
                         builder.append(";")
-                                .append(sanitize(tag.getKey()))
+                                .append(normalize(sanitize(tag.getKey())))
                                 .append("=")
-                                .append(sanitize(tag.getValue()));
+                                .append(normalize(sanitize(tag.getValue())));
                     }
                 }
             }
@@ -69,6 +70,11 @@ public final class GraphiteSerializer implements Serializer {
             builder.append(timestamp);
             builder.append("\n");
         }
+    }
+
+    // TODO tune
+    private String normalize(final String source) {
+        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, source.replace('.', '_'));
     }
 
     private String sanitize(final String source) {

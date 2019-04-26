@@ -133,13 +133,13 @@ public final class JvmGc extends JmxQuery {
                 metrics.add(Metric.builder()
                         .key(id.concurrent ? "jvm.gc.concurrent.phase.duration" : "jvm.gc.pause")
                         .at(timestamp)
-                        .tag("gcName", gcName)
+                        .tag("gc.name", gcName)
                         .gauge("ms", duration)
                         .build());
                 metrics.add(Metric.builder()
                         .key("jvm.gc.memory.freed")
                         .at(timestamp)
-                        .tag("gcName", gcName)
+                        .tag("gc.name", gcName)
                         .gauge("bytes", freed)
                         .build());
             }
