@@ -1,14 +1,14 @@
 package io.github.anycollect.core.impl.pull.availability;
 
 public enum Health {
-    PASSED(0), FAILED(1), UNKNOWN(2);
-    private final int value;
+    PASSED(0), UNKNOWN(1), FAILED(2);
+    private final int statusCode;
 
-    Health(final int value) {
-        this.value = value;
+    Health(final int statusCode) {
+        this.statusCode = statusCode;
     }
 
-    public int getValue() {
-        return value;
+    public int getStatusCode() {
+        return statusCode;
     }
 }

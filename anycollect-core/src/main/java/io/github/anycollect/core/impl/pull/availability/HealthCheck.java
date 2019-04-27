@@ -33,7 +33,7 @@ public final class HealthCheck implements Runnable {
 
     public void run() {
         Check check = checkingTarget.check();
-        Metric health = state.compile(check.getTimestamp(), check.getHealth().getValue());
+        Metric health = state.compile(check.getTimestamp(), check.getHealth().getStatusCode());
         dispatcher.dispatch(health);
     }
 }
