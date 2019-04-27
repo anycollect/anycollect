@@ -135,7 +135,7 @@ public final class PullManagerImpl implements PullManager {
                     healthCheckConfig.meta());
         }
         DesiredStateManager<T, Q> desiredStateManager = new DesiredStateManagerImpl<>(puller, dispatcher, checker);
-        DesiredStateUpdateJob<T, Q> job = new DesiredStateUpdateJob<>(stateProvider, desiredStateManager, checker);
+        DesiredStateUpdateJob<T, Q> job = new DesiredStateUpdateJob<>(stateProvider, desiredStateManager);
         updater.scheduleAtFixedRate(job, updatePeriodInSeconds, TimeUnit.SECONDS);
     }
 }
