@@ -4,6 +4,14 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+    <appender name="METRICS_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%X{slf4j.writer.instance.id} --> %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="io.github.anycollect.core.impl.writers.slf4j.Slf4jWriter" additivity="false">
+        <appender-ref ref="METRICS_STDOUT" />
+    </logger>
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>

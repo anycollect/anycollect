@@ -11,6 +11,7 @@ import io.github.anycollect.extensions.annotations.InstanceId;
 import io.github.anycollect.metric.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,9 +40,12 @@ public class Slf4jWriter implements Writer {
     public void write(@Nonnull final List<? extends Metric> metrics) {
         for (Metric metric : metrics) {
             try {
+                MDC.put("slf4j.writer.instance.id", id);
                 LOG.info("{}", serializer.serialize(metric));
             } catch (SerialisationException e) {
                 LOG.debug("could not serialize metric {}", metric);
+            } finally {
+                MDC.clear();
             }
         }
     }
