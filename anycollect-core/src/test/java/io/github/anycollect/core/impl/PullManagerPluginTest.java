@@ -1,10 +1,7 @@
 package io.github.anycollect.core.impl;
 
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
-import io.github.anycollect.core.api.internal.DesiredStateProvider;
-import io.github.anycollect.core.api.internal.ImmutableState;
-import io.github.anycollect.core.api.internal.PullManager;
-import io.github.anycollect.core.api.internal.State;
+import io.github.anycollect.core.api.internal.*;
 import io.github.anycollect.core.impl.pull.PullManagerImpl;
 import io.github.anycollect.core.impl.self.StdSelfDiscovery;
 import io.github.anycollect.extensions.Definition;
@@ -68,10 +65,11 @@ class PullManagerPluginTest {
         DesiredStateProvider<TestTarget, TestQuery> provider = mock(DesiredStateProvider.class);
         when(provider.current()).thenReturn(state);
         FirstDispatch dispatcher = new FirstDispatch();
-        puller.start(provider, dispatcher);
+        puller.start(provider, dispatcher, HealthCheckConfig.builder().tags(Tags.of("check", "test")).build());
         await().until(() -> dispatcher.metric != null);
         Metric metric = dispatcher.metric;
         assertThat(metric.getKey()).isEqualTo("health.check");
+        assertThat(metric.getTags()).isEqualTo(Tags.of("check", "test"));
         assertThat(metric.getMeta()).isEqualTo(Tags.of("target.id", target1.getId()));
     }
 
