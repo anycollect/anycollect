@@ -93,13 +93,14 @@ public final class PullManagerImpl implements PullManager {
     public <T extends Target<Q>, Q extends Query> void start(@Nonnull final ServiceDiscovery<? extends T> discovery,
                                                              @Nonnull final QueryProvider<? extends Q> provider,
                                                              @Nonnull final QueryMatcherResolver resolver,
-                                                             @Nonnull final Dispatcher dispatcher) {
+                                                             @Nonnull final Dispatcher dispatcher,
+                                                             @Nonnull final HealthCheckConfig healthCheckConfig) {
         DesiredStateProvider<T, Q> stateProvider = new StdDesiredStateProvider<>(
                 discovery,
                 provider,
                 resolver,
                 defaultPullPeriodInSeconds);
-        start(stateProvider, dispatcher);
+        start(stateProvider, dispatcher, healthCheckConfig);
     }
 
     @Override
@@ -116,16 +117,22 @@ public final class PullManagerImpl implements PullManager {
                 QueryProvider.singleton(selfQuery),
                 QueryMatcherResolver.consistent(QueryMatcher.all()),
                 defaultPullPeriodInSeconds);
-        start(stateProvider, dispatcher);
+        start(stateProvider, dispatcher, HealthCheckConfig.DISABLED);
     }
 
     @Override
     public <T extends Target<Q>, Q extends Query> void start(@Nonnull final DesiredStateProvider<T, Q> stateProvider,
-                                                             @Nonnull final Dispatcher dispatcher) {
-        HealthChecker<T, Q> checker = new HealthCheckerImpl<>(
-                dispatcher,
-                healthCheckScheduler,
-                healthCheckPeriodInSeconds);
+                                                             @Nonnull final Dispatcher dispatcher,
+                                                             @Nonnull final HealthCheckConfig healthCheckConfig) {
+        HealthChecker<T, Q> checker = HealthChecker.noop();
+        if (healthCheckConfig.enabled()) {
+            checker = new HealthCheckerImpl<>(
+                    dispatcher,
+                    healthCheckScheduler,
+                    healthCheckConfig.period() != -1 ? healthCheckConfig.period() : healthCheckPeriodInSeconds,
+                    healthCheckConfig.tags(),
+                    healthCheckConfig.meta());
+        }
         DesiredStateManager<T, Q> desiredStateManager = new DesiredStateManagerImpl<>(puller, dispatcher, checker);
         DesiredStateUpdateJob<T, Q> job = new DesiredStateUpdateJob<>(stateProvider, desiredStateManager, checker);
         updater.scheduleAtFixedRate(job, updatePeriodInSeconds, TimeUnit.SECONDS);

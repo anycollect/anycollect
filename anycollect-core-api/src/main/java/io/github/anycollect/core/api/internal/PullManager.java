@@ -14,14 +14,21 @@ public interface PullManager {
             @Nonnull ServiceDiscovery<? extends T> discovery,
             @Nonnull QueryProvider<? extends Q> provider,
             @Nonnull QueryMatcherResolver resolver,
-            @Nonnull Dispatcher dispatcher
+            @Nonnull Dispatcher dispatcher,
+            @Nonnull HealthCheckConfig healthCheckConfig
     );
 
     <Q extends SelfQuery> void start(@Nonnull Q selfQuery, @Nonnull Dispatcher dispatcher);
 
     <Q extends SelfQuery> void start(@Nonnull Q selfQuery, @Nonnull Dispatcher dispatcher, int periodInSeconds);
 
+    default <T extends Target<Q>, Q extends Query> void start(@Nonnull DesiredStateProvider<T, Q> stateProvider,
+                                                              @Nonnull Dispatcher dispatcher) {
+        start(stateProvider, dispatcher, HealthCheckConfig.DISABLED);
+    }
+
     <T extends Target<Q>, Q extends Query> void start(@Nonnull DesiredStateProvider<T, Q> stateProvider,
-                                                      @Nonnull Dispatcher dispatcher);
+                                                      @Nonnull Dispatcher dispatcher,
+                                                      @Nonnull HealthCheckConfig healthCheckConfig);
 
 }

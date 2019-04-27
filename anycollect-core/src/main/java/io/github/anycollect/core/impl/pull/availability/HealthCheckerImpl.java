@@ -5,6 +5,7 @@ import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.scheduler.Cancellation;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
+import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.GuardedBy;
@@ -20,15 +21,21 @@ public final class HealthCheckerImpl<T extends Target<Q>, Q extends Query> imple
     private final Scheduler healthCheckScheduler;
     @GuardedBy("lock")
     private final Map<T, Cancellation> healthCheckCancellation = new HashMap<>();
+    private final Tags tags;
+    private final Tags meta;
     private final Lock lock = new ReentrantLock();
 
 
     public HealthCheckerImpl(@Nonnull final Dispatcher dispatcher,
                              @Nonnull final Scheduler healthCheckScheduler,
-                             final int periodInSeconds) {
+                             final int periodInSeconds,
+                             @Nonnull final Tags tags,
+                             @Nonnull final Tags meta) {
         this.dispatcher = dispatcher;
         this.healthCheckScheduler = healthCheckScheduler;
         this.periodInSeconds = periodInSeconds;
+        this.tags = tags;
+        this.meta = meta;
     }
 
     @Override
@@ -37,7 +44,7 @@ public final class HealthCheckerImpl<T extends Target<Q>, Q extends Query> imple
         lock.lock();
         try {
             if (!healthCheckCancellation.containsKey(target)) {
-                HealthCheck check = new HealthCheck(dispatcher, checkingTarget);
+                HealthCheck check = new HealthCheck(dispatcher, checkingTarget, tags, meta);
                 Cancellation cancellation = healthCheckScheduler.scheduleAtFixedRate(check, periodInSeconds, TimeUnit.SECONDS);
                 healthCheckCancellation.put(target, cancellation);
             }
