@@ -11,6 +11,7 @@ import com.orbitz.consul.cache.KVCache;
 import com.orbitz.consul.model.agent.ImmutableRegistration;
 import com.orbitz.consul.model.agent.Registration;
 import com.orbitz.consul.model.kv.Value;
+import oshi.SystemInfo;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -48,9 +49,11 @@ public final class JmxStub {
                 .build();
         String pidFile = args[3];
         System.out.println("pid file: \"" + pidFile + "\"");
-        String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[1];
+        int pid = new SystemInfo().getOperatingSystem().getProcessId();
         System.out.println("pid: " + pid);
-        Files.write(Paths.get(pidFile), Collections.singletonList(pid), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        Files.write(Paths.get(pidFile),
+                Collections.singletonList(Integer.toString(pid)),
+                StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         Registration service = ImmutableRegistration.builder()
                 .id(serviceId)
                 .name("stub")
