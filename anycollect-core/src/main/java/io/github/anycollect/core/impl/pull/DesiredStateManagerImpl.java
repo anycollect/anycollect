@@ -69,9 +69,9 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
             for (T target : previousTargets) {
                 if (!desiredTargets.contains(target)) {
                     puller.release(target);
-                    checks.remove(target);
                     cancelledQueries += previousState.getQueries(target).size();
                     healthChecker.remove(checks.get(target));
+                    checks.remove(target);
                 }
             }
             for (T target : desiredTargets) {

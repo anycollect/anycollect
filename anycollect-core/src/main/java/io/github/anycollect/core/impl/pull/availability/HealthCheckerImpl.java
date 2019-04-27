@@ -45,7 +45,8 @@ public final class HealthCheckerImpl<T extends Target<Q>, Q extends Query> imple
         try {
             if (!healthCheckCancellation.containsKey(target)) {
                 HealthCheck check = new HealthCheck(dispatcher, checkingTarget, tags, meta);
-                Cancellation cancellation = healthCheckScheduler.scheduleAtFixedRate(check, periodInSeconds, TimeUnit.SECONDS);
+                Cancellation cancellation
+                        = healthCheckScheduler.scheduleAtFixedRate(check, periodInSeconds, TimeUnit.SECONDS);
                 healthCheckCancellation.put(target, cancellation);
             }
         } finally {
