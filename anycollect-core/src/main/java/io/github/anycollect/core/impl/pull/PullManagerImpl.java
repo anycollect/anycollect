@@ -15,6 +15,7 @@ import io.github.anycollect.core.impl.pull.availability.HealthCheckerImpl;
 import io.github.anycollect.core.impl.pull.separate.SchedulerFactory;
 import io.github.anycollect.core.impl.pull.separate.SchedulerFactoryImpl;
 import io.github.anycollect.core.impl.pull.separate.SeparatePullScheduler;
+import io.github.anycollect.core.impl.scheduler.MonitoredScheduledThreadPoolExecutor;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import io.github.anycollect.core.impl.scheduler.SchedulerImpl;
 import io.github.anycollect.extensions.annotations.ExtConfig;
@@ -22,13 +23,13 @@ import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.metric.Tags;
 import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -58,8 +59,8 @@ public final class PullManagerImpl implements PullManager {
         ThreadFactory updaterThreads = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-state-updater-[%d]")
                 .build();
-        this.updater = new SchedulerImpl(new ScheduledThreadPoolExecutor(1, updaterThreads));
         this.registry = optRegistry != null ? optRegistry : new NoopMeterRegistry();
+        this.updater = new SchedulerImpl(new MonitoredScheduledThreadPoolExecutor(1, updaterThreads, registry, "state.updater", Tags.empty()));
         SchedulerFactory schedulerFactory = new SchedulerFactoryImpl(
                 config.getConcurrencyRule(), config.getDefaultPoolSize(), registry);
         this.puller = new SeparatePullScheduler(schedulerFactory, this.registry, Clock.getDefault());
@@ -67,7 +68,7 @@ public final class PullManagerImpl implements PullManager {
         ThreadFactory healthCheckThreads = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-health-check-[%d]")
                 .build();
-        this.healthCheckScheduler = new SchedulerImpl(new ScheduledThreadPoolExecutor(1, healthCheckThreads));
+        this.healthCheckScheduler = new SchedulerImpl(new MonitoredScheduledThreadPoolExecutor(1, healthCheckThreads, registry, "health.check", Tags.empty()));
         this.clock = config.getClock();
     }
 
