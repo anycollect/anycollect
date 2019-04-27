@@ -80,8 +80,9 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
                     clock.wallTime() - start, e);
             if (e instanceof ConnectionException) {
                 target.update(Check.failed(start));
+            } else {
+                target.update(Check.unknown(start));
             }
-            target.update(Check.unknown(start));
         }
     }
 }
