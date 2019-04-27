@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 public final class JmxStub {
@@ -46,6 +47,10 @@ public final class JmxStub {
                 .withHostAndPort(HostAndPort.fromParts(consulHost, consulPort))
                 .build();
         String pidFile = args[3];
+        System.out.println("pid file: \"" + pidFile + "\"");
+        String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[1];
+        System.out.println("pid: " + pid);
+        Files.write(Paths.get(pidFile), Collections.singletonList(pid), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         Registration service = ImmutableRegistration.builder()
                 .id(serviceId)
                 .name("stub")
@@ -60,7 +65,7 @@ public final class JmxStub {
             Value confValue = map.get("conf");
             JmxConfig conf = JmxConfig.empty();
             if (confValue != null) {
-                 conf = confValue.getValueAsString().map(str -> {
+                conf = confValue.getValueAsString().map(str -> {
                     try {
                         return YAML_OBJECT_MAPPER.readValue(str, JmxConfig.class);
                     } catch (IOException e) {
