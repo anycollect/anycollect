@@ -11,8 +11,14 @@ public final class ShutdownHook extends Thread {
 
     @Override
     public void run() {
-        for (ShutdownTask task : tasks) {
-            task.shutdown();
+        String name = Thread.currentThread().getName();
+        try {
+            Thread.currentThread().setName("graceful-shutdown");
+            for (ShutdownTask task : tasks) {
+                task.shutdown();
+            }
+        } finally {
+            Thread.currentThread().setName(name);
         }
     }
 }
