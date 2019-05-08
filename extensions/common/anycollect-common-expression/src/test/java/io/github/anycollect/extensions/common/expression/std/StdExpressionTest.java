@@ -2,10 +2,11 @@ package io.github.anycollect.extensions.common.expression.std;
 
 import io.github.anycollect.extensions.common.expression.Args;
 import io.github.anycollect.extensions.common.expression.EvaluationException;
+import io.github.anycollect.extensions.common.expression.MapArgs;
 import io.github.anycollect.extensions.common.expression.filters.Filter;
 import io.github.anycollect.extensions.common.expression.filters.JoinFilter;
 import io.github.anycollect.extensions.common.expression.filters.MatchReplaceFilter;
-import io.github.anycollect.extensions.common.expression.parser.ParseException;
+import io.github.anycollect.extensions.common.expression.ParseException;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ class StdExpressionTest {
         filters.add(new MatchReplaceFilter());
         filters.add(new JoinFilter());
         StdExpression exp = new StdExpression(expressionString, filters);
-        Args args = Args.builder()
+        Args args = MapArgs.builder()
                 .add("site", "1")
                 .add("host", "168.0.0.1")
                 .add("port", "80")

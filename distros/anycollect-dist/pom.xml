@@ -46,6 +46,11 @@
         </dependency>
         <dependency>
             <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-common-expression</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
             <artifactId>anycollect-system-reader</artifactId>
             <version>${project.version}</version>
         </dependency>

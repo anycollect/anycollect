@@ -7,7 +7,7 @@ import io.github.anycollect.extensions.common.expression.Expression;
 import io.github.anycollect.extensions.common.expression.ExpressionFactory;
 import io.github.anycollect.extensions.common.expression.MetricIdBuilder;
 import io.github.anycollect.extensions.common.expression.MetricIdBuilderFactory;
-import io.github.anycollect.extensions.common.expression.parser.ParseException;
+import io.github.anycollect.extensions.common.expression.ParseException;
 
 import java.util.HashMap;
 import java.util.Map;

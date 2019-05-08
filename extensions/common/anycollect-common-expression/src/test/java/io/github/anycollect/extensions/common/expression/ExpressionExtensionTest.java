@@ -1,30 +1,16 @@
 package io.github.anycollect.extensions.common.expression;
 
-import io.github.anycollect.extensions.loaders.AnnotationDefinitionLoader;
-import io.github.anycollect.extensions.loaders.DefinitionLoader;
-import io.github.anycollect.extensions.loaders.InstanceLoader;
 import io.github.anycollect.extensions.common.expression.filters.JoinFilter;
 import io.github.anycollect.extensions.common.expression.filters.MatchReplaceFilter;
 import io.github.anycollect.extensions.common.expression.filters.TrimFilter;
-import io.github.anycollect.extensions.common.expression.parser.ParseException;
 import io.github.anycollect.extensions.common.expression.parser.TokenType;
 import io.github.anycollect.extensions.common.expression.std.StdExpressionFactory;
-import io.github.anycollect.extensions.context.ContextImpl;
-import io.github.anycollect.extensions.Definition;
-import io.github.anycollect.extensions.context.ExtendableContext;
-import io.github.anycollect.extensions.Instance;
-import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
-import org.apache.commons.io.FileUtils;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -32,26 +18,18 @@ class ExpressionExtensionTest {
     private StdExpressionFactory expressions;
 
     @BeforeEach
-    void setUp() throws IOException {
-        DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Arrays.asList(
-                TrimFilter.class,
-                JoinFilter.class,
-                MatchReplaceFilter.class,
-                StdExpressionFactory.class)
-        );
-        Collection<Definition> definitions = definitionLoader.load();
-        File config = FileUtils.getFile("src", "test", "resources", "anycollect.yaml");
-        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config));
-        ExtendableContext context = new ContextImpl(definitions);
-        instanceLoader.load(context);
-        List<Instance> instances = context.getInstances();
-        expressions = (StdExpressionFactory) instances.get(3).resolve();
+    void setUp() {
+        expressions = new StdExpressionFactory(Lists.list(
+                new JoinFilter(Collections.singletonList("append")),
+                new MatchReplaceFilter(),
+                new TrimFilter()
+        ));
     }
 
     @Test
     void componentTest() throws ParseException, EvaluationException {
         String expressionString = "\"site.${site}.host.\" | append((${host} | replace(\"\\.\", _)), \".port.${port}\" | trim)";
-        Args args = Args.builder()
+        Args args = MapArgs.builder()
                 .add("site", "1")
                 .add("host", "168.0.0.1")
                 .add("port", "80 ")

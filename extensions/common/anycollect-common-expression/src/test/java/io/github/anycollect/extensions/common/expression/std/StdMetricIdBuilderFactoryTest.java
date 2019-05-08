@@ -1,7 +1,7 @@
 package io.github.anycollect.extensions.common.expression.std;
 
 import io.github.anycollect.extensions.common.expression.ExpressionFactory;
-import io.github.anycollect.extensions.common.expression.parser.ParseException;
+import io.github.anycollect.extensions.common.expression.ParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

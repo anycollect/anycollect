@@ -8,9 +8,12 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.Definition;
 import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.common.expression.*;
+import io.github.anycollect.extensions.common.expression.std.StdExpressionFactory;
 import io.github.anycollect.extensions.context.ExtendableContext;
 import io.github.anycollect.extensions.dependencies.ConfigDefinition;
 import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
+import io.github.anycollect.extensions.expression.VarSubstitutorToArgsAdapter;
 import io.github.anycollect.extensions.loaders.InstanceLoader;
 import io.github.anycollect.extensions.scope.Scope;
 import io.github.anycollect.extensions.substitution.VarSubstitutor;
@@ -42,6 +45,8 @@ final class CustomConstructor extends Constructor {
     private final ExtendableContext context;
     private final Scope scope;
     private final VarSubstitutor environment;
+    private final Args expressionVars;
+    private final ExpressionFactory expressions;
     private static final InjectableValues.Std VALUES;
     private String extensionName;
 
@@ -59,10 +64,13 @@ final class CustomConstructor extends Constructor {
         this.context = context;
         this.scope = scope;
         this.environment = environment;
+        this.expressions = new StdExpressionFactory();
+        this.expressionVars = new VarSubstitutorToArgsAdapter(environment);
         yamlConstructors.put(new Tag("!load"), new PluginInstanceDefinitionConstruct());
         yamlConstructors.put(new Tag("!ref"), new PluginRefConstruct());
         yamlConstructors.put(new Tag("!refs"), new PluginRefsConstruct());
         yamlConstructors.put(new Tag("!var"), new VarSubstituteConstruct());
+        yamlConstructors.put(new Tag("!exp"), new ExpressionConstruct());
     }
 
     class PluginInstanceDefinitionConstruct extends AbstractConstruct {
@@ -202,6 +210,34 @@ final class CustomConstructor extends Constructor {
             Object var = environment.substitute(varName);
             LOG.debug("environment variable {} resolved to: {}", varName, var);
             return var;
+        }
+    }
+
+    class ExpressionConstruct extends AbstractConstruct {
+        @Override
+        public Object construct(final Node node) {
+            LOG.debug("start resolving expression: {}", node);
+            if (!(node instanceof ScalarNode)) {
+                throw new ConfigurationException("Non-scalar use of tag !var tag is illegal: " + node);
+            }
+            ScalarNode scalarNode = (ScalarNode) node;
+            String exp = "\"" + scalarNode.getValue() + "\"";
+            Expression expression;
+            try {
+                expression = expressions.create(exp);
+            } catch (ParseException e) {
+                LOG.error("expression {} is not valid", exp, e);
+                throw new ConfigurationException("expression is not valid", e);
+            }
+            String resolved;
+            try {
+                resolved = expression.process(expressionVars);
+            } catch (EvaluationException e) {
+                LOG.error("expression {} could not be evaluated", exp, e);
+                throw new ConfigurationException("expression could not be evaluated", e);
+            }
+            LOG.debug("expression {} resolved to: {}", exp, resolved);
+            return resolved;
         }
     }
 

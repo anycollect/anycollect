@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ArgsTest {
     @Test
     void nullsAreForbidden() {
-        Args args = Args.builder()
+        Args args = MapArgs.builder()
                 .add("key", "1")
                 .build();
         IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class, () -> args.get("wrong"));

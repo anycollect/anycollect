@@ -1,0 +1,6 @@
+manifest:
+  extensions:
+    - class: io.github.anycollect.extensions.common.expression.std.StdExpressionFactory
+    - class: io.github.anycollect.extensions.common.expression.filters.JoinFilter
+    - class: io.github.anycollect.extensions.common.expression.filters.MatchReplaceFilter
+    - class: io.github.anycollect.extensions.common.expression.filters.TrimFilter

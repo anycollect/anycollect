@@ -6,8 +6,9 @@ import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.common.expression.Expression;
 import io.github.anycollect.extensions.common.expression.ExpressionFactory;
 import io.github.anycollect.extensions.common.expression.filters.Filter;
-import io.github.anycollect.extensions.common.expression.parser.ParseException;
+import io.github.anycollect.extensions.common.expression.ParseException;
 
+import java.util.Collections;
 import java.util.List;
 
 @Extension(name = "StdExpressions", point = ExpressionFactory.class)
@@ -17,6 +18,10 @@ public final class StdExpressionFactory implements ExpressionFactory {
     @ExtCreator
     public StdExpressionFactory(@ExtDependency(qualifier = "filters") final List<Filter> filters) {
         this.filters = filters;
+    }
+
+    public StdExpressionFactory() {
+        this.filters = Collections.emptyList();
     }
 
     @Override

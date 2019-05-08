@@ -1,5 +1,7 @@
 package io.github.anycollect.extensions.common.expression.parser;
 
+import io.github.anycollect.extensions.common.expression.ParseException;
+
 import java.util.Arrays;
 
 public class UnexpectedTokenParseException extends ParseException {
