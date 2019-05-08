@@ -8,7 +8,7 @@ public interface VarSubstitutor {
     VarSubstitutor EMPTY = new VarSubstitutor() {
         @Override
         @Nullable
-        public Object substitute(@Nonnull final String varName) {
+        public String substitute(@Nonnull final String varName) {
             return null;
         }
     };
@@ -26,5 +26,5 @@ public interface VarSubstitutor {
     }
 
     @Nullable
-    Object substitute(@Nonnull String varName);
+    String substitute(@Nonnull String varName);
 }

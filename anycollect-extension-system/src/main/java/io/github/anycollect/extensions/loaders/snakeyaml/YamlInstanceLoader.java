@@ -47,6 +47,11 @@ public final class YamlInstanceLoader implements InstanceLoader {
     }
 
     @Override
+    public VarSubstitutor getVarSubstitutor() {
+        return environment;
+    }
+
+    @Override
     public void load(@Nonnull final ExtendableContext context) {
         CustomConstructor constructor = new CustomConstructor(context, scope, environment);
         Yaml yaml = new Yaml(constructor);

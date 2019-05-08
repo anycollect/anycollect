@@ -14,9 +14,9 @@ final class FirstNonNullVarSubstitutor implements VarSubstitutor {
 
     @Nullable
     @Override
-    public Object substitute(@Nonnull final String varName) {
+    public String substitute(@Nonnull final String varName) {
         for (VarSubstitutor substitutor : substitutors) {
-            Object value = substitutor.substitute(varName);
+            String value = substitutor.substitute(varName);
             if (value != null) {
                 return value;
             }

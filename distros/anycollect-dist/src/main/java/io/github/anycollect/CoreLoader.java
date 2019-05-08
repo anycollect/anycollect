@@ -14,17 +14,17 @@ import io.github.anycollect.core.impl.self.SelfDiscoveryConfig;
 import io.github.anycollect.core.impl.self.StdSelfDiscovery;
 import io.github.anycollect.extensions.Definition;
 import io.github.anycollect.extensions.Instance;
-import io.github.anycollect.extensions.substitution.EnvVarSubstitutor;
-import io.github.anycollect.extensions.loaders.InstanceLoader;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.context.ExtendableContext;
+import io.github.anycollect.extensions.loaders.InstanceLoader;
+import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.extensions.scope.FileScope;
 import io.github.anycollect.extensions.scope.Scope;
 import io.github.anycollect.extensions.scope.SimpleScope;
-import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
+import io.github.anycollect.extensions.substitution.VarSubstitutor;
 import io.github.anycollect.meter.registry.AnyCollectMeterRegistry;
 import io.github.anycollect.meter.registry.AnyCollectMeterRegistryConfig;
 import io.github.anycollect.metric.MeterRegistry;
@@ -44,12 +44,14 @@ import java.util.List;
 public final class CoreLoader implements InstanceLoader {
     public static final String NAME = "Core";
     private static final Logger LOG = LoggerFactory.getLogger(CoreLoader.class);
+    private final VarSubstitutor varSubstitutor;
     private final CoreConfig config;
     private final Scope scope;
 
     @ExtCreator
     public CoreLoader(@ExtDependency(qualifier = "parent") @Nonnull final InstanceLoader parent,
                       @ExtConfig @Nonnull final CoreConfig config) {
+        this.varSubstitutor = parent.getVarSubstitutor();
         this.config = config;
         this.scope = new SimpleScope(parent.getScope(), "core");
     }
@@ -57,6 +59,11 @@ public final class CoreLoader implements InstanceLoader {
     @Override
     public Scope getScope() {
         return scope;
+    }
+
+    @Override
+    public VarSubstitutor getVarSubstitutor() {
+        return varSubstitutor;
     }
 
     @Override
@@ -141,7 +148,7 @@ public final class CoreLoader implements InstanceLoader {
             YamlInstanceLoader loader;
             Scope childScope = FileScope.child(this.scope, includeConfigFile);
             try {
-                loader = new YamlInstanceLoader(childScope, new FileReader(includeConfigFile), new EnvVarSubstitutor());
+                loader = new YamlInstanceLoader(childScope, new FileReader(includeConfigFile), varSubstitutor);
             } catch (FileNotFoundException e) {
                 throw new ConfigurationException("configuration file " + includeConfigFile.getAbsolutePath()
                         + "is not found", e);

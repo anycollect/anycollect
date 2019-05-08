@@ -41,6 +41,8 @@ public final class AnyCollect {
         Collection<Definition> definitions = loader.load();
         ExtendableContext context = new ContextImpl(definitions);
         Scope scope = FileScope.root(configFile);
+        // TODO add var substitutor
+//        context.addInstance(substitutor);
 
         InstanceLoader instanceLoader
                 = new YamlInstanceLoader(scope, new FileReader(configFile), substitutor);
@@ -83,7 +85,6 @@ public final class AnyCollect {
     }
 
     public void shutdown() {
-        Thread.currentThread().setName("graceful-shutdown");
         LOG.info("graceful shutdown");
         destroy();
     }
