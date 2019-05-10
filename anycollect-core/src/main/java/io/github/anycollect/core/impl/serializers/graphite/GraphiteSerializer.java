@@ -55,9 +55,9 @@ public final class GraphiteSerializer implements Serializer {
                 } else {
                     for (Tag tag : tags) {
                         builder.append(";");
-                        sanitize(tag.getKey(), builder);
+                        normalize(tag.getKey(), builder);
                         builder.append("=");
-                        sanitize(tag.getValue(), builder);
+                        normalize(tag.getValue(), builder);
                     }
                 }
             }
@@ -69,32 +69,23 @@ public final class GraphiteSerializer implements Serializer {
         }
     }
 
-    private void normalize(final String source, final StringBuilder builder) {
+    private static void normalize(final String source, final StringBuilder builder) {
         boolean upper = false;
         for (int i = 0; i < source.length(); ++i) {
             char ch = source.charAt(i);
             if (ch == '.') {
                 upper = true;
+                continue;
             }
             if (ch == ' ') {
                 builder.append('_');
             } else {
                 if (upper) {
                     builder.append(Character.toUpperCase(ch));
+                    upper = false;
                 } else {
                     builder.append(ch);
                 }
-            }
-        }
-    }
-
-    private void sanitize(final String source, final StringBuilder builder) {
-        for (int i = 0; i < source.length(); ++i) {
-            char ch = source.charAt(i);
-            if (ch == ' ') {
-                builder.append('_');
-            } else {
-                builder.append(ch);
             }
         }
     }
