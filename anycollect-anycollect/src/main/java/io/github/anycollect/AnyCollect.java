@@ -20,12 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public final class AnyCollect {
+public final class AnyCollect implements Runnable {
     private static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
     private static final long PAUSE = 5000;
     private static final Logger LOG = LoggerFactory.getLogger(AnyCollect.class);
@@ -35,8 +36,7 @@ public final class AnyCollect {
         MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
     }
 
-    public AnyCollect(final File configFile, final VarSubstitutor substitutor)
-            throws Exception {
+    public AnyCollect(final File configFile, final VarSubstitutor substitutor) throws FileNotFoundException {
         DefinitionLoader loader = new ClassPathManifestScanDefinitionLoader(AnyCollect.class.getClassLoader(), MAPPER);
         ExtendableContext context = new ContextImpl();
         loader.load(context);
@@ -53,7 +53,8 @@ public final class AnyCollect {
         this.instances = new ArrayList<>(context.getInstances());
     }
 
-    public void run() throws Exception {
+    @Override
+    public void run() {
         Router router = null;
         for (Instance instance : instances) {
             Object extension = instance.resolve();
@@ -67,7 +68,11 @@ public final class AnyCollect {
             initialize();
             router.start();
             while (true) {
-                Thread.sleep(PAUSE);
+                try {
+                    Thread.sleep(PAUSE);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
                 LOG.info("up");
             }
         }

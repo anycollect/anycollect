@@ -26,6 +26,11 @@
     <dependencies>
         <dependency>
             <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-anycollect</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
             <artifactId>anycollect-core-api</artifactId>
             <version>${project.version}</version>
         </dependency>
