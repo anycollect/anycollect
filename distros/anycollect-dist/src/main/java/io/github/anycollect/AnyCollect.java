@@ -5,17 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.anycollect.core.api.Router;
 import io.github.anycollect.core.api.common.Lifecycle;
-import io.github.anycollect.extensions.Definition;
 import io.github.anycollect.extensions.Instance;
-import io.github.anycollect.extensions.loaders.ClassLoaderDefinitionLoader;
-import io.github.anycollect.extensions.loaders.DefinitionLoader;
-import io.github.anycollect.extensions.loaders.InstanceLoader;
-import io.github.anycollect.extensions.substitution.VarSubstitutor;
+import io.github.anycollect.extensions.annotations.InjectMode;
 import io.github.anycollect.extensions.context.ContextImpl;
 import io.github.anycollect.extensions.context.ExtendableContext;
+import io.github.anycollect.extensions.loaders.ClassPathManifestScanDefinitionLoader;
+import io.github.anycollect.extensions.loaders.DefinitionLoader;
+import io.github.anycollect.extensions.loaders.InstanceLoader;
+import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.extensions.scope.FileScope;
 import io.github.anycollect.extensions.scope.Scope;
-import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
+import io.github.anycollect.extensions.substitution.VarSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +37,9 @@ public final class AnyCollect {
 
     public AnyCollect(final File configFile, final VarSubstitutor substitutor)
             throws Exception {
-        DefinitionLoader loader = new ClassLoaderDefinitionLoader(AnyCollect.class.getClassLoader(), MAPPER);
-        Collection<Definition> definitions = loader.load();
-        ExtendableContext context = new ContextImpl(definitions);
+        DefinitionLoader loader = new ClassPathManifestScanDefinitionLoader(AnyCollect.class.getClassLoader(), MAPPER);
+        ExtendableContext context = new ContextImpl();
+        loader.load(context);
         Scope scope = FileScope.root(configFile);
         // TODO add var substitutor
 //        context.addInstance(substitutor);
@@ -47,7 +47,7 @@ public final class AnyCollect {
         InstanceLoader instanceLoader
                 = new YamlInstanceLoader(scope, new FileReader(configFile), substitutor);
         Instance rootLoader = new Instance(context.getDefinition(YamlInstanceLoader.NAME),
-                "root", instanceLoader, Instance.InjectMode.AUTO, scope);
+                "root", instanceLoader, InjectMode.AUTO, scope);
         context.addInstance(rootLoader);
         instanceLoader.load(context);
         this.instances = new ArrayList<>(context.getInstances());

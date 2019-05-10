@@ -11,4 +11,14 @@ public @interface Extension {
     String name();
 
     Class<?> point();
+
+    AutoLoad autoload() default @Extension.AutoLoad(instanceName = "", enabled = false);
+
+    @interface AutoLoad {
+        String instanceName();
+
+        InjectMode injectMode() default InjectMode.AUTO;
+
+        boolean enabled() default true;
+    }
 }

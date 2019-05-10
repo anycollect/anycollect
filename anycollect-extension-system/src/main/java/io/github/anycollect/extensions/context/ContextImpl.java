@@ -2,7 +2,11 @@ package io.github.anycollect.extensions.context;
 
 import io.github.anycollect.extensions.Definition;
 import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.annotations.InjectMode;
 import io.github.anycollect.extensions.scope.Scope;
+import io.github.anycollect.extensions.scope.SimpleScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -10,14 +14,20 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public final class ContextImpl implements ExtendableContext {
+    private static final Logger LOG = LoggerFactory.getLogger(ContextImpl.class);
     private final Map<String, Definition> definitions;
     private final List<Instance> instances;
+    private final Scope auto = new SimpleScope(null, "auto");
+
+    public ContextImpl() {
+        this(Collections.emptyList());
+    }
 
     public ContextImpl(@Nonnull final Collection<Definition> definitions) {
         this.instances = new ArrayList<>();
         this.definitions = new HashMap<>();
         for (Definition definition : definitions) {
-            this.definitions.put(definition.getName(), definition);
+            addDefinition(definition);
         }
     }
 
@@ -30,7 +40,7 @@ public final class ContextImpl implements ExtendableContext {
     @Override
     public Instance getInstance(@Nonnull final Class<?> type, @Nonnull final Scope scope) {
         return getInstance(instance -> instance.getDefinition().getExtensionPointClass().equals(type)
-                && instance.getInjectMode() == Instance.InjectMode.AUTO, scope);
+                && instance.getInjectMode() == InjectMode.AUTO, scope);
     }
 
     @Nullable
@@ -55,6 +65,11 @@ public final class ContextImpl implements ExtendableContext {
         return instances;
     }
 
+    @Override
+    public Collection<Definition> getDefinitions() {
+        return definitions.values();
+    }
+
     private Instance getInstance(@Nonnull final Predicate<Instance> filter, @Nonnull final Scope scope) {
         Instance candidate = null;
         for (Instance instance : instances) {
@@ -65,6 +80,10 @@ public final class ContextImpl implements ExtendableContext {
                         continue;
                     }
                     if (instance.getScope().distance(scope) < candidate.getScope().distance(scope)) {
+                        candidate = instance;
+                    }
+                } else if (instance.getScope().equals(auto)) {
+                    if (candidate == null) {
                         candidate = instance;
                     }
                 }
@@ -81,5 +100,9 @@ public final class ContextImpl implements ExtendableContext {
     @Override
     public void addDefinition(@Nonnull final Definition definition) {
         definitions.put(definition.getName(), definition);
+        if (definition.isAutoLoad()) {
+            LOG.debug("auto load instance of {}", definition.getName());
+            addInstance(definition.createAutoInstance(auto));
+        }
     }
 }

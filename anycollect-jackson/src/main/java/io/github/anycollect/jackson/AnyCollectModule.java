@@ -4,12 +4,21 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.*;
 
+@Extension(
+        name = AnyCollectModule.NAME,
+        point = Module.class,
+        autoload = @Extension.AutoLoad(instanceName = AnyCollectModule.INSTANCE_NAME)
+)
 public final class AnyCollectModule extends Module {
+    public static final String NAME = "AnyCollectJacksonModule";
+    public static final String INSTANCE_NAME = "anycollectJacksonModule";
+
     @Override
     public String getModuleName() {
-        return "anycollect";
+        return "AnyCollectModule";
     }
 
     @Override

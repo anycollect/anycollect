@@ -6,6 +6,7 @@ import io.github.anycollect.extensions.scope.Scope;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,6 +44,11 @@ public interface Context {
         public List<Instance> getInstances() {
             return Collections.emptyList();
         }
+
+        @Override
+        public Collection<Definition> getDefinitions() {
+            return Collections.emptyList();
+        }
     };
 
     boolean hasInstance(@Nonnull String name, @Nonnull Scope scope);
@@ -59,4 +65,6 @@ public interface Context {
     Definition getDefinition(@Nonnull String name);
 
     List<Instance> getInstances();
+
+    Collection<Definition> getDefinitions();
 }

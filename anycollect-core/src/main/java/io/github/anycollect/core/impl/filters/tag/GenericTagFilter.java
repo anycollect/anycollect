@@ -1,14 +1,16 @@
 package io.github.anycollect.core.impl.filters.tag;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import io.github.anycollect.core.impl.filters.Filter;
-import io.github.anycollect.core.impl.filters.FilterReply;
+import io.github.anycollect.core.api.filter.Filter;
+import io.github.anycollect.core.api.filter.FilterReply;
 import io.github.anycollect.metric.frame.MetricFrame;
 
 import javax.annotation.Nonnull;
 
+@JsonTypeName("tag")
 @JsonDeserialize(builder = GenericTagFilter.Builder.class)
 public final class GenericTagFilter implements Filter {
     private final FilterReply reply;

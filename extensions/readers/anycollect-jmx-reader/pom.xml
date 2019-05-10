@@ -49,7 +49,7 @@
         <!-- TESTING -->
         <dependency>
             <groupId>io.github.anycollect</groupId>
-            <artifactId>anycollect-extension-system</artifactId>
+            <artifactId>anycollect-extension-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

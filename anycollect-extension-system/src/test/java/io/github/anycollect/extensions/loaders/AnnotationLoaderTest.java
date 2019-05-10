@@ -16,6 +16,7 @@ import io.github.anycollect.extensions.utils.ConstrictorUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.ThrowingSupplier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -111,7 +112,7 @@ class AnnotationLoaderTest {
     @DisplayName("extension point must not have annotation")
     void extensionPointMustNotHaveAnnotation() {
         AnnotationDefinitionLoader loader = create(ExtensionPointWithoutAnnotaionImpl.class);
-        Assertions.assertDoesNotThrow(loader::load);
+        Assertions.assertDoesNotThrow((ThrowingSupplier<Collection<Definition>>) loader::load);
     }
 
     @Test

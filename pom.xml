@@ -34,6 +34,8 @@
         <module>distros/anycollect-dist</module>
         <module>extensions/readers/anycollect-system-reader</module>
         <module>anycollect-benchmarks</module>
+        <module>anycollect-extension-system-api</module>
+        <module>extensions/jackson/anycollect-jackson-guava</module>
     </modules>
 
     <build>

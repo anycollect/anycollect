@@ -2,9 +2,9 @@ package io.github.anycollect.core.impl.transform;
 
 import io.github.anycollect.core.api.Processor;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
-import io.github.anycollect.core.impl.filters.Filter;
+import io.github.anycollect.core.api.filter.Filter;
 import io.github.anycollect.core.impl.filters.FilterChain;
-import io.github.anycollect.core.impl.filters.FilterReply;
+import io.github.anycollect.core.api.filter.FilterReply;
 import io.github.anycollect.core.impl.transform.transformations.Transformation;
 import io.github.anycollect.core.impl.transform.transformations.TransformationChain;
 import io.github.anycollect.extensions.annotations.ExtConfig;

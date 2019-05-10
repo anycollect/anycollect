@@ -31,8 +31,7 @@ class StaticJavaAppDiscoveryTest {
     void createPullManager() throws Exception {
         DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Arrays.asList(
                 AnyCollectMeterRegistry.class,
-                StaticJavaAppDiscovery.class)
-        );
+                StaticJavaAppDiscovery.class));
         Collection<Definition> definitions = definitionLoader.load();
         File config = FileUtils.getFile("src", "test", "resources", "static-java-app-discovery.yaml");
         InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config));

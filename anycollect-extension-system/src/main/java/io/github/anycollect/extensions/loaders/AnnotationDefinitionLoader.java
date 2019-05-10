@@ -3,6 +3,7 @@ package io.github.anycollect.extensions.loaders;
 import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.Definition;
 import io.github.anycollect.extensions.annotations.*;
+import io.github.anycollect.extensions.context.ExtendableContext;
 import io.github.anycollect.extensions.dependencies.AbstractDependencyDefinition;
 import io.github.anycollect.extensions.dependencies.ConfigDefinition;
 import io.github.anycollect.extensions.dependencies.MultiDependencyDefinition;
@@ -30,15 +31,12 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
     }
 
     @Override
-    public Collection<Definition> load() {
+    public void load(final ExtendableContext context) {
         LOG.debug("start to load extension definitions from {}", extensionClasses);
-        List<Definition> definitions = new ArrayList<>();
         for (Class<?> extensionClass : extensionClasses) {
             Definition definition = parse(extensionClass);
-            definitions.add(definition);
+            context.addDefinition(definition);
         }
-        LOG.debug("extension definitions has been successfully loaded, {}", definitions);
-        return definitions;
     }
 
     @SuppressWarnings("unchecked")
@@ -125,6 +123,7 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
                 .withSingleDependencies(singleDependencyDefinitions)
                 .withMultiDependencies(multiDependencyDefinitions)
                 .withConfig(config)
+                .withAutoLoad(loadAutoLoad(extensionClass))
                 .build();
     }
 
@@ -185,6 +184,14 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
                 }
             }
         }
+        if (targetConstructor == null) {
+            LOG.debug("could not find constructor annotated with {} in {}", ExtCreator.class, extensionClass);
+            try {
+                targetConstructor = extensionClass.getConstructor();
+            } catch (NoSuchMethodException e) {
+                LOG.debug("could not find no args constructor in {}", extensionClass);
+            }
+        }
         if (targetConstructor == null || !Modifier.isPublic(targetConstructor.getModifiers())) {
             errorConstructor(extensionClass);
         }
@@ -216,6 +223,16 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
             throw new ConfigurationException("extension class " + extClass.getName() + " must have "
                     + Extension.class.getName() + " annotation");
         }
+    }
+
+    private Definition.AutoLoad loadAutoLoad(final Class extClass) {
+        Extension extension = (Extension) extClass.getAnnotation(Extension.class);
+        Extension.AutoLoad autoload = extension.autoload();
+        return new Definition.AutoLoad(
+                autoload.instanceName(),
+                autoload.injectMode(),
+                autoload.enabled()
+        );
     }
 
     private String loadExtensionName(final Class extClass) {

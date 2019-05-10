@@ -1,24 +1,11 @@
 package io.github.anycollect.readers.jmx;
 
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
-import io.github.anycollect.core.impl.matcher.StaticQueryMatcherResolver;
-import io.github.anycollect.core.impl.pull.PullManagerImpl;
-import io.github.anycollect.core.impl.self.StdSelfDiscovery;
-import io.github.anycollect.extensions.loaders.AnnotationDefinitionLoader;
-import io.github.anycollect.extensions.loaders.DefinitionLoader;
-import io.github.anycollect.extensions.loaders.InstanceLoader;
-import io.github.anycollect.extensions.context.ContextImpl;
-import io.github.anycollect.extensions.Definition;
-import io.github.anycollect.extensions.Instance;
-import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
-import io.github.anycollect.meter.registry.AnyCollectMeterRegistry;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
-import io.github.anycollect.readers.jmx.discovery.CurrentApp;
-import io.github.anycollect.readers.jmx.query.StaticJmxQueryProvider;
 import io.github.anycollect.readers.jmx.utils.HistogramTest;
-import org.apache.commons.io.FileUtils;
+import io.github.anycollect.test.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,11 +14,7 @@ import org.junit.jupiter.api.Test;
 import javax.annotation.Nonnull;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import java.io.File;
-import java.io.FileReader;
 import java.lang.management.ManagementFactory;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import static io.github.anycollect.assertj.AnyCollectAssertions.assertThat;
@@ -42,22 +25,8 @@ class JmxReaderTest {
 
     @BeforeEach
     void createJmxReader() throws Exception {
-        DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Arrays.asList(
-                StdSelfDiscovery.class,
-                AnyCollectMeterRegistry.class,
-                PullManagerImpl.class,
-                CurrentApp.class,
-                StaticJmxQueryProvider.class,
-                StaticQueryMatcherResolver.class,
-                JmxReader.class
-        ));
-        Collection<Definition> definitions = definitionLoader.load();
-        File config = FileUtils.getFile("src", "test", "resources", "jmx-reader.yaml");
-        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config));
-        ContextImpl context = new ContextImpl(definitions);
-        instanceLoader.load(context);
-        List<Instance> instances = context.getInstances();
-        jmx = (JmxReader) instances.get(6).resolve();
+        TestContext context = new TestContext("jmx-reader.yaml");
+        jmx = (JmxReader) context.getInstance("jmx").resolve();
     }
 
     @Test

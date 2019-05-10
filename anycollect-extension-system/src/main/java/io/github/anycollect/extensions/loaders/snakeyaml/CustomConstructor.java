@@ -2,12 +2,14 @@ package io.github.anycollect.extensions.loaders.snakeyaml;
 
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.Definition;
 import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.annotations.InjectMode;
+import io.github.anycollect.extensions.api.JacksonModule;
 import io.github.anycollect.extensions.common.expression.*;
 import io.github.anycollect.extensions.common.expression.std.StdExpressionFactory;
 import io.github.anycollect.extensions.context.ExtendableContext;
@@ -17,7 +19,6 @@ import io.github.anycollect.extensions.expression.VarSubstitutorToArgsAdapter;
 import io.github.anycollect.extensions.loaders.InstanceLoader;
 import io.github.anycollect.extensions.scope.Scope;
 import io.github.anycollect.extensions.substitution.VarSubstitutor;
-import io.github.anycollect.jackson.AnyCollectModule;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,31 +37,27 @@ import static java.util.stream.Collectors.toMap;
 
 final class CustomConstructor extends Constructor {
     private static final Logger LOG = LoggerFactory.getLogger(CustomConstructor.class);
-    private static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
     private static final String DEPENDENCIES = "dependencies";
     private static final String EXTENSION = "extension";
     private static final String INSTANCE = "instance";
     private static final String INJECT_MODE = "injectMode";
+    private final ObjectMapper mapper;
     private static final String CONFIG = "config";
     private final ExtendableContext context;
     private final Scope scope;
     private final VarSubstitutor environment;
     private final Args expressionVars;
     private final ExpressionFactory expressions;
-    private static final InjectableValues.Std VALUES;
+    private final InjectableValues.Std values;
     private String extensionName;
-
-    static {
-        MAPPER.registerModule(new AnyCollectModule());
-        MAPPER.registerModule(new GuavaModule());
-        MAPPER.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
-        VALUES = new InjectableValues.Std();
-        MAPPER.setInjectableValues(VALUES);
-    }
 
     CustomConstructor(final ExtendableContext context,
                       final Scope scope,
                       final VarSubstitutor environment) {
+        this.mapper = new ObjectMapper(new YAMLFactory());
+        this.mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+        this.values = new InjectableValues.Std();
+        this.mapper.setInjectableValues(values);
         this.context = context;
         this.scope = scope;
         this.environment = environment;
@@ -71,6 +68,23 @@ final class CustomConstructor extends Constructor {
         yamlConstructors.put(new Tag("!refs"), new PluginRefsConstruct());
         yamlConstructors.put(new Tag("!var"), new VarSubstituteConstruct());
         yamlConstructors.put(new Tag("!exp"), new ExpressionConstruct());
+        for (Instance instance : context.getInstances()) {
+            upgradeMapperIfNeeded(instance);
+        }
+    }
+
+    private void upgradeMapperIfNeeded(final Instance instance) {
+        Object resolved = instance.resolve();
+        if (resolved instanceof Module) {
+            Module module = (Module) resolved;
+            LOG.debug("register jackson module {}", module.getModuleName());
+            mapper.registerModule(module);
+        }
+        if (resolved instanceof JacksonModule) {
+            Module module = ((JacksonModule) resolved).module();
+            LOG.debug("register jackson module {}", module.getModuleName());
+            mapper.registerModule(module);
+        }
     }
 
     class PluginInstanceDefinitionConstruct extends AbstractConstruct {
@@ -100,7 +114,7 @@ final class CustomConstructor extends Constructor {
             Object resolved = instance.resolve();
             // TODO
             if (context.getInstance(instance.getDefinition().getExtensionPointClass(), scope) == instance) {
-                VALUES.addValue(instance.getDefinition().getExtensionPointClass(), resolved);
+                CustomConstructor.this.values.addValue(instance.getDefinition().getExtensionPointClass(), resolved);
             }
             LOG.trace("instance has been successfully loaded: {}", instance);
             if (resolved instanceof InstanceLoader) {
@@ -108,6 +122,7 @@ final class CustomConstructor extends Constructor {
                 LOG.info("Start child instance loader {}", instanceName);
                 childLoader.load(context);
             }
+            upgradeMapperIfNeeded(instance);
             return instance;
         }
 
@@ -130,10 +145,10 @@ final class CustomConstructor extends Constructor {
             return extensionName;
         }
 
-        private Instance.InjectMode getInjectMode() {
+        private InjectMode getInjectMode() {
             return values.containsKey(INJECT_MODE)
-                    ? Instance.InjectMode.valueOf(((String) values.get(INJECT_MODE)).toUpperCase())
-                    : Instance.InjectMode.MANUAL;
+                    ? InjectMode.valueOf(((String) values.get(INJECT_MODE)).toUpperCase())
+                    : InjectMode.MANUAL;
         }
 
         private Map<String, Instance> getSingleDependencies() {
@@ -183,13 +198,13 @@ final class CustomConstructor extends Constructor {
                     List<Object> listConfig = new ArrayList<>();
                     List<?> listRawConfig = (List<?>) rawConfig;
                     for (Object elementRawConfig : listRawConfig) {
-                        Object elementConfig = MAPPER.readValue(MAPPER.writeValueAsString(elementRawConfig),
+                        Object elementConfig = mapper.readValue(mapper.writeValueAsString(elementRawConfig),
                                 config.getParameterType());
                         listConfig.add(elementConfig);
                     }
                     return listConfig;
                 }
-                return MAPPER.readValue(MAPPER.writeValueAsString(rawConfig), config.getParameterType());
+                return mapper.readValue(mapper.writeValueAsString(rawConfig), config.getParameterType());
             } catch (IOException e) {
                 LOG.error("unexpected error during parsing configuration of class {} for {}, config: {}",
                         config.getParameterType().getName(), instanceName, rawConfig, e);

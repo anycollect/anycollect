@@ -2,11 +2,15 @@ package io.github.anycollect.core.impl.filters;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.github.anycollect.core.api.filter.Filter;
+import io.github.anycollect.core.api.filter.FilterReply;
 import io.github.anycollect.metric.frame.MetricFrame;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@JsonTypeName("denyKey")
 public final class DenyKeyFilter implements Filter {
     private final DenyFilter deny;
 

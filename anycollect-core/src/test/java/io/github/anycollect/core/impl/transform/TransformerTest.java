@@ -1,26 +1,16 @@
 package io.github.anycollect.core.impl.transform;
 
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
-import io.github.anycollect.extensions.loaders.AnnotationDefinitionLoader;
-import io.github.anycollect.extensions.loaders.DefinitionLoader;
-import io.github.anycollect.extensions.loaders.InstanceLoader;
-import io.github.anycollect.extensions.context.ContextImpl;
-import io.github.anycollect.extensions.Definition;
 import io.github.anycollect.extensions.Instance;
-import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.metric.Metric;
-import org.apache.commons.io.FileUtils;
+import io.github.anycollect.test.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.io.File;
-import java.io.FileReader;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -30,14 +20,9 @@ class TransformerTest {
 
     @BeforeEach
     void createPullManager() throws Exception {
-        DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Collections.singletonList(Transformer.class));
-        Collection<Definition> definitions = definitionLoader.load();
-        File config = FileUtils.getFile("src", "test", "resources", "transformer.yaml");
-        InstanceLoader instanceLoader = new YamlInstanceLoader(new FileReader(config));
-        ContextImpl context = new ContextImpl(definitions);
-        instanceLoader.load(context);
-        List<Instance> instances = context.getInstances();
-        transformer = (Transformer) instances.get(0).resolve();
+        TestContext context = new TestContext("transformer.yaml");
+        Instance instance = context.getInstance(Transformer.class);
+        transformer = (Transformer) instance.resolve();
     }
 
     @Test

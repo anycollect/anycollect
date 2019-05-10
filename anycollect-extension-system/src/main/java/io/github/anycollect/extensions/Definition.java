@@ -1,6 +1,7 @@
 package io.github.anycollect.extensions;
 
 import io.github.anycollect.core.exceptions.ConfigurationException;
+import io.github.anycollect.extensions.annotations.InjectMode;
 import io.github.anycollect.extensions.context.Context;
 import io.github.anycollect.extensions.dependencies.*;
 import io.github.anycollect.extensions.di.Instantiator;
@@ -28,6 +29,7 @@ public final class Definition {
     private final ConfigDefinition configDefinition;
     private final Map<String, SingleDependencyDefinition> singleDeps;
     private final Map<String, MultiDependencyDefinition> multiDeps;
+    private final AutoLoad autoLoad;
     private final Instantiator instantiator;
 
     public static Builder builder() {
@@ -55,6 +57,7 @@ public final class Definition {
         for (MultiDependencyDefinition definition : builder.multiDependencyDefinitions) {
             multiDeps.put(definition.getName(), definition);
         }
+        this.autoLoad = builder.autoLoad;
     }
 
     public Optional<ConfigDefinition> getConfigDefinition() {
@@ -74,7 +77,37 @@ public final class Definition {
                                    final Map<String, Instance> singleDependencies,
                                    final Map<String, List<Instance>> multiDependencies) {
         return createInstance(instanceName, config, singleDependencies, multiDependencies,
-                Context.EMPTY, Instance.InjectMode.MANUAL, new SimpleScope(null, "default"));
+                Context.EMPTY, InjectMode.MANUAL, new SimpleScope(null, "default"));
+    }
+
+    public Instance createInstance(final String instanceName,
+                                   final Context context,
+                                   final InjectMode injectMode,
+                                   final Scope scope) {
+        return createInstance(instanceName,
+                null,
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                context,
+                injectMode,
+                scope);
+    }
+
+    public boolean isAutoLoad() {
+        return autoLoad.enabled;
+    }
+
+    public Instance createAutoInstance(final Scope scope) {
+        if (!autoLoad.enabled) {
+            throw new IllegalStateException("auto load is not supported");
+        }
+        return createInstance(autoLoad.instanceName,
+                null,
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                null,
+                autoLoad.injectMode,
+                scope);
     }
 
     public Instance createInstance(final String instanceName,
@@ -82,7 +115,7 @@ public final class Definition {
                                    final Map<String, Instance> singleDependencies,
                                    final Map<String, List<Instance>> multiDependencies,
                                    final Context context,
-                                   final Instance.InjectMode injectMode,
+                                   final InjectMode injectMode,
                                    final Scope scope) {
         List<Dependency> dependencies = new ArrayList<>();
         if (configDefinition != null) {
@@ -123,6 +156,24 @@ public final class Definition {
         }
     }
 
+    @Getter
+    @EqualsAndHashCode
+    public static class AutoLoad {
+        private final String instanceName;
+        private final InjectMode injectMode;
+        private final boolean enabled;
+
+        public static AutoLoad disabled() {
+            return new AutoLoad("", InjectMode.AUTO, false);
+        }
+
+        public AutoLoad(final String instanceName, final InjectMode injectMode, final boolean enabled) {
+            this.instanceName = instanceName;
+            this.injectMode = injectMode;
+            this.enabled = enabled;
+        }
+    }
+
     public static final class Builder {
         private String name;
         private Class<?> extensionPointClass;
@@ -131,6 +182,7 @@ public final class Definition {
         private List<SingleDependencyDefinition> singleDependencyDefinitions = new ArrayList<>();
         private List<MultiDependencyDefinition> multiDependencyDefinitions = new ArrayList<>();
         private Constructor<?> constructor;
+        private AutoLoad autoLoad = AutoLoad.disabled();
 
         public Builder withName(final String extensionName) {
             Objects.requireNonNull(extensionName, "name of extension must not be null");
@@ -182,6 +234,11 @@ public final class Definition {
         public Builder withMultiDependencies(final List<MultiDependencyDefinition> dependencies) {
             Objects.requireNonNull(dependencies, "dependencies must not be null");
             this.multiDependencyDefinitions.addAll(dependencies);
+            return this;
+        }
+
+        public Builder withAutoLoad(final AutoLoad autoLoad) {
+            this.autoLoad = autoLoad;
             return this;
         }
 

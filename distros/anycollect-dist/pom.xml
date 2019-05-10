@@ -84,6 +84,11 @@
             <artifactId>anycollect-discrepancy-processor</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-jackson-guava</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- CLI -->
         <dependency>

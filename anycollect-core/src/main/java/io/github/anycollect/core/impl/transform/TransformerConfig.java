@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.github.anycollect.core.impl.filters.AcceptAllFilter;
-import io.github.anycollect.core.impl.filters.Filter;
+import io.github.anycollect.core.api.filter.Filter;
 import io.github.anycollect.core.impl.transform.transformations.Transformation;
 import org.immutables.value.Value;
 

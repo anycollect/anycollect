@@ -1,4 +1,4 @@
-package io.github.anycollect.core.impl.filters;
+package io.github.anycollect.core.api.filter;
 
 public enum FilterReply {
     ACCEPT, NEUTRAL, DENY

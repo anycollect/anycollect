@@ -1,5 +1,6 @@
 package io.github.anycollect.extensions;
 
+import io.github.anycollect.extensions.annotations.InjectMode;
 import io.github.anycollect.extensions.scope.Scope;
 import lombok.Getter;
 import lombok.ToString;
@@ -50,7 +51,4 @@ public final class Instance {
         return new Instance(definition, instanceName, resolved, injectMode, scope, true);
     }
 
-    public enum InjectMode {
-        AUTO, MANUAL
-    }
 }
