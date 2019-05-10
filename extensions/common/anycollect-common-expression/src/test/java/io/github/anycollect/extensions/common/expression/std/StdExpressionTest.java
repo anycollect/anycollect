@@ -21,7 +21,8 @@ class StdExpressionTest {
         List<Filter> filters = new ArrayList<>();
         filters.add(new MatchReplaceFilter());
         filters.add(new JoinFilter());
-        StdExpression exp = new StdExpression(expressionString, filters);
+        StdExpressionFactory factory = new StdExpressionFactory(filters);
+        StdExpression exp = factory.create(expressionString);
         Args args = MapArgs.builder()
                 .add("site", "1")
                 .add("host", "168.0.0.1")

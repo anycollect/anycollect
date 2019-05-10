@@ -26,6 +26,8 @@ public final class Parser {
         if (lookahead.getType() != TokenType.EPSILON) {
             throw new ParseException("unexpected symbol found " + lookahead.getSequence());
         }
+        tokens.clear();
+        lookahead = null;
         return ret;
     }
 
