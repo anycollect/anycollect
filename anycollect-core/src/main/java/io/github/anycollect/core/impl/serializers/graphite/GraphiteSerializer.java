@@ -1,6 +1,5 @@
 package io.github.anycollect.core.impl.serializers.graphite;
 
-import com.google.common.base.CaseFormat;
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
@@ -10,12 +9,10 @@ import io.github.anycollect.metric.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 @Extension(name = GraphiteSerializer.NAME, point = Serializer.class)
 public final class GraphiteSerializer implements Serializer {
     public static final String NAME = "GraphiteSerializer";
-    private static final Pattern FORBIDDEN = Pattern.compile("\\s");
     private final GraphiteSerializerConfig config;
 
     @ExtCreator
@@ -50,17 +47,17 @@ public final class GraphiteSerializer implements Serializer {
             if (!tags.isEmpty()) {
                 if (!config.tagSupport()) {
                     for (Tag tag : tags) {
-                        builder.append(".")
-                                .append(normalize(sanitize(tag.getKey())))
-                                .append(".")
-                                .append(normalize(sanitize(tag.getValue())));
+                        builder.append(".");
+                        normalize(tag.getKey(), builder);
+                        builder.append(".");
+                        normalize(tag.getValue(), builder);
                     }
                 } else {
                     for (Tag tag : tags) {
-                        builder.append(";")
-                                .append(normalize(sanitize(tag.getKey())))
-                                .append("=")
-                                .append(normalize(sanitize(tag.getValue())));
+                        builder.append(";");
+                        sanitize(tag.getKey(), builder);
+                        builder.append("=");
+                        sanitize(tag.getValue(), builder);
                     }
                 }
             }
@@ -72,12 +69,33 @@ public final class GraphiteSerializer implements Serializer {
         }
     }
 
-    // TODO tune
-    private String normalize(final String source) {
-        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, source.replace('.', '_'));
+    private void normalize(final String source, final StringBuilder builder) {
+        boolean upper = false;
+        for (int i = 0; i < source.length(); ++i) {
+            char ch = source.charAt(i);
+            if (ch == '.') {
+                upper = true;
+            }
+            if (ch == ' ') {
+                builder.append('_');
+            } else {
+                if (upper) {
+                    builder.append(Character.toUpperCase(ch));
+                } else {
+                    builder.append(ch);
+                }
+            }
+        }
     }
 
-    private String sanitize(final String source) {
-        return FORBIDDEN.matcher(source).replaceAll("_");
+    private void sanitize(final String source, final StringBuilder builder) {
+        for (int i = 0; i < source.length(); ++i) {
+            char ch = source.charAt(i);
+            if (ch == ' ') {
+                builder.append('_');
+            } else {
+                builder.append(ch);
+            }
+        }
     }
 }
