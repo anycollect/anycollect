@@ -1,0 +1,13 @@
+extensions:
+  - !load
+    extension: CollectdInternalWriter
+    instance: collectd
+    config:
+      mappings:
+        - filters:
+            - type: accept
+          host: host
+          plugin: GenericJMX
+          pluginInstance: test_${instance}
+          type: ${mtype}
+          typeInstance: ${what}

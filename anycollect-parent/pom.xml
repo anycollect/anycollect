@@ -32,6 +32,7 @@
 
         <!-- EXTENSIONS -->
         <oshi.version>3.13.0</oshi.version>
+        <plugin-api.version>5.4.0</plugin-api.version>
 
         <!-- CODE GENERATION -->
         <lombok.version>1.18.4</lombok.version>
@@ -138,6 +139,12 @@
                 <groupId>com.github.oshi</groupId>
                 <artifactId>oshi-core</artifactId>
                 <version>${oshi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.collectd</groupId>
+                <artifactId>plugin-api</artifactId>
+                <version>${plugin-api.version}</version>
             </dependency>
 
             <!-- CODE GENERATION -->
