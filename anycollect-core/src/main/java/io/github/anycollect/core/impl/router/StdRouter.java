@@ -96,7 +96,7 @@ public final class StdRouter implements Router, Lifecycle {
                 .setNameFormat("anycollect-route(" + consumer.getAddress() + ")-[%d]")
                 .build();
         ExecutorService executorService = Executors.newSingleThreadExecutor(factory);
-        return new BackgroundMetricConsumer(executorService, new MonitoredMetricConsumer(consumer, registry));
+        return new BackgroundMetricConsumer(executorService, new MonitoredMetricConsumer(consumer, registry), registry);
     }
 
     @Override

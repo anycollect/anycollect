@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MonitoredMetricConsumer implements MetricConsumer {
+public final class MonitoredMetricConsumer implements MetricConsumer {
     private final MetricConsumer delegate;
     private final Counter consumedMetrics;
     private final Timer processingTime;
