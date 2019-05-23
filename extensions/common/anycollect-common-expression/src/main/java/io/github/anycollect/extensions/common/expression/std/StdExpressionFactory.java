@@ -39,7 +39,7 @@ public final class StdExpressionFactory implements ExpressionFactory {
             builder.add(TokenType.FILTER, String.join("|", aliases));
         }
         Tokenizer tokenizer = builder
-                .add(TokenType.CONSTANT, "\"[a-zA-Z\\.\\-\\+_\\\\]+\"|[a-zA-Z\\.\\-\\+_\\\\]+|true|false|[0-9]+")
+                .add(TokenType.CONSTANT, "\"[/a-zA-Z\\.\\-\\+_\\\\]+\"|[/a-zA-Z\\.\\-\\+_\\\\]+|true|false|[0-9]+")
                 .add(TokenType.DOUBLE_QUOTES, "\"")
                 .add(TokenType.OPEN_BRACKET, "\\(")
                 .add(TokenType.CLOSE_BRACKET, "\\)")
