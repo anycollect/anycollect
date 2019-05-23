@@ -41,13 +41,14 @@ public final class JmxStub {
         String host = System.getProperty("java.rmi.server.hostname");
         String port = System.getProperty("com.sun.management.jmxremote.rmi.port");
         System.out.println("jmx host: " + host + ", port: " + port);
-        String serviceId = args[0];
-        String consulHost = args[1];
-        int consulPort = Integer.parseInt(args[2]);
+        String node = args[0];
+        String serviceId = args[1];
+        String consulHost = args[2];
+        int consulPort = Integer.parseInt(args[3]);
         Consul client = Consul.builder()
                 .withHostAndPort(HostAndPort.fromParts(consulHost, consulPort))
                 .build();
-        String pidFile = args[3];
+        String pidFile = args[4];
         System.out.println("pid file: \"" + pidFile + "\"");
         int pid = new SystemInfo().getOperatingSystem().getProcessId();
         System.out.println("pid: " + pid);
@@ -92,7 +93,7 @@ public final class JmxStub {
                 .build();
 
         kvs.putValue(
-                "/anycollect/jmx/" + serviceId,
+                "/anycollect/jmx/" + node + "/" + serviceId,
                 JSON_OBJECT_MAPPER.writeValueAsString(jmxRegistration)
         );
 
