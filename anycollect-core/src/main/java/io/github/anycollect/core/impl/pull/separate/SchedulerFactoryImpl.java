@@ -32,7 +32,7 @@ public final class SchedulerFactoryImpl implements SchedulerFactory {
     @Override
     public Scheduler create(final Target<?> target) {
         int poolSize = rule.getPoolSize(target, defaultPoolSize);
-        LOG.debug("creating scheduler for target {} with pool size {}", target, poolSize);
+        LOG.info("Creating scheduler for target {} with pool size {}", target, poolSize);
         ThreadFactory threadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-pull-(" + target.getId() + ")-[%d]")
                 .build();

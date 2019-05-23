@@ -29,7 +29,10 @@ public final class LeBucket implements Stat, Comparable<LeBucket> {
 
     @Override
     public String getTagValue() {
-        return "le_" + Double.toString(max);
+        if ((int) max == max) {
+            return "le_" + (int) max;
+        }
+        return "le_" + max;
     }
 
     public double getMax() {

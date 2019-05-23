@@ -33,4 +33,6 @@ public interface PullScheduler {
      * @param target - target that must be unmonitored
      */
     void release(@Nonnull Target<?> target);
+
+    void shutdown();
 }

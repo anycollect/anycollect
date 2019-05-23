@@ -90,7 +90,6 @@ public final class AnyCollect implements Runnable {
     }
 
     public void shutdown() {
-        LOG.info("graceful shutdown");
         destroy();
     }
 

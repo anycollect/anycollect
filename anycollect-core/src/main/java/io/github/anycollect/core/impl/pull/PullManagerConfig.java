@@ -19,7 +19,7 @@ public final class PullManagerConfig {
     private static final int DEFAULT_UPDATE_PERIOD_IN_SECONDS = 60;
     private static final int DEFAULT_PULL_PERIOD_IN_SECONDS = 30;
     private static final int DEFAULT_HEALTH_CHECK_PERIOD_IN_SECONDS = 10;
-    private static final int DEFAULT_POOL_SIZE = 2;
+    private static final int DEFAULT_POOL_SIZE = 1;
 
     private final int updatePeriodInSeconds;
     private final int defaultPullPeriodInSeconds;

@@ -68,4 +68,14 @@ public final class SocketWriter implements Writer, Lifecycle {
     public String getId() {
         return id;
     }
+
+    @Override
+    public void init() {
+        LOG.info("{} has been successfully initialised", NAME);
+    }
+
+    @Override
+    public void destroy() {
+        LOG.info("{}({}) has been successfully destroyed", id, NAME);
+    }
 }

@@ -46,7 +46,7 @@ class StatTest {
         assertThat(Stat.percentile(99).getTagValue()).isEqualTo("max_99").isEqualTo(Stat.percentile(99).toString());
         assertThat(Stat.percentile(999).getTagValue()).isEqualTo("max_999").isEqualTo(Stat.percentile(999).toString());
         assertThat(Stat.le(0.4).getTagValue()).isEqualTo("le_0.4").isEqualTo(Stat.le(0.4).toString());
-        assertThat(Stat.le(120).getTagValue()).isEqualTo("le_120.0").isEqualTo(Stat.le(120).toString());
+        assertThat(Stat.le(120).getTagValue()).isEqualTo("le_120").isEqualTo(Stat.le(120).toString());
         assertThat(Stat.leInf().getTagValue()).isEqualTo("le_Infinity").isEqualTo(Stat.leInf().toString());
         assertThat(Stat.value().getTagValue()).isEqualTo("value").isEqualTo(Stat.value().toString());
     }

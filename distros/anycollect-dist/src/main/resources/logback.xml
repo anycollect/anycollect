@@ -9,7 +9,7 @@
             <pattern>%X{slf4j.writer.instance.id} --> %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="io.github.anycollect.core.impl.writers.slf4j.Slf4jWriter" additivity="false">
+    <logger name="Slf4jWriter" additivity="false">
         <appender-ref ref="METRICS_STDOUT" />
     </logger>
     <root level="info">

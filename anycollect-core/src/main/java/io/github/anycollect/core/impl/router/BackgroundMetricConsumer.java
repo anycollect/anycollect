@@ -4,6 +4,8 @@ import io.github.anycollect.metric.Counter;
 import io.github.anycollect.metric.Gauge;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.Metric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
@@ -15,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @ThreadSafe
 public final class BackgroundMetricConsumer implements MetricConsumer {
+    private static final Logger LOG = LoggerFactory.getLogger(BackgroundMetricConsumer.class);
     private final ExecutorService executor;
     private final MetricConsumer delegate;
     private volatile boolean stopped = false;
@@ -64,7 +67,10 @@ public final class BackgroundMetricConsumer implements MetricConsumer {
     public void stop() {
         stopped = true;
         delegate.stop();
-        executor.shutdownNow();
+        LOG.info("Stopping async input queue workers for {}, there are currently {} unprocessed metrics",
+                getAddress(), inputSize.get());
+        this.executor.shutdown();
+        LOG.info("Input queue worker for {} has been successfully stopped", getAddress());
     }
 
     @Override
