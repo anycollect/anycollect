@@ -2,18 +2,21 @@ package io.github.anycollect.core.manifest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
+import lombok.Getter;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
-@JsonRootName("manifest")
 public final class ModuleManifest {
+    @Getter
+    private final String manifest;
     private final List<ExtensionManifest> extensions;
 
     @JsonCreator
-    public ModuleManifest(@JsonProperty("extensions") @Nonnull final List<ExtensionManifest> extensions) {
+    public ModuleManifest(@JsonProperty("manifest") @Nonnull final String manifest,
+                          @JsonProperty("extensions") @Nonnull final List<ExtensionManifest> extensions) {
+        this.manifest = manifest;
         this.extensions = extensions;
     }
 

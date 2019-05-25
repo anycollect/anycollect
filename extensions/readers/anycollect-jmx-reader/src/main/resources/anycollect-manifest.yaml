@@ -1,8 +1,8 @@
-manifest:
+- manifest: jmx-reader
   extensions:
-  - class: io.github.anycollect.readers.jmx.JmxReader
-  - class: io.github.anycollect.readers.jmx.discovery.StaticJavaAppDiscovery
-  - class: io.github.anycollect.readers.jmx.discovery.KvJavaAppDiscovery
-  - class: io.github.anycollect.readers.jmx.discovery.CurrentApp
-  - class: io.github.anycollect.readers.jmx.query.StaticJmxQueryProvider
-  - class: io.github.anycollect.readers.jmx.query.JvmMetrics
+    - class: io.github.anycollect.readers.jmx.JmxReader
+    - class: io.github.anycollect.readers.jmx.discovery.StaticJavaAppDiscovery
+    - class: io.github.anycollect.readers.jmx.discovery.KvJavaAppDiscovery
+    - class: io.github.anycollect.readers.jmx.discovery.CurrentApp
+    - class: io.github.anycollect.readers.jmx.query.StaticJmxQueryProvider
+    - class: io.github.anycollect.readers.jmx.query.JvmMetrics

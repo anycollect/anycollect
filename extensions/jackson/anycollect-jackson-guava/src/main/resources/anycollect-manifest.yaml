@@ -1,3 +1,3 @@
-manifest:
+- manifest: guava-jackson
   extensions:
     - class: io.github.anycollect.jackson.guava.GuavaJacksonModule

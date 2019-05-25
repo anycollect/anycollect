@@ -1,4 +1,4 @@
-manifest:
+- manifest: expressions
   extensions:
     - class: io.github.anycollect.extensions.common.expression.std.StdExpressionFactory
     - class: io.github.anycollect.extensions.common.expression.filters.JoinFilter

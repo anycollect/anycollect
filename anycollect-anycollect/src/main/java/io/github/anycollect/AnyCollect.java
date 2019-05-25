@@ -32,10 +32,6 @@ public final class AnyCollect implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(AnyCollect.class);
     private final Collection<Instance> instances;
 
-    static {
-        MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
-    }
-
     public AnyCollect(final File configFile, final VarSubstitutor substitutor) throws FileNotFoundException {
         DefinitionLoader loader = new ClassPathManifestScanDefinitionLoader(AnyCollect.class.getClassLoader(), MAPPER);
         ExtendableContext context = new ContextImpl();

@@ -1,4 +1,4 @@
-manifest:
+- manifest: system-reader
   extensions:
   - class: io.github.anycollect.readers.system.SystemReader
   - class: io.github.anycollect.readers.process.discovery.current.CurrentProcessDiscovery

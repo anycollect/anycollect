@@ -1,6 +1,6 @@
 package io.github.anycollect.extensions.loaders;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.anycollect.core.exceptions.ConfigurationException;
@@ -28,7 +28,6 @@ public final class ClassPathManifestScanDefinitionLoader implements DefinitionLo
     public ClassPathManifestScanDefinitionLoader() {
         this.classLoader = ClassPathManifestScanDefinitionLoader.class.getClassLoader();
         this.mapper = new ObjectMapper(new YAMLFactory());
-        this.mapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
     }
 
     public ClassPathManifestScanDefinitionLoader(@Nonnull final ClassLoader classLoader,
@@ -49,17 +48,20 @@ public final class ClassPathManifestScanDefinitionLoader implements DefinitionLo
         List<Class<?>> extensions = new ArrayList<>();
         while (resources.hasMoreElements()) {
             URL url = resources.nextElement();
-            ModuleManifest manifest;
+            List<ModuleManifest> manifests;
             try {
-                manifest = mapper.readValue(url, ModuleManifest.class);
+                manifests = mapper.readValue(url, new TypeReference<List<ModuleManifest>>() {
+                });
             } catch (IOException e) {
                 LOG.error("manifest {} is not valid", url, e);
                 throw new ConfigurationException("manifest is not valid", e);
             }
-            extensions.addAll(manifest.getExtensions().stream()
-                    .map(ExtensionManifest::getClassName)
-                    .map(this::loadExtensionClass)
-                    .collect(toList()));
+            for (ModuleManifest manifest : manifests) {
+                extensions.addAll(manifest.getExtensions().stream()
+                        .map(ExtensionManifest::getClassName)
+                        .map(this::loadExtensionClass)
+                        .collect(toList()));
+            }
         }
         new AnnotationDefinitionLoader(extensions).load(context);
     }
