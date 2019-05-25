@@ -119,7 +119,7 @@ public final class JmxStub {
             System.out.println("graceful shutdown");
             agentClient.deregister(serviceId);
             kvCache.stop();
-            kvs.deleteKey("/anycollect/jmx/" + serviceId);
+            kvs.deleteKey("/anycollect/jmx/" + node + "/" + serviceId);
             thread.interrupt();
             System.out.println("service has been successfully deregistered from consul");
             try {
