@@ -105,7 +105,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>io.github.anycollect.Init</mainClass>
+                                    <mainClass>io.github.anycollect.testing.jmx.JmxStub</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
