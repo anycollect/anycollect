@@ -52,7 +52,7 @@ public final class SeparatePullScheduler implements PullScheduler {
         }
         PullJob<T, Q> job = new PullJob<>(target, query, dispatcher, registry, clock);
         Scheduler scheduler = activeSchedulers.computeIfAbsent(target.get(), factory::create);
-        return scheduler.scheduleAtFixedRate(job, periodInSeconds, TimeUnit.SECONDS);
+        return scheduler.scheduleAtFixedRate(job, periodInSeconds, TimeUnit.SECONDS, false);
     }
 
     @Override
