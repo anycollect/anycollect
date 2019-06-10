@@ -16,6 +16,12 @@ public class JitScheduler implements Scheduler {
     }
 
     @Override
+    public Cancellation scheduleAtFixedRate(@Nonnull Runnable runnable, long period, @Nonnull TimeUnit unit, boolean allowOverworkAfterPause) {
+        runnable.run();
+        return new NoopCancelation();
+    }
+
+    @Override
     public void shutdown() {
         shutdown = true;
     }
