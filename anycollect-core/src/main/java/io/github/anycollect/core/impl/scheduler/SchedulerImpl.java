@@ -52,9 +52,13 @@ public final class SchedulerImpl implements Scheduler {
         if (allowOverworkAfterPause) {
             return scheduleAtFixedRate(runnable, period, unit);
         } else {
-            return scheduleAtFixedRate(
-                    new SkippingOverworkRunnable(runnable, unit.toNanos(period), registry, prefix, tags),
-                    period, unit);
+            if (isShutdown()) {
+                throw new IllegalStateException("scheduler is shutdown");
+            }
+            ThrottledRunnable throttledRunnable = new ThrottledRunnable(runnable, unit.toNanos(period), registry, prefix, tags);
+            ScheduledFuture<?> future = service.scheduleAtFixedRate(throttledRunnable, 0L, period, unit);
+            throttledRunnable.setDelayed(future);
+            return new ScheduledFeatureAdapter(future);
         }
     }
 
