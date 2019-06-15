@@ -80,13 +80,14 @@
                 <executions>
                     <execution>
                         <id>default</id>
-                        <phase>install</phase>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>build</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
+                    <skip>${docker.images.build.skip}</skip>
                     <repository>anycollect/jmx-stub</repository>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
