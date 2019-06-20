@@ -1,11 +1,8 @@
 package io.github.anycollect.readers.jmx.query.operations;
 
 import io.github.anycollect.core.exceptions.ConnectionException;
-import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.readers.jmx.server.JmxConnection;
-import io.github.anycollect.readers.jmx.server.JmxEvent;
-import io.github.anycollect.readers.jmx.server.JmxEventListener;
-import io.github.anycollect.readers.jmx.server.JmxEventType;
+import io.github.anycollect.readers.jmx.server.JmxConnectionDropListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,11 +14,11 @@ import javax.management.ObjectName;
 import java.io.IOException;
 import java.util.Collection;
 
-public final class SubscribeOperation implements QueryOperation<Subscription>, JmxEventListener {
+public final class SubscribeOperation implements QueryOperation<Subscription>, JmxConnectionDropListener {
     private static final Logger LOG = LoggerFactory.getLogger(SubscribeOperation.class);
     private final Collection<ObjectName> objectNames;
     private final NotificationListener listener;
-    private Subscription subscription;
+    private volatile Subscription subscription;
 
     public SubscribeOperation(@Nonnull final Collection<ObjectName> objectNames,
                               @Nonnull final NotificationListener listener) {
@@ -30,8 +27,8 @@ public final class SubscribeOperation implements QueryOperation<Subscription>, J
     }
 
     @Override
-    public Subscription operate(@Nonnull final JmxConnection connection) throws QueryException, ConnectionException {
-        connection.addListener(this);
+    public Subscription operate(@Nonnull final JmxConnection connection) throws ConnectionException {
+        connection.onConnectionDrop(this);
         return operate(connection.getConnection());
     }
 
@@ -53,8 +50,8 @@ public final class SubscribeOperation implements QueryOperation<Subscription>, J
     }
 
     @Override
-    public void handle(@Nonnull final JmxEvent event) {
-        if (event.getType() == JmxEventType.CONNECTION_CLOSED) {
+    public void onDrop() {
+        if (subscription != null) {
             subscription.invalidate();
         }
     }

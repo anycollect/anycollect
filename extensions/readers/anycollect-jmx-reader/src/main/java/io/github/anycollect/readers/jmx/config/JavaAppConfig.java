@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -26,6 +27,12 @@ public final class JavaAppConfig {
     private final String host;
     private final int port;
     private final Credentials credentials;
+
+    public JavaAppConfig(@Nullable final String instanceId,
+                         @Nonnull final String host,
+                         final int port) {
+        this(instanceId, null, null, null, host, port, null);
+    }
 
     public JavaAppConfig(@Nullable final String instanceId,
                          @Nullable final String url,

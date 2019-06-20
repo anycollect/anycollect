@@ -25,7 +25,10 @@ public final class CommonsJmxConnectionFactoryAdapter implements PooledObjectFac
 
     @Override
     public PooledObject<JmxConnection> makeObject() throws ConnectionException {
-        return new DefaultPooledObject<>(jmxConnectionFactory.createJmxConnection());
+        JmxConnection jmxConnection = jmxConnectionFactory.createJmxConnection();
+        DefaultPooledObject<JmxConnection> object = new DefaultPooledObject<>(jmxConnection);
+        jmxConnection.onConnectionDrop(object::invalidate);
+        return object;
     }
 
     @Override

@@ -11,7 +11,6 @@ import io.github.anycollect.readers.jmx.server.pool.JmxConnectionPool;
 import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
-import javax.management.MBeanServerConnection;
 import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = true)
@@ -57,9 +56,8 @@ public final class PooledJavaApp extends JavaApp {
         JmxConnection jmxConnection = null;
         try {
             jmxConnection = pool.borrowConnection();
-            MBeanServerConnection connection = jmxConnection.getConnection();
             try {
-                return operation.operate(connection);
+                return operation.operate(jmxConnection);
             } catch (ConnectionException e) {
                 pool.invalidateConnection(jmxConnection);
                 throw e;
