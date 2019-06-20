@@ -8,5 +8,9 @@ public interface ServiceDiscovery<T extends Target> {
         return new CompositeServiceDiscovery<>(discoveries);
     }
 
+    static <T extends Target> ServiceDiscovery<T> singleton(T target) {
+        return new SingletonServiceDiscovery<>(target);
+    }
+
     Set<T> discover();
 }
