@@ -38,7 +38,7 @@ public final class TaggingJob implements Job {
     }
 
     @Override
-    public List<Metric> execute() throws QueryException, ConnectionException {
+    public List<Metric> execute() throws InterruptedException, QueryException, ConnectionException {
         return delegate.execute().stream()
                 .map(metric -> metric.reframe(reframer))
                 .collect(Collectors.toList());

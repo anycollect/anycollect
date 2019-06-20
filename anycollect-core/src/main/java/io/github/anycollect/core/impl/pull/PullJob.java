@@ -74,6 +74,9 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
             LOG.debug("success: {}.execute({}) taken {}ms and produces {} metrics", target.get().getId(), query.getId(),
                     clock.wallTime() - start, metrics.size());
             target.update(Check.passed(start));
+        } catch (InterruptedException e) {
+            LOG.debug("thread {} is interrupted", Thread.currentThread(), e);
+            Thread.currentThread().interrupt();
         } catch (QueryException | ConnectionException | RuntimeException e) {
             failed.increment();
             LOG.debug("failed: {}.execute({}) taken {}ms and failed", target.get().getId(), query.getId(),

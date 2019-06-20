@@ -7,5 +7,5 @@ import io.github.anycollect.metric.Metric;
 import java.util.List;
 
 public interface Job {
-    List<Metric> execute() throws QueryException, ConnectionException;
+    List<Metric> execute() throws InterruptedException, QueryException, ConnectionException;
 }
