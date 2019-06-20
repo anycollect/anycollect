@@ -53,6 +53,7 @@ public final class SubscribeOperation implements QueryOperation<Subscription>, J
     public void onDrop() {
         if (subscription != null) {
             subscription.invalidate();
+            subscription = null;
         }
     }
 }
