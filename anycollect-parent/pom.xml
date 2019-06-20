@@ -25,7 +25,7 @@
         <codahale-metrics.version>4.0.5</codahale-metrics.version>
 
         <!-- YAML, CONFIGURATION -->
-        <jackson.version>2.9.8</jackson.version>
+        <jackson.version>2.9.9</jackson.version>
         <snakeyaml.version>1.23</snakeyaml.version>
 
         <!-- DISCOVERY -->
@@ -65,6 +65,7 @@
         <awaitility.version>3.1.5</awaitility.version>
         <commons-io.version>2.6</commons-io.version>
         <jmh.version>1.21</jmh.version>
+        <testcontainers.version>1.11.3</testcontainers.version>
 
         <!-- PLUGINS -->
         <compiler.version>3.6.1</compiler.version>
@@ -263,6 +264,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.openjdk.jmh</groupId>
                 <artifactId>jmh-core</artifactId>
                 <version>${jmh.version}</version>
@@ -323,6 +330,11 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
