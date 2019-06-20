@@ -4,13 +4,13 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.metric.noop.NoopMeterRegistry;
-import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.query.operations.QueryOperation;
+import io.github.anycollect.readers.jmx.server.JavaApp;
+import io.github.anycollect.readers.jmx.server.JmxConnection;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import javax.management.MBeanServer;
-import javax.management.MBeanServerConnection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -25,9 +25,9 @@ class CurrentAppTest {
         QueryOperation<Object> operation = mock(QueryOperation.class);
         server.operate(operation);
 
-        ArgumentCaptor<MBeanServerConnection> mbeanServer = ArgumentCaptor.forClass(MBeanServerConnection.class);
+        ArgumentCaptor<JmxConnection> mbeanServer = ArgumentCaptor.forClass(JmxConnection.class);
         verify(operation, times(1)).operate(mbeanServer.capture());
-        MBeanServerConnection connection = mbeanServer.getValue();
-        assertThat(connection).isInstanceOf(MBeanServer.class);
+        JmxConnection connection = mbeanServer.getValue();
+        assertThat(connection.getConnection()).isInstanceOf(MBeanServer.class);
     }
 }
