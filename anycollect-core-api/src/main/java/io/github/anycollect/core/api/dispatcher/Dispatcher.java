@@ -20,6 +20,10 @@ public interface Dispatcher {
         return NOOP;
     }
 
+    static Accumulator accumulator() {
+        return new Accumulator();
+    }
+
     void dispatch(@Nonnull Metric metric);
 
     void dispatch(@Nonnull List<Metric> metrics);

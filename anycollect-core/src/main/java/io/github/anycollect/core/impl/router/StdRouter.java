@@ -1,17 +1,16 @@
 package io.github.anycollect.core.impl.router;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import io.github.anycollect.core.api.Processor;
-import io.github.anycollect.core.api.Reader;
-import io.github.anycollect.core.api.Router;
-import io.github.anycollect.core.api.Writer;
+import io.github.anycollect.core.api.*;
 import io.github.anycollect.core.api.common.Lifecycle;
+import io.github.anycollect.core.api.filter.FilterChain;
+import io.github.anycollect.core.api.internal.PullManager;
 import io.github.anycollect.core.impl.router.adapters.ProcessorAdapter;
 import io.github.anycollect.core.impl.router.adapters.ReaderAdapter;
+import io.github.anycollect.core.impl.router.adapters.SyncReaderAdapter;
 import io.github.anycollect.core.impl.router.adapters.WriterAdapter;
 import io.github.anycollect.core.impl.router.config.RouterConfig;
 import io.github.anycollect.core.impl.router.config.TopologyItem;
-import io.github.anycollect.core.api.filter.FilterChain;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
@@ -28,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -41,11 +41,16 @@ public final class StdRouter implements Router, Lifecycle {
     public StdRouter(@ExtDependency(qualifier = "readers") @Nonnull final List<Reader> readers,
                      @ExtDependency(qualifier = "processors") @Nonnull final List<Processor> processors,
                      @ExtDependency(qualifier = "writers") @Nonnull final List<Writer> writers,
+                     @ExtDependency(qualifier = "syncReaders") @Nonnull final List<SyncReader> syncReaders,
                      @ExtDependency(qualifier = "registry") @Nonnull final MeterRegistry registry,
+                     @ExtDependency(qualifier = "puller") @Nonnull final PullManager pullManager,
                      @ExtConfig @Nonnull final RouterConfig config) {
         List<MetricProducer> mappedProducers = readers.stream()
                 .map(ReaderAdapter::new)
                 .collect(toList());
+        mappedProducers.addAll(syncReaders.stream()
+                .map(syncReader -> new SyncReaderAdapter(syncReader, pullManager))
+                .collect(Collectors.toList()));
         List<MetricProcessor> mappedProcessors = processors.stream()
                 .map(ProcessorAdapter::new)
                 .collect(toList());
