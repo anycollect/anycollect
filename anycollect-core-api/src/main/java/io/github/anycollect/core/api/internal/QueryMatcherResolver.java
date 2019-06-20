@@ -7,6 +7,10 @@ public interface QueryMatcherResolver {
         return new ConsistentQueryMatcherResolver(matcher);
     }
 
+    static QueryMatcherResolver alwaysAll(int period) {
+        return consistent(QueryMatcher.all(period));
+    }
+
     @Nonnull
     QueryMatcher current();
 }
