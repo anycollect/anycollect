@@ -67,4 +67,9 @@ final class CompiledMetric implements Metric {
     public String getKey() {
         return frame.getKey();
     }
+
+    @Override
+    public String toString() {
+        return Metric.toString(this);
+    }
 }

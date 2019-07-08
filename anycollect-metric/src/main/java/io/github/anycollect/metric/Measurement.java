@@ -52,4 +52,11 @@ public interface Measurement {
     }
 
     double getValue();
+
+    @Nonnull
+    static String toString(@Nonnull final Measurement measurement) {
+        return measurement.getStat() + "[" + measurement.getType() + "]"
+                + "=" + measurement.getValue()
+                + (measurement.getUnit().isEmpty() ? "" : "(" + measurement.getUnit() + ")");
+    }
 }

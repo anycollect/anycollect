@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.stream.Collectors.joining;
-
 @Getter
 public final class ImmutableMetric implements Metric {
     private final MetricFrame frame;
@@ -37,9 +35,7 @@ public final class ImmutableMetric implements Metric {
 
     @Override
     public String toString() {
-        return frame.getKey() + ";" + (!frame.getTags().isEmpty() ? frame.getTags() + ";" : "") + measurements.stream()
-                .map(Measurement::toString)
-                .collect(joining(","));
+        return Metric.toString(this);
     }
 
     @Nonnull

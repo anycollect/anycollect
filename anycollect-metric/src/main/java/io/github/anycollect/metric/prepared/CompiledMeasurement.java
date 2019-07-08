@@ -43,4 +43,9 @@ final class CompiledMeasurement implements Measurement {
     public double getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return Measurement.toString(this);
+    }
 }

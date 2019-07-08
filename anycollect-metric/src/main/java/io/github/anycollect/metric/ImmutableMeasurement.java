@@ -23,7 +23,7 @@ public final class ImmutableMeasurement implements Measurement {
 
     @Override
     public String toString() {
-        return frame.getStat() + "[" + frame.getType() + "]" + "=" + value + "(" + frame.getUnit() + ")";
+        return Measurement.toString(this);
     }
 
     @Nonnull

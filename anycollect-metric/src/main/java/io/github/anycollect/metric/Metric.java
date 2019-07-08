@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.stream.Collectors.joining;
+
 public interface Metric {
     static Builder builder() {
         return new Builder();
@@ -111,6 +113,14 @@ public interface Metric {
     @Nonnull
     default Metric removeTag(@Nonnull final String key) {
         return reframe(getFrame().removeTag(key));
+    }
+
+    static String toString(Metric metric) {
+        MetricFrame frame = metric.getFrame();
+        List<? extends Measurement> measurements = metric.getMeasurements();
+        return frame.getKey() + ";" + (!frame.getTags().isEmpty() ? frame.getTags() + ";" : "") + measurements.stream()
+                .map(measurement -> Measurement.toString(measurement))
+                .collect(joining(","));
     }
 
     class Builder extends BaseBuilder<Builder> {
