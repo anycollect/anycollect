@@ -128,7 +128,7 @@ public final class PullManagerImpl implements PullManager, Lifecycle {
             checker = new HealthCheckerImpl<>(
                     dispatcher,
                     healthCheckScheduler,
-                    healthCheckConfig.period() != -1 ? healthCheckConfig.period() : healthCheckPeriodInSeconds,
+                    TimeUnit.SECONDS.toMillis(healthCheckConfig.period() != -1 ? healthCheckConfig.period() : healthCheckPeriodInSeconds),
                     healthCheckConfig.tags(),
                     healthCheckConfig.meta());
         }

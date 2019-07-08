@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public final class HealthCheckerImpl<T extends Target<Q>, Q extends Query> implements HealthChecker<T, Q> {
     private final Dispatcher dispatcher;
-    private final int periodInSeconds;
+    private final long periodInMillis;
     private final Scheduler healthCheckScheduler;
     @GuardedBy("lock")
     private final Map<T, Cancellation> healthCheckCancellation = new HashMap<>();
@@ -28,12 +28,12 @@ public final class HealthCheckerImpl<T extends Target<Q>, Q extends Query> imple
 
     public HealthCheckerImpl(@Nonnull final Dispatcher dispatcher,
                              @Nonnull final Scheduler healthCheckScheduler,
-                             final int periodInSeconds,
+                             final long periodInMillis,
                              @Nonnull final Tags tags,
                              @Nonnull final Tags meta) {
         this.dispatcher = dispatcher;
         this.healthCheckScheduler = healthCheckScheduler;
-        this.periodInSeconds = periodInSeconds;
+        this.periodInMillis = periodInMillis;
         this.tags = tags;
         this.meta = meta;
     }
@@ -44,9 +44,9 @@ public final class HealthCheckerImpl<T extends Target<Q>, Q extends Query> imple
         lock.lock();
         try {
             if (!healthCheckCancellation.containsKey(target)) {
-                HealthCheck check = new HealthCheck(dispatcher, checkingTarget, tags, meta);
+                HealthCheck check = new HealthCheck(dispatcher, checkingTarget, tags, meta, periodInMillis);
                 Cancellation cancellation
-                        = healthCheckScheduler.scheduleAtFixedRate(check, periodInSeconds, TimeUnit.SECONDS);
+                        = healthCheckScheduler.scheduleAtFixedRate(check, periodInMillis, TimeUnit.MILLISECONDS);
                 healthCheckCancellation.put(target, cancellation);
             }
         } finally {
