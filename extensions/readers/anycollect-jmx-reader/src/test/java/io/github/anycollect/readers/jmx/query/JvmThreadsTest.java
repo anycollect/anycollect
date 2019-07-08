@@ -14,7 +14,7 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.List;
 
-import static io.github.anycollect.assertj.AnyCollectAssertions.assertThatFamilies;
+import static io.github.anycollect.assertj.AnyCollectAssertions.assertThatMetrics;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,16 +44,16 @@ class JvmThreadsTest {
         when(thread.getThreadInfo(ids)).thenReturn(infos);
         server.registerMBean(thread, new ObjectName("java.lang:type=Threading"));
         List<Metric> families = new MockJavaApp(server).bind(jvmThreads).execute();
-        assertThatFamilies(families)
+        assertThatMetrics(families)
                 .contains("jvm.threads.live", Tags.of("type", "daemon"))
                 .hasMeasurement(Stat.value(), Type.GAUGE, "", 1);
-        assertThatFamilies(families)
+        assertThatMetrics(families)
                 .contains("jvm.threads.live", Tags.of("type", "nondaemon"))
                 .hasMeasurement(Stat.value(), Type.GAUGE, "", 2);
-        assertThatFamilies(families)
+        assertThatMetrics(families)
                 .contains("jvm.threads.started")
                 .hasMeasurement(Stat.value(), Type.COUNTER, "", 5);
-        assertThatFamilies(families)
+        assertThatMetrics(families)
                 .contains("jvm.threads.states", Tags.of("state", "RUNNABLE"))
                 .hasMeasurement(Stat.value(), Type.GAUGE, "", 1);
     }

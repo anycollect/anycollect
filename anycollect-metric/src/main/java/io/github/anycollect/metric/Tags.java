@@ -24,6 +24,17 @@ public interface Tags extends Iterable<Tag> {
         return ImmutableTags.singleton(key, value);
     }
 
+    static Tags of(@Nonnull String... keyValues) {
+        if (keyValues.length % 2 != 0) {
+            throw new IllegalArgumentException("array must contain even number of elements");
+        }
+        ImmutableTags.Builder builder = new ImmutableTags.Builder();
+        for (int i = 0; i < keyValues.length / 2; i++) {
+            builder.tag(keyValues[2 * i], keyValues[2 * i + 1]);
+        }
+        return builder.build();
+    }
+
     boolean hasTagKey(String key);
 
     @Nonnull

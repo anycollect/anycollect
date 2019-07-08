@@ -14,11 +14,11 @@ public final class AnyCollectAssertions extends Assertions {
         return TagsAssert.assertThat(actual);
     }
 
-    public static MetricFamilyAssert assertThat(final Metric actual) {
-        return MetricFamilyAssert.assertThat(actual);
+    public static MetricAssert assertThat(final Metric actual) {
+        return MetricAssert.assertThat(actual);
     }
 
-    public static ListMetricFamilyAssert assertThatFamilies(final List<Metric> actual) {
-        return new ListMetricFamilyAssert(actual);
+    public static MetricsAssert assertThatMetrics(final List<Metric> actual) {
+        return new MetricsAssert(actual);
     }
 }

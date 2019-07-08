@@ -6,33 +6,37 @@ import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
 import org.assertj.core.api.AbstractAssert;
 
-public final class MetricFamilyAssert extends AbstractAssert<MetricFamilyAssert, Metric> {
-    public MetricFamilyAssert(final Metric actual) {
-        super(actual, MetricFamilyAssert.class);
+public final class MetricAssert extends AbstractAssert<MetricAssert, Metric> {
+    public MetricAssert(final Metric actual) {
+        super(actual, MetricAssert.class);
     }
 
-    public static MetricFamilyAssert assertThat(final Metric actual) {
-        return new MetricFamilyAssert(actual);
+    public static MetricAssert assertThat(final Metric actual) {
+        return new MetricAssert(actual);
     }
 
-    public MetricFamilyAssert hasKey(final String key) {
+    public MetricAssert hasKey(final String key) {
         if (!key.equals(actual.getKey())) {
             failWithMessage("expected <%s> to have key %s but was <%s>", actual, key, actual.getKey());
         }
         return this;
     }
 
-    public MetricFamilyAssert hasTags(final String... tags) {
+    public MetricAssert hasTags(final String... tags) {
         TagsAssert.assertThat(actual.getTags()).hasTags(tags);
         return this;
     }
 
-    public MetricFamilyAssert hasMeta(final String... tags) {
+    public MetricAssert hasMeta(final String... tags) {
         TagsAssert.assertThat(actual.getMeta()).hasTags(tags);
         return this;
     }
 
-    public MetricFamilyAssert hasMeasurement(final Stat stat, final Type type, final String unit, final double value) {
+    public MetricAssert hasValue(final double value) {
+        return hasMeasurement(Stat.VALUE, Type.GAUGE, "", value);
+    }
+
+    public MetricAssert hasMeasurement(final Stat stat, final Type type, final String unit, final double value) {
         boolean has = false;
         for (Measurement measurement : actual.getMeasurements()) {
             if (stat.equals(measurement.getStat())
