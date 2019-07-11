@@ -69,6 +69,7 @@
 
         <!-- PLUGINS -->
         <compiler.version>3.6.1</compiler.version>
+        <assembly.plugin.version>3.1.1</assembly.plugin.version>
         <surefire.plugin.version>2.22.2</surefire.plugin.version>
         <checkstyle.plugin.version>3.0.0</checkstyle.plugin.version>
         <pmd.plugin.version>3.11.0</pmd.plugin.version>
@@ -363,6 +364,11 @@
                             <version>${pmd.version}</version>
                         </dependency>
                     </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${assembly.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

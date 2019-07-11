@@ -1,0 +1,4 @@
+extensions:
+  - !load
+    extension: Slf4jWriter
+    instance: slf4j

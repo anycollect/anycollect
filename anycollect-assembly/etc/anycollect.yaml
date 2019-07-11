@@ -1,0 +1,16 @@
+extensions:
+  - !load
+    extension: Core
+    config:
+      export:
+        - file: slf4j.yaml
+          instances: [slf4j]
+      pull:
+        updatePeriod: 20
+        pullPeriod: 10
+      internalMonitoring:
+        tags:
+          instance: anycollect
+      topology:
+        - from: internal
+          to: slf4j

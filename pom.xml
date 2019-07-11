@@ -31,13 +31,14 @@
         <module>anycollect-meter-registry</module>
         <module>extensions/kv/anycollect-consul-kv</module>
         <module>extensions/readers/anycollect-async-socket-reader</module>
-        <module>distros/anycollect-dist</module>
         <module>extensions/readers/anycollect-system-reader</module>
         <module>anycollect-benchmarks</module>
         <module>anycollect-extension-system-api</module>
         <module>extensions/jackson/anycollect-jackson-guava</module>
         <module>distros/anycollect-collectd-plugin-dist</module>
         <module>anycollect-anycollect</module>
+        <module>anycollect-agent</module>
+        <module>anycollect-assembly</module>
     </modules>
 
     <build>

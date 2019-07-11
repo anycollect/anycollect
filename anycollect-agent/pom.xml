@@ -10,7 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>anycollect-dist</artifactId>
+    <artifactId>anycollect-agent</artifactId>
 
     <dependencyManagement>
         <dependencies>
