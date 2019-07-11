@@ -6,7 +6,7 @@
         <artifactId>anycollect-parent</artifactId>
         <groupId>io.github.anycollect</groupId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../../anycollect-parent/pom.xml</relativePath>
+        <relativePath>../anycollect-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -126,25 +126,11 @@
                         </goals>
                         <configuration>
                             <outputDirectory>
-                                ${project.build.directory}/libs
+                                target/libs
                             </outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <finalName>anycollect-${project.version}</finalName>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>io.github.anycollect.Init</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.spotify</groupId>
@@ -172,7 +158,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.1</version>
                 <configuration>
-                    <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                    <dependencyReducedPomLocation>target/dependency-reduced-pom.xml</dependencyReducedPomLocation>
                 </configuration>
                 <executions>
                     <execution>
