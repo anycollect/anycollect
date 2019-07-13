@@ -3,14 +3,16 @@ package io.github.anycollect.extensions.loaders.snakeyaml;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.Definition;
 import io.github.anycollect.extensions.Instance;
 import io.github.anycollect.extensions.context.ContextImpl;
-import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.dependencies.ConfigDefinition;
 import io.github.anycollect.extensions.dependencies.MultiDependencyDefinition;
 import io.github.anycollect.extensions.dependencies.SingleDependencyDefinition;
 import io.github.anycollect.extensions.exceptions.MissingRequiredPropertyException;
+import io.github.anycollect.extensions.scope.SimpleScope;
+import io.github.anycollect.extensions.substitution.VarSubstitutor;
 import io.github.anycollect.extensions.utils.ConstrictorUtils;
 import io.github.anycollect.extensions.utils.TestConfigUtils;
 import lombok.EqualsAndHashCode;
@@ -186,19 +188,40 @@ class YamlInstanceLoaderTest {
         assertThat(ex.getProperty()).isEqualTo("extension");
     }
 
+    @Test
+    @DisplayName("activation test")
+    void activationTest() throws IOException {
+        List<Instance> instances = loadFile("activation.yaml", VarSubstitutor.of("ext3.number", "1"));
+        assertThat(instances).size().isEqualTo(2);
+        Ext3 ext3 = (Ext3) instances.get(1).resolve();
+        assertThat(ext3.config.key).isEqualTo("1");
+    }
+
     private List<Instance> loadString(String content) {
-        return loadReader(new StringReader(content));
+        return loadString(content, VarSubstitutor.EMPTY);
+    }
+
+    private List<Instance> loadString(String content, VarSubstitutor environment) {
+        return loadReader(new StringReader(content), environment);
     }
 
     private List<Instance> loadFile(String name) throws IOException {
+        return loadFile(name, VarSubstitutor.EMPTY);
+    }
+
+    private List<Instance> loadFile(String name, VarSubstitutor environment) throws IOException {
         try (FileReader reader = new FileReader(new File("src/test/resources/config/" + name))) {
-            return loadReader(reader);
+            return loadReader(reader, environment);
         }
     }
 
     private List<Instance> loadReader(Reader reader) {
+        return loadReader(reader, VarSubstitutor.EMPTY);
+    }
+
+    private List<Instance> loadReader(Reader reader, VarSubstitutor environment) {
         ContextImpl context = new ContextImpl(this.definitions);
-        new YamlInstanceLoader(reader).load(context);
+        new YamlInstanceLoader(new SimpleScope(null, "default"), reader, environment).load(context);
         Collection<Instance> instances = context.getInstances();
         return new ArrayList<>(instances);
     }
@@ -226,10 +249,12 @@ class YamlInstanceLoaderTest {
     static public class Ext3 implements ExtPoint3 {
         private final ExtPoint1 ext1;
         private final List<ExtPoint2> ext2s;
+        private final Ext3Config config;
 
         public Ext3(ExtPoint1 ext1, List<ExtPoint2> ext2s, Ext3Config config) {
             this.ext1 = ext1;
             this.ext2s = ext2s;
+            this.config = config;
         }
 
         public ExtPoint1 getExt1() {

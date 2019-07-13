@@ -1,0 +1,26 @@
+extensions:
+- !load
+  extension: Ext1
+  instance: ext1
+- !load
+  extension: Ext3
+  instance: ext3
+  dependencies:
+    ext1: !ref ext1
+  config:
+    key: !var ext3.number
+  activation:
+    type: property
+    name: ext3.number
+    value: 1
+- !load
+  extension: Ext3
+  instance: ext3
+  dependencies:
+    ext1: !ref ext1
+  config:
+    key: !var ext3.number
+  activation:
+    type: property
+    name: ext3.number
+    value: 2

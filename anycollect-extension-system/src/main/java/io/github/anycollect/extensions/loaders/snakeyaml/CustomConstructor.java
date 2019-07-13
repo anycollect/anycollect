@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.anycollect.core.exceptions.ConfigurationException;
+import io.github.anycollect.extensions.Activation;
 import io.github.anycollect.extensions.Definition;
 import io.github.anycollect.extensions.Instance;
 import io.github.anycollect.extensions.annotations.InjectMode;
@@ -41,6 +42,7 @@ final class CustomConstructor extends Constructor {
     private static final String EXTENSION = "extension";
     private static final String INSTANCE = "instance";
     private static final String INJECT_MODE = "injectMode";
+    private static final String ACTIVATION = "activation";
     private final ObjectMapper mapper;
     private static final String CONFIG = "config";
     private final ExtendableContext context;
@@ -57,6 +59,7 @@ final class CustomConstructor extends Constructor {
         this.mapper = new ObjectMapper(new YAMLFactory());
         this.mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
         this.values = new InjectableValues.Std();
+        this.values.addValue("environment", environment);
         this.mapper.setInjectableValues(values);
         this.context = context;
         this.scope = scope;
@@ -106,7 +109,11 @@ final class CustomConstructor extends Constructor {
             Object config = getNullableConfig(definition, instanceName);
             Map<String, Instance> singleDependencies = getSingleDependencies();
             Map<String, List<Instance>> multiDependencies = getMultiDependencies();
-
+            Activation activation = getActivation();
+            if (!activation.isReached()) {
+                LOG.info("instance {} is not activated", instanceName);
+                return null;
+            }
             Instance instance = definition.createInstance(
                     instanceName, config, singleDependencies, multiDependencies,
                     context, getInjectMode(), scope);
@@ -210,6 +217,19 @@ final class CustomConstructor extends Constructor {
                         config.getParameterType().getName(), instanceName, rawConfig, e);
                 throw new ConfigurationException("unexpected error during parsing configuration", e);
             }
+        }
+
+        private Activation getActivation() {
+            if (values.containsKey(ACTIVATION)) {
+                Object rawActivation = values.get(ACTIVATION);
+                try {
+                    return mapper.readValue(mapper.writeValueAsString(rawActivation), Activation.class);
+                } catch (IOException e) {
+                    LOG.error("could not parse activation {}", rawActivation, e);
+                    throw new ConfigurationException("could not parse activation", e);
+                }
+            }
+            return Activation.active();
         }
     }
 
