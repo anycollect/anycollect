@@ -1,0 +1,3 @@
+extensions:
+- !load
+  extension: AutoRouterLoader

@@ -1,4 +1,5 @@
 - manifest: anycollect
   extensions:
     - class: io.github.anycollect.CoreLoader
+    - class: io.github.anycollect.AutoRouterLoader
     - class: io.github.anycollect.InternalReader

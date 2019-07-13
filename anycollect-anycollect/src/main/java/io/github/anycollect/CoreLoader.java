@@ -1,9 +1,6 @@
 package io.github.anycollect;
 
-import io.github.anycollect.core.api.Processor;
-import io.github.anycollect.core.api.Reader;
-import io.github.anycollect.core.api.SyncReader;
-import io.github.anycollect.core.api.Writer;
+import io.github.anycollect.core.api.*;
 import io.github.anycollect.core.api.internal.PullManager;
 import io.github.anycollect.core.api.target.SelfDiscovery;
 import io.github.anycollect.core.exceptions.ConfigurationException;
@@ -169,28 +166,16 @@ public final class CoreLoader implements InstanceLoader {
             }
         }
 
-        List<Reader> readers = new ArrayList<>();
-        List<SyncReader> syncReaders = new ArrayList<>();
-        List<Processor> processors = new ArrayList<>();
-        List<Writer> writers = new ArrayList<>();
+        List<Route> routes = new ArrayList<>();
         for (Instance instance : context.getInstances()) {
             Object resolved = instance.resolve();
-            if (resolved instanceof Reader) {
-                readers.add((Reader) resolved);
-            }
-            if (resolved instanceof Processor) {
-                processors.add((Processor) resolved);
-            }
-            if (resolved instanceof Writer) {
-                writers.add((Writer) resolved);
-            }
-            if (resolved instanceof SyncReader) {
-                syncReaders.add((SyncReader) resolved);
+            if (resolved instanceof Route) {
+                routes.add((Route) resolved);
             }
         }
 
         ImmutableRouterConfig routerConfig = RouterConfig.builder().addAllTopology(config.topology()).build();
-        StdRouter router = new StdRouter(readers, processors, writers, syncReaders, meterRegistry, pullManager, routerConfig);
+        StdRouter router = StdRouter.of(routes, meterRegistry, pullManager, routerConfig);
         context.addInstance(new Instance(context.getDefinition(StdRouter.NAME),
                 "router", router, InjectMode.MANUAL, scope));
     }

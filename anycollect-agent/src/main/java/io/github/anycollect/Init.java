@@ -8,12 +8,14 @@ import io.github.anycollect.shutdown.ShutdownTask;
 import oshi.SystemInfo;
 import picocli.CommandLine;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class Init {
     private Init() {
@@ -33,16 +35,18 @@ public final class Init {
                     StandardOpenOption.CREATE, StandardOpenOption.WRITE);
             shutdownTasks.add(new RemoveFileShutdownTask(path));
         }
-        VarSubstitutor substitutor;
-        if (config.getEnv() != null) {
-            substitutor = VarSubstitutor.firstNonNull(
+        VarSubstitutor substitutor = VarSubstitutor.firstNonNull(
                     VarSubstitutor.ofMap(config.getEnv()),
-                    VarSubstitutor.env()
-            );
-        } else {
-            substitutor = VarSubstitutor.env();
-        }
-        AnyCollect anyCollect = new AnyCollect(config.getConfigFile(), substitutor);
+                    VarSubstitutor.env(),
+                    VarSubstitutor.ofClassPathFile("preconfigured/default-vars.properties")
+        );
+        List<String> extensionNames = config.getEnabledPreconfiguredExtensions();
+        extensionNames.add(0, "core");
+        extensionNames.add("router");
+        List<String> extensionClassPathFiles = extensionNames.stream()
+                .map(extensionName -> "preconfigured" + File.separator + extensionName + ".yaml")
+                .collect(Collectors.toList());
+        AnyCollect anyCollect = new AnyCollect(config.getConfigFile(), extensionClassPathFiles, substitutor);
         shutdownTasks.add(anyCollect::shutdown);
         Runtime.getRuntime().addShutdownHook(new ShutdownHook(shutdownTasks));
         anyCollect.run();

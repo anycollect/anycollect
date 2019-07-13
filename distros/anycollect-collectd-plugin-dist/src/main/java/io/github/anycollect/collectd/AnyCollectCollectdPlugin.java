@@ -9,6 +9,7 @@ import org.collectd.api.OConfigItem;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public final class AnyCollectCollectdPlugin implements CollectdInitInterface, CollectdConfigInterface {
     public static final String NAME = "AnyCollect";
@@ -35,6 +36,9 @@ public final class AnyCollectCollectdPlugin implements CollectdInitInterface, Co
             anyCollect = new AnyCollect(new File(config), new EnvVarSubstitutor());
         } catch (FileNotFoundException e) {
             Collectd.logError("file " + config + " not found");
+            return 1;
+        } catch (IOException e) {
+            Collectd.logError(e.getMessage());
             return 1;
         }
         anyCollect.run();

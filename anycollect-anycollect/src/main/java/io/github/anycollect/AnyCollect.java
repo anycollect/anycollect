@@ -1,6 +1,5 @@
 package io.github.anycollect;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.anycollect.core.api.Router;
@@ -15,16 +14,17 @@ import io.github.anycollect.extensions.loaders.InstanceLoader;
 import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.extensions.scope.FileScope;
 import io.github.anycollect.extensions.scope.Scope;
+import io.github.anycollect.extensions.scope.SimpleScope;
 import io.github.anycollect.extensions.substitution.VarSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import javax.annotation.Nullable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public final class AnyCollect implements Runnable {
     private static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
@@ -32,20 +32,41 @@ public final class AnyCollect implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(AnyCollect.class);
     private final Collection<Instance> instances;
 
-    public AnyCollect(final File configFile, final VarSubstitutor substitutor) throws FileNotFoundException {
+    public AnyCollect(final File configFile, final VarSubstitutor substitutor) throws IOException {
+        this(configFile, Collections.emptyList(), substitutor);
+    }
+
+    public AnyCollect(@Nullable final File configFile, final List<String> classpathConfigFiles, final VarSubstitutor substitutor) throws IOException {
         DefinitionLoader loader = new ClassPathManifestScanDefinitionLoader(AnyCollect.class.getClassLoader(), MAPPER);
         ExtendableContext context = new ContextImpl();
         loader.load(context);
-        Scope scope = FileScope.root(configFile);
-        // TODO add var substitutor
-//        context.addInstance(substitutor);
+        List<Reader> readers = new ArrayList<>();
+        if (configFile != null) {
+            readers.add(new FileReader(configFile));
+        }
+        for (String classpathConfigFile : classpathConfigFiles) {
+            readers.add(new InputStreamReader(this.getClass().getClassLoader().getResource(classpathConfigFile).openStream()));
+        }
+        Scope scope;
+        if (configFile != null) {
+            scope = FileScope.root(configFile);
+        } else {
+            scope = new SimpleScope(null, "root");
+        }
+        for (Reader reader : readers) {
+            // TODO add var substitutor
+            //        context.addInstance(substitutor);
 
-        InstanceLoader instanceLoader
-                = new YamlInstanceLoader(scope, new FileReader(configFile), substitutor);
-        Instance rootLoader = new Instance(context.getDefinition(YamlInstanceLoader.NAME),
-                "root", instanceLoader, InjectMode.AUTO, scope);
-        context.addInstance(rootLoader);
-        instanceLoader.load(context);
+            InstanceLoader instanceLoader
+                    = new YamlInstanceLoader(scope, reader, substitutor);
+            Instance rootLoader = new Instance(context.getDefinition(YamlInstanceLoader.NAME),
+                    "root", instanceLoader, InjectMode.AUTO, scope);
+            context.addInstance(rootLoader);
+            instanceLoader.load(context);
+        }
+        for (Reader reader : readers) {
+            reader.close();
+        }
         this.instances = new ArrayList<>(context.getInstances());
     }
 

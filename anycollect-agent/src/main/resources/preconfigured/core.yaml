@@ -1,0 +1,76 @@
+extensions:
+# Core
+- !load
+  extension: SelfDiscovery
+  instance: self
+  injectMode: auto
+  config:
+    targetId: "anycollect-self"
+- !load
+  extension: MeterRegistry
+  instance: registry
+  injectMode: auto
+  config:
+    globalPrefix: !var anycollect.selfstats.prefix
+    commonTags:
+      instance: !var anycollect.selfstats.tags.instance
+- !load
+  extension: PullEngine
+  instance: puller
+  injectMode: auto
+  config:
+    updatePeriod: !var discovery.period
+    pullPeriod: !var pull.period
+
+# Logic
+- !load
+  extension: MeterRegistryReader
+  instance: "internal.registry"
+
+# Jmx
+- !load
+  extension: CurrentApp
+  instance: anycollectJvm
+  config:
+    targetId: "anycollect-jvm"
+    tags:
+      instance: !var anycollect.selfstats.tags.instance
+- !load
+  extension: JvmMetrics
+  instance: jvmMetrics
+  config:
+    prefix: !var anycollect.selfstats.prefix
+- !load
+  extension: StaticQueryMatcherResolver
+  instance: matcher
+  config:
+    rules:
+    - instanceId: ".*"
+      queryId: "jvm.*"
+      period: !var pull.period
+- !load
+  extension: JmxReader
+  instance: "internal.jmx"
+  dependencies:
+    discovery: !refs
+    - anycollectJvm
+    queries: !refs
+    - jvmMetrics
+    matcher: !ref matcher
+
+# Process
+- !load
+  extension: CurrentProcessDiscovery
+  instance: anycollectProcess
+  config:
+    targetId: "anycollect-process"
+    tags:
+      instance: !var anycollect.selfstats.tags.instance
+- !load
+  extension: ProcessReader
+  instance: "internal.process"
+  dependencies:
+    discovery: !ref anycollectProcess
+  config:
+    prefix: !var anycollect.selfstats.prefix
+    period: !var pull.period
