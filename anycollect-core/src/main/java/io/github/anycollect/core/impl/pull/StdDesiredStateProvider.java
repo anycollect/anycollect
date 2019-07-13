@@ -9,7 +9,7 @@ import io.github.anycollect.core.api.target.Target;
 import javax.annotation.Nonnull;
 import java.util.Set;
 
-public final class StdDesiredStateProvider<T extends Target<Q>, Q extends Query> implements DesiredStateProvider<T, Q> {
+public final class StdDesiredStateProvider<T extends Target, Q extends Query<T>> implements DesiredStateProvider<T, Q> {
     private final ServiceDiscovery<? extends T> discovery;
     private final QueryProvider<? extends Q> provider;
     private final QueryMatcherResolver resolver;

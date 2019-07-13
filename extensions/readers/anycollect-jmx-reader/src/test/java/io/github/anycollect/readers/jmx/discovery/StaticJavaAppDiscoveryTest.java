@@ -1,11 +1,12 @@
 package io.github.anycollect.readers.jmx.discovery;
 
+import io.github.anycollect.core.api.target.Target;
+import io.github.anycollect.extensions.Definition;
+import io.github.anycollect.extensions.Instance;
+import io.github.anycollect.extensions.context.ContextImpl;
 import io.github.anycollect.extensions.loaders.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.loaders.DefinitionLoader;
 import io.github.anycollect.extensions.loaders.InstanceLoader;
-import io.github.anycollect.extensions.context.ContextImpl;
-import io.github.anycollect.extensions.Definition;
-import io.github.anycollect.extensions.Instance;
 import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.meter.registry.AnyCollectMeterRegistry;
 import io.github.anycollect.readers.jmx.server.JavaApp;
@@ -52,7 +53,7 @@ class StaticJavaAppDiscoveryTest {
         Set<JavaApp> discover = discovery.discover();
         assertThat(discover).hasSize(1).first()
                 .isInstanceOf(PooledJavaApp.class)
-                .extracting(JavaApp::getId)
+                .extracting(Target::getId)
                 .isEqualTo("cassandra-1");
     }
 }

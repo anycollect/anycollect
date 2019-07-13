@@ -29,6 +29,11 @@ public final class JavaAppConfig {
     private final Credentials credentials;
 
     public JavaAppConfig(@Nullable final String instanceId,
+                         @Nullable final String url) {
+        this(instanceId, null, null, url, null, null, null);
+    }
+
+    public JavaAppConfig(@Nullable final String instanceId,
                          @Nonnull final String host,
                          final int port) {
         this(instanceId, null, null, null, host, port, null);

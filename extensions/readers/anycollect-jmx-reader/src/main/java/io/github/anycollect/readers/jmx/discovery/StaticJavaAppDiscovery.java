@@ -2,6 +2,7 @@ package io.github.anycollect.readers.jmx.discovery;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.anycollect.core.api.target.ServiceDiscovery;
 import io.github.anycollect.core.api.target.TargetCreationException;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
@@ -22,8 +23,8 @@ import java.util.Set;
 /**
  * Static Java App discovery
  */
-@Extension(name = StaticJavaAppDiscovery.NAME, point = JavaAppDiscovery.class)
-public final class StaticJavaAppDiscovery implements JavaAppDiscovery {
+@Extension(name = StaticJavaAppDiscovery.NAME, point = ServiceDiscovery.class)
+public final class StaticJavaAppDiscovery implements ServiceDiscovery<JavaApp> {
     public static final String NAME = "StaticJavaAppDiscovery";
     private static final Logger LOG = LoggerFactory.getLogger(StaticJavaAppDiscovery.class);
     private final Set<JavaApp> apps;

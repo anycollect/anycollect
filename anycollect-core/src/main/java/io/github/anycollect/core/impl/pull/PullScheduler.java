@@ -21,7 +21,7 @@ public interface PullScheduler {
      * @return the cancellation to cancel scheduled job
      */
     @Nonnull
-    <T extends Target<Q>, Q extends Query> Cancellation schedulePull(
+    <T extends Target, Q extends Query<T>> Cancellation schedulePull(
             @Nonnull CheckingTarget<T> target, @Nonnull Q query, @Nonnull Dispatcher dispatcher, int periodInSeconds);
 
     /**
@@ -32,7 +32,7 @@ public interface PullScheduler {
      *
      * @param target - target that must be unmonitored
      */
-    void release(@Nonnull Target<?> target);
+    void release(@Nonnull Target target);
 
     void shutdown();
 }

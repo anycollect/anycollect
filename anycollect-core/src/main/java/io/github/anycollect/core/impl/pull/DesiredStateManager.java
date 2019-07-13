@@ -7,7 +7,7 @@ import io.github.anycollect.core.api.target.Target;
 
 import javax.annotation.Nonnull;
 
-public interface DesiredStateManager<T extends Target<Q>, Q extends Query> extends Lifecycle {
+public interface DesiredStateManager<T extends Target, Q extends Query<T>> extends Lifecycle {
     void update(@Nonnull State<T, Q> desiredState);
 
     void cleanup();

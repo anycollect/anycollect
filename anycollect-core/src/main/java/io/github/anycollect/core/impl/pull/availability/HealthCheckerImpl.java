@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public final class HealthCheckerImpl<T extends Target<Q>, Q extends Query> implements HealthChecker<T, Q> {
+public final class HealthCheckerImpl<T extends Target, Q extends Query<T>> implements HealthChecker<T, Q> {
     private final Dispatcher dispatcher;
     private final long periodInMillis;
     private final Scheduler healthCheckScheduler;

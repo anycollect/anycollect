@@ -6,6 +6,11 @@ import javax.annotation.Nullable;
 public final class SimpleScope extends AbstractScope {
     private final String id;
 
+    public SimpleScope(@Nonnull final String id) {
+        super(null);
+        this.id = id;
+    }
+
     public SimpleScope(@Nullable final Scope parent, @Nonnull final String id) {
         super(parent);
         this.id = id;

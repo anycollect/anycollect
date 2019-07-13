@@ -6,10 +6,10 @@ import io.github.anycollect.core.api.target.Target;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public final class ImmutableState<T extends Target<Q>, Q extends Query> implements State<T, Q> {
+public final class ImmutableState<T extends Target, Q extends Query<T>> implements State<T, Q> {
     private final Map<T, Set<PeriodicQuery<Q>>> state;
 
-    public static <T extends Target<Q>, Q extends Query> ImmutableState.Builder<T, Q> builder() {
+    public static <T extends Target, Q extends Query<T>> ImmutableState.Builder<T, Q> builder() {
         return new Builder<>();
     }
 
@@ -28,7 +28,7 @@ public final class ImmutableState<T extends Target<Q>, Q extends Query> implemen
         return Collections.unmodifiableSet(state.getOrDefault(target, Collections.emptySet()));
     }
 
-    public static final class Builder<T extends Target<Q>, Q extends Query> {
+    public static final class Builder<T extends Target, Q extends Query<T>> {
         private final Map<T, Set<PeriodicQuery<Q>>> state = new HashMap<>();
 
         public Builder<T, Q> put(@Nonnull final T target, @Nonnull final Q query, final int period) {

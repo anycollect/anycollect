@@ -16,8 +16,8 @@ import io.github.anycollect.readers.jmx.server.JavaApp;
 import javax.annotation.Nonnull;
 import java.util.Set;
 
-@Extension(name = KvJavaAppDiscovery.NAME, point = JavaAppDiscovery.class)
-public final class KvJavaAppDiscovery implements JavaAppDiscovery {
+@Extension(name = KvJavaAppDiscovery.NAME, point = ServiceDiscovery.class)
+public final class KvJavaAppDiscovery implements ServiceDiscovery<JavaApp> {
     public static final String NAME = "KvJavaAppDiscovery";
     private final ServiceDiscovery<JavaApp> delegate;
 
@@ -34,7 +34,7 @@ public final class KvJavaAppDiscovery implements JavaAppDiscovery {
     }
 
     @Override
-    public synchronized Set<JavaApp> discover() {
+    public synchronized Set<? extends JavaApp> discover() {
         return delegate.discover();
     }
 

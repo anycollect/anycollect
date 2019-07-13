@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 
 public final class HealthCheck implements Runnable {
     private final Dispatcher dispatcher;
-    private final CheckingTarget<? extends Target<?>> checkingTarget;
+    private final CheckingTarget<? extends Target> checkingTarget;
     private final PreparedMetric state;
     private final PreparedMetric up;
     private final PreparedMetric down;
@@ -20,7 +20,7 @@ public final class HealthCheck implements Runnable {
     private final Clock clock;
 
     public HealthCheck(@Nonnull final Dispatcher dispatcher,
-                       @Nonnull final CheckingTarget<? extends Target<?>> checkingTarget,
+                       @Nonnull final CheckingTarget<? extends Target> checkingTarget,
                        @Nonnull final Tags tags,
                        @Nonnull final Tags meta,
                        final long timeout) {
@@ -28,7 +28,7 @@ public final class HealthCheck implements Runnable {
     }
 
     HealthCheck(@Nonnull final Dispatcher dispatcher,
-                @Nonnull final CheckingTarget<? extends Target<?>> checkingTarget,
+                @Nonnull final CheckingTarget<? extends Target> checkingTarget,
                 @Nonnull final Tags tags,
                 @Nonnull final Tags meta,
                 final long timeout,
@@ -36,7 +36,7 @@ public final class HealthCheck implements Runnable {
         this.dispatcher = dispatcher;
         this.checkingTarget = checkingTarget;
         this.timeout = timeout;
-        Target<?> target = this.checkingTarget.get();
+        Target target = this.checkingTarget.get();
         Tags resultTags = tags.concat(target.getTags());
         Tags resultMeta = Tags.of("target.id", target.getId())
                 .concat(meta)

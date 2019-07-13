@@ -1,6 +1,8 @@
 package io.github.anycollect.readers.process;
 
 import io.github.anycollect.core.api.internal.Clock;
+import io.github.anycollect.core.api.job.Job;
+import io.github.anycollect.core.api.job.TaggingJob;
 import io.github.anycollect.core.api.query.AbstractQuery;
 import io.github.anycollect.metric.Metric;
 import oshi.hardware.GlobalMemory;
@@ -11,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ProcessQuery extends AbstractQuery {
+public final class ProcessQuery extends AbstractQuery<Process> {
     private final String prefix;
     private final String cpuUsageKey;
     private final String memUsageKey;
@@ -57,5 +59,11 @@ public final class ProcessQuery extends AbstractQuery {
                 .gauge("percents", cpuUsage)
                 .build());
         return metrics;
+    }
+
+    @Nonnull
+    @Override
+    public Job bind(@Nonnull final Process target) {
+        return new TaggingJob(null, target, this, new ProcessJob(target, this));
     }
 }

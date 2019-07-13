@@ -101,6 +101,9 @@ public final class StdJmxQuery extends JmxQuery {
                     List<Attribute> attributes = app.operate(new QueryAttributes(objectName, attributeNames));
                     long timestamp = clock.wallTime();
                     PreparedMetric metric = cache.computeIfAbsent(objectName, this::prepare);
+                    if (metric == null) {
+                        continue;
+                    }
                     double[] values = new double[attributes.size()];
                     for (int i = 0; i < attributes.size(); ++i) {
                         values[i] = ((Number) attributes.get(i).getValue()).doubleValue();
@@ -120,6 +123,11 @@ public final class StdJmxQuery extends JmxQuery {
                     .concatMeta(getMeta());
             for (String tagKey : tagKeys) {
                 String tagValue = objectName.getKeyProperty(tagKey);
+                if (tagValue == null) {
+                    LOG.debug("Could not create metric from {}, property {} is missing. Query key is {}",
+                            objectName, tagKey, key);
+                    return null;
+                }
                 builder.tag(tagKey, tagValue);
             }
             for (MeasurementPath path : paths) {

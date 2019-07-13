@@ -10,7 +10,7 @@ import io.github.anycollect.core.api.target.Target;
 import javax.annotation.Nonnull;
 
 public interface PullManager {
-    <T extends Target<Q>, Q extends Query> void start(
+    <T extends Target, Q extends Query<T>> void start(
             @Nonnull ServiceDiscovery<? extends T> discovery,
             @Nonnull QueryProvider<? extends Q> provider,
             @Nonnull QueryMatcherResolver resolver,
@@ -22,12 +22,12 @@ public interface PullManager {
 
     <Q extends SelfQuery> void start(@Nonnull Q selfQuery, @Nonnull Dispatcher dispatcher, int periodInSeconds);
 
-    default <T extends Target<Q>, Q extends Query> void start(@Nonnull DesiredStateProvider<T, Q> stateProvider,
+    default <T extends Target, Q extends Query<T>> void start(@Nonnull DesiredStateProvider<T, Q> stateProvider,
                                                               @Nonnull Dispatcher dispatcher) {
         start(stateProvider, dispatcher, HealthCheckConfig.DISABLED);
     }
 
-    <T extends Target<Q>, Q extends Query> void start(@Nonnull DesiredStateProvider<T, Q> stateProvider,
+    <T extends Target, Q extends Query<T>> void start(@Nonnull DesiredStateProvider<T, Q> stateProvider,
                                                       @Nonnull Dispatcher dispatcher,
                                                       @Nonnull HealthCheckConfig healthCheckConfig);
 

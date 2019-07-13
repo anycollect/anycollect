@@ -1,5 +1,6 @@
 package io.github.anycollect.readers.process.discovery.pidfile;
 
+import io.github.anycollect.core.api.target.ServiceDiscovery;
 import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
@@ -8,7 +9,6 @@ import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.process.EphemeralProcess;
 import io.github.anycollect.readers.process.LiveProcess;
 import io.github.anycollect.readers.process.Process;
-import io.github.anycollect.readers.process.discovery.ProcessDiscovery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import oshi.SystemInfo;
@@ -24,8 +24,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@Extension(name = PidFileProcessDiscovery.NAME, point = ProcessDiscovery.class)
-public final class PidFileProcessDiscovery extends ProcessDiscovery {
+@Extension(name = PidFileProcessDiscovery.NAME, point = ServiceDiscovery.class)
+public final class PidFileProcessDiscovery implements ServiceDiscovery<Process> {
     public static final String NAME = "PidFileProcessDiscovery";
     private static final Logger LOG = LoggerFactory.getLogger(PidFileProcessDiscovery.class);
     private final WatchService watchService;
@@ -128,7 +128,6 @@ public final class PidFileProcessDiscovery extends ProcessDiscovery {
             LOG.debug("there is no process with pid {} for now", pid);
             return new EphemeralProcess(def.targetId(), def.tags(), Tags.empty());
         }
-        Tags meta = createMeta(process);
-        return new LiveProcess(def.targetId(), pid, def.tags(), meta.concat(Tags.of("pid.file", pidFile.toFile().getAbsolutePath())));
+        return new LiveProcess(os, def.targetId(), pid, def.tags(), Tags.of("pid.file", pidFile.toFile().getAbsolutePath()));
     }
 }

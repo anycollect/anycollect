@@ -5,7 +5,7 @@ import io.github.anycollect.core.api.target.Target;
 
 import javax.annotation.Nonnull;
 
-public interface HealthChecker<T extends Target<Q>, Q extends Query> {
+public interface HealthChecker<T extends Target, Q extends Query<T>> {
     @SuppressWarnings("rawtypes")
     HealthChecker NOOP = new HealthChecker() {
         @Override
@@ -20,7 +20,7 @@ public interface HealthChecker<T extends Target<Q>, Q extends Query> {
     };
 
     @SuppressWarnings("unchecked")
-    static <T extends Target<Q>, Q extends Query> HealthChecker<T, Q> noop() {
+    static <T extends Target, Q extends Query<T>> HealthChecker<T, Q> noop() {
         return (HealthChecker<T, Q>) NOOP;
     }
 

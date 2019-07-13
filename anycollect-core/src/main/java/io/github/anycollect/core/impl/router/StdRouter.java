@@ -37,6 +37,31 @@ public final class StdRouter implements Router, Lifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(StdRouter.class);
     private final List<Channel> channels;
 
+    public static StdRouter of(@ExtDependency(qualifier = "readers") @Nonnull final List<Route> routes,
+                               @ExtDependency(qualifier = "registry") @Nonnull final MeterRegistry registry,
+                               @ExtDependency(qualifier = "puller") @Nonnull final PullManager pullManager,
+                               @ExtConfig @Nonnull final RouterConfig config) {
+        List<Reader> readers = new ArrayList<>();
+        List<SyncReader> syncReaders = new ArrayList<>();
+        List<Processor> processors = new ArrayList<>();
+        List<Writer> writers = new ArrayList<>();
+        for (Route route : routes) {
+            if (route instanceof Reader) {
+                readers.add((Reader) route);
+            }
+            if (route instanceof Processor) {
+                processors.add((Processor) route);
+            }
+            if (route instanceof Writer) {
+                writers.add((Writer) route);
+            }
+            if (route instanceof SyncReader) {
+                syncReaders.add((SyncReader) route);
+            }
+        }
+        return new StdRouter(readers, processors, writers, syncReaders, registry, pullManager, config);
+    }
+
     @ExtCreator
     public StdRouter(@ExtDependency(qualifier = "readers") @Nonnull final List<Reader> readers,
                      @ExtDependency(qualifier = "processors") @Nonnull final List<Processor> processors,

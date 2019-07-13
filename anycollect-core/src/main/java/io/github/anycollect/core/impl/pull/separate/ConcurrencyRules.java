@@ -20,7 +20,7 @@ public final class ConcurrencyRules implements ConcurrencyRule {
     }
 
     @Override
-    public int getPoolSize(@Nonnull final Target<?> target, final int fallback) {
+    public int getPoolSize(@Nonnull final Target target, final int fallback) {
         for (ConcurrencyRule rule : rules) {
             int poolSize = rule.getPoolSize(target, -1);
             if (poolSize != -1) {

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 
-public final class DesiredStateUpdateJob<T extends Target<Q>, Q extends Query> implements Runnable {
+public final class DesiredStateUpdateJob<T extends Target, Q extends Query<T>> implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(DesiredStateUpdateJob.class);
     private final DesiredStateProvider<T, Q> stateProvider;
     private final DesiredStateManager<T, Q> scheduler;

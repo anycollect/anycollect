@@ -5,7 +5,7 @@ import io.github.anycollect.core.api.target.Target;
 
 import javax.annotation.Nonnull;
 
-public interface DesiredStateProvider<T extends Target<Q>, Q extends Query> {
+public interface DesiredStateProvider<T extends Target, Q extends Query<T>> {
     @Nonnull
     State<T, Q> current();
 }

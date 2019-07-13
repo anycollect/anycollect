@@ -89,7 +89,7 @@ public final class PullManagerImpl implements PullManager, Lifecycle {
     }
 
     @Override
-    public <T extends Target<Q>, Q extends Query> void start(@Nonnull final ServiceDiscovery<? extends T> discovery,
+    public <T extends Target, Q extends Query<T>> void start(@Nonnull final ServiceDiscovery<? extends T> discovery,
                                                              @Nonnull final QueryProvider<? extends Q> provider,
                                                              @Nonnull final QueryMatcherResolver resolver,
                                                              @Nonnull final Dispatcher dispatcher,
@@ -120,7 +120,7 @@ public final class PullManagerImpl implements PullManager, Lifecycle {
     }
 
     @Override
-    public <T extends Target<Q>, Q extends Query> void start(@Nonnull final DesiredStateProvider<T, Q> stateProvider,
+    public <T extends Target, Q extends Query<T>> void start(@Nonnull final DesiredStateProvider<T, Q> stateProvider,
                                                              @Nonnull final Dispatcher dispatcher,
                                                              @Nonnull final HealthCheckConfig healthCheckConfig) {
         HealthChecker<T, Q> checker = HealthChecker.noop();

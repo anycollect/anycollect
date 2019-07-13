@@ -13,14 +13,14 @@ import static org.mockito.Mockito.*;
 
 class PullJobTest {
     private TestTarget target = mock(TestTarget.class);
-    private TestQuery query = new TestQuery("id");
+    private TestQuery query = spy(new TestQuery("id"));
     private Dispatcher dispatcher = mock(Dispatcher.class);
     private PullJob<TestTarget, TestQuery> job;
 
     @BeforeEach
     void setUp() {
         when(target.getId()).thenReturn("id");
-        when(target.bind(any())).thenCallRealMethod();
+        when(query.bind(target)).thenCallRealMethod();
         job = new PullJob<>(new CheckingTarget<>(target), query, dispatcher);
     }
 

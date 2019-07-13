@@ -19,7 +19,6 @@ class StdDesiredStateProviderTest {
     private ServiceDiscovery<TestTarget> discovery = mock(ServiceDiscovery.class);
     @SuppressWarnings("unchecked")
     private QueryProvider<TestQuery> provider = mock(QueryProvider.class);
-    @SuppressWarnings("unchecked")
     private QueryMatcher matcher = mock(QueryMatcher.class);
     private QueryMatcherResolver resolver = mock(QueryMatcherResolver.class);
 
@@ -34,7 +33,7 @@ class StdDesiredStateProviderTest {
         TestTarget target = mock(TestTarget.class);
         TestQuery query1 = new TestQuery("id1");
         TestQuery query2 = new TestQuery("id2");
-        when(discovery.discover()).thenReturn(Sets.newLinkedHashSet(target));
+        doReturn(Sets.newLinkedHashSet(target)).when(discovery).discover();
         when(provider.provide()).thenReturn(Sets.newLinkedHashSet(query1, query2));
         when(matcher.getPeriodInSeconds(target, query1, 30)).thenReturn(-1);
         when(matcher.getPeriodInSeconds(target, query2, 30)).thenReturn(2);

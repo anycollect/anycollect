@@ -13,9 +13,7 @@ import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.annotations.InstanceId;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.readers.jmx.discovery.JavaAppDiscovery;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
-import io.github.anycollect.readers.jmx.query.JmxQueryProvider;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +34,8 @@ public class JmxReader implements Reader, Lifecycle {
     @ExtCreator
     public JmxReader(
             @ExtDependency(qualifier = "puller") @Nonnull final PullManager puller,
-            @ExtDependency(qualifier = "discovery") @Nonnull final List<JavaAppDiscovery> discovery,
-            @ExtDependency(qualifier = "queries") @Nonnull final List<JmxQueryProvider> queries,
+            @ExtDependency(qualifier = "discovery") @Nonnull final List<ServiceDiscovery<JavaApp>> discovery,
+            @ExtDependency(qualifier = "queries") @Nonnull final List<QueryProvider<JmxQuery>> queries,
             @ExtDependency(qualifier = "matcher") @Nonnull final QueryMatcherResolver matcher,
             @InstanceId @Nonnull final String id) {
         this.puller = puller;

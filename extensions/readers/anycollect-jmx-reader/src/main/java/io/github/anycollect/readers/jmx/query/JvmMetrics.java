@@ -1,5 +1,6 @@
 package io.github.anycollect.readers.jmx.query;
 
+import io.github.anycollect.core.api.query.QueryProvider;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
@@ -10,8 +11,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@Extension(name = JvmMetrics.NAME, point = JmxQueryProvider.class)
-public final class JvmMetrics implements JmxQueryProvider {
+@Extension(name = JvmMetrics.NAME, point = QueryProvider.class)
+public final class JvmMetrics implements QueryProvider<JmxQuery> {
     public static final String NAME = "JvmMetrics";
     private final Set<JmxQuery> queries;
 

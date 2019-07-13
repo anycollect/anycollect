@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 
-public final class PullJob<T extends Target<Q>, Q extends Query> implements Runnable {
+public final class PullJob<T extends Target, Q extends Query<T>> implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(PullJob.class);
     private final CheckingTarget<T> target;
     private final Q query;
@@ -48,7 +48,7 @@ public final class PullJob<T extends Target<Q>, Q extends Query> implements Runn
         Objects.requireNonNull(clock, "clock must not be null");
         this.target = target;
         this.query = query;
-        this.job = target.get().bind(query);
+        this.job = query.bind(target.get());
         this.dispatcher = dispatcher;
         this.clock = clock;
         this.failed = Counter.key("pull.jobs.failed")

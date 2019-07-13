@@ -30,7 +30,7 @@ public final class SchedulerFactoryImpl implements SchedulerFactory {
 
     @Nonnull
     @Override
-    public Scheduler create(final Target<?> target) {
+    public Scheduler create(final Target target) {
         int poolSize = rule.getPoolSize(target, defaultPoolSize);
         LOG.info("Creating scheduler for target {} with pool size {}", target, poolSize);
         ThreadFactory threadFactory = new ThreadFactoryBuilder()

@@ -21,7 +21,7 @@ public final class RegExpConcurrencyRule implements ConcurrencyRule {
     }
 
     @Override
-    public int getPoolSize(@Nonnull final Target<?> target, final int fallback) {
+    public int getPoolSize(@Nonnull final Target target, final int fallback) {
         if (idRegexp.matcher(target.getId()).matches()) {
             return poolSize;
         }

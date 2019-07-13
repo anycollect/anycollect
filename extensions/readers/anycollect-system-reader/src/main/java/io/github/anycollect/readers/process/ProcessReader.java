@@ -11,7 +11,6 @@ import io.github.anycollect.core.api.query.QueryProvider;
 import io.github.anycollect.core.api.target.ServiceDiscovery;
 import io.github.anycollect.extensions.annotations.*;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.readers.process.discovery.ProcessDiscovery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import oshi.SystemInfo;
@@ -30,7 +29,7 @@ public final class ProcessReader implements Reader, Lifecycle {
 
     @ExtCreator
     public ProcessReader(@ExtDependency(qualifier = "puller") @Nonnull final PullManager pullManager,
-                         @ExtDependency(qualifier = "discovery") @Nonnull final ProcessDiscovery discovery,
+                         @ExtDependency(qualifier = "discovery") @Nonnull final ServiceDiscovery<Process> discovery,
                          @ExtConfig @Nonnull final ProcessReaderConfig config,
                          @InstanceId @Nonnull final String id) {
         this.pullManager = pullManager;

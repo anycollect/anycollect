@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class SeparatePullScheduler implements PullScheduler {
     private static final Logger LOG = LoggerFactory.getLogger(SeparatePullScheduler.class);
-    private final ConcurrentHashMap<Target<?>, Scheduler> activeSchedulers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Target, Scheduler> activeSchedulers = new ConcurrentHashMap<>();
     private final SchedulerFactory factory;
     private final MeterRegistry registry;
     private final Clock clock;
@@ -42,7 +42,7 @@ public final class SeparatePullScheduler implements PullScheduler {
 
     @Nonnull
     @Override
-    public <T extends Target<Q>, Q extends Query> Cancellation schedulePull(
+    public <T extends Target, Q extends Query<T>> Cancellation schedulePull(
             @Nonnull final CheckingTarget<T> target,
             @Nonnull final Q query,
             @Nonnull final Dispatcher dispatcher,
@@ -56,7 +56,7 @@ public final class SeparatePullScheduler implements PullScheduler {
     }
 
     @Override
-    public void release(@Nonnull final Target<?> target) {
+    public void release(@Nonnull final Target target) {
         if (stopped) {
             return;
         }
@@ -75,8 +75,8 @@ public final class SeparatePullScheduler implements PullScheduler {
         }
         stopped = true;
         LOG.info("Stopping separate pull scheduler");
-        for (Map.Entry<Target<?>, Scheduler> entry : activeSchedulers.entrySet()) {
-            Target<?> target = entry.getKey();
+        for (Map.Entry<Target, Scheduler> entry : activeSchedulers.entrySet()) {
+            Target target = entry.getKey();
             Scheduler scheduler = entry.getValue();
             LOG.info("Stopping scheduler for {}", target.getId());
             scheduler.shutdown();

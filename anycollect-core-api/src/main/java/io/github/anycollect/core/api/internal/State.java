@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Set;
 
-public interface State<T extends Target<Q>, Q extends Query> {
+public interface State<T extends Target, Q extends Query<T>> {
     @SuppressWarnings("rawtypes")
     State EMPTY = new State() {
         @Override
@@ -22,7 +22,7 @@ public interface State<T extends Target<Q>, Q extends Query> {
     };
 
     @SuppressWarnings("unchecked")
-    static <T extends Target<Q>, Q extends Query> State<T, Q> empty() {
+    static <T extends Target, Q extends Query<T>> State<T, Q> empty() {
         return (State<T, Q>) EMPTY;
     }
 

@@ -9,11 +9,11 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public final class ProcessJob implements Job {
-    private final LiveProcess process;
+    private final Process process;
     private final ProcessQuery stats;
     private OSProcess last = null;
 
-    public ProcessJob(@Nonnull final LiveProcess process, @Nonnull final ProcessQuery stats) {
+    public ProcessJob(@Nonnull final Process process, @Nonnull final ProcessQuery stats) {
         this.process = process;
         this.stats = stats;
     }

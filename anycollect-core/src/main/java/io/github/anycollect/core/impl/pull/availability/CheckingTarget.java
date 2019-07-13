@@ -10,11 +10,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @ToString
 @ThreadSafe
-public final class CheckingTarget<T extends Target<?>> {
+public final class CheckingTarget<T extends Target> {
     private final T target;
     private final AtomicReference<Check> check;
 
-    public static <T extends Target<?>> CheckingTarget<T> of(@Nonnull final T target) {
+    public static <T extends Target> CheckingTarget<T> of(@Nonnull final T target) {
         return new CheckingTarget<>(target);
     }
 

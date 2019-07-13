@@ -24,7 +24,7 @@ public interface CurrentProcessDiscoveryConfig {
     }
 
     @Value.Default
-    @JsonProperty("tags")
+    @JsonProperty("meta")
     default Tags meta() {
         return Tags.empty();
     }

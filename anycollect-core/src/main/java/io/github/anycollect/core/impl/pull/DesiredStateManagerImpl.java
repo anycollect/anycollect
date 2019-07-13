@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static java.util.stream.Collectors.toSet;
 
-public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query> implements DesiredStateManager<T, Q> {
+public final class DesiredStateManagerImpl<T extends Target, Q extends Query<T>> implements DesiredStateManager<T, Q> {
     private static final Logger LOG = LoggerFactory.getLogger(DesiredStateManagerImpl.class);
     private final PullScheduler puller;
     private final Dispatcher dispatcher;
@@ -138,7 +138,7 @@ public final class DesiredStateManagerImpl<T extends Target<Q>, Q extends Query>
     }
 
     @EqualsAndHashCode
-    private static final class JobId<T extends Target<Q>, Q extends Query> {
+    private static final class JobId<T extends Target, Q extends Query<T>> {
         private final T target;
         private final Q query;
         private final int period;

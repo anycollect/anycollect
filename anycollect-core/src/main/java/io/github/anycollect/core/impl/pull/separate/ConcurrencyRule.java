@@ -14,5 +14,5 @@ import javax.annotation.Nonnull;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = RegExpConcurrencyRule.class, name = "regexp")})
 public interface ConcurrencyRule {
-    int getPoolSize(@Nonnull Target<?> target, int fallback);
+    int getPoolSize(@Nonnull Target target, int fallback);
 }

@@ -12,5 +12,5 @@ public interface ServiceDiscovery<T extends Target> {
         return new SingletonServiceDiscovery<>(target);
     }
 
-    Set<T> discover();
+    Set<? extends T> discover();
 }

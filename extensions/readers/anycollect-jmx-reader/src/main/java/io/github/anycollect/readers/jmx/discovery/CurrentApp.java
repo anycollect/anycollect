@@ -2,6 +2,7 @@ package io.github.anycollect.readers.jmx.discovery;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.anycollect.core.api.target.ServiceDiscovery;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
@@ -21,8 +22,8 @@ import java.lang.management.ManagementFactory;
 import java.util.Collections;
 import java.util.Set;
 
-@Extension(name = "CurrentApp", point = JavaAppDiscovery.class)
-public final class CurrentApp implements JavaAppDiscovery {
+@Extension(name = "CurrentApp", point = ServiceDiscovery.class)
+public final class CurrentApp implements ServiceDiscovery<JavaApp> {
     private static final JmxConnectionFactory JMX_CONNECTION_FACTORY = new JmxConnectionFactory() {
         @Nonnull
         @Override

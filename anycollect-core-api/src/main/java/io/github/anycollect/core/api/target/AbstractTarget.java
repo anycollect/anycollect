@@ -1,6 +1,5 @@
 package io.github.anycollect.core.api.target;
 
-import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.metric.Tags;
 import lombok.EqualsAndHashCode;
 
@@ -8,7 +7,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 @EqualsAndHashCode
-public abstract class AbstractTarget<Q extends Query> implements Target<Q> {
+public abstract class AbstractTarget implements Target {
     private final String id;
     private final Tags tags;
     private final Tags meta;

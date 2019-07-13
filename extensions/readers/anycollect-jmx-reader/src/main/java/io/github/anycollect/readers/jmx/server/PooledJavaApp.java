@@ -1,5 +1,6 @@
 package io.github.anycollect.readers.jmx.server;
 
+import io.github.anycollect.core.api.target.AbstractTarget;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.FunctionCounter;
@@ -14,7 +15,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = true)
-public final class PooledJavaApp extends JavaApp {
+public final class PooledJavaApp extends AbstractTarget implements JavaApp {
     private final JmxConnectionPool pool;
 
     public PooledJavaApp(@Nonnull final String id,

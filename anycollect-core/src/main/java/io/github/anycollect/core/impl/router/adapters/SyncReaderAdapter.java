@@ -45,24 +45,24 @@ public final class SyncReaderAdapter implements MetricProducer {
         return reader.getId();
     }
 
-    private static final class SyncReaderToTargetAdapter extends AbstractTarget<SyncReaderToQueryAdapter> {
-        private final SyncReader reader;
-
+    private static final class SyncReaderToTargetAdapter extends AbstractTarget {
         SyncReaderToTargetAdapter(@Nonnull final SyncReader reader) {
             super(reader.getTargetId(), Tags.empty(), Tags.empty());
+        }
+    }
+
+    private static final class SyncReaderToQueryAdapter extends AbstractQuery<SyncReaderToTargetAdapter> {
+        private final SyncReader reader;
+
+        SyncReaderToQueryAdapter(@Nonnull final SyncReader reader) {
+            super(reader.getQueryId());
             this.reader = reader;
         }
 
         @Nonnull
         @Override
-        public Job bind(@Nonnull final SyncReaderToQueryAdapter query) {
+        public Job bind(@Nonnull final SyncReaderToTargetAdapter target) {
             return new SyncReaderToJobAdapter(reader);
-        }
-    }
-
-    private static final class SyncReaderToQueryAdapter extends AbstractQuery {
-        SyncReaderToQueryAdapter(@Nonnull final SyncReader reader) {
-            super(reader.getQueryId());
         }
     }
 

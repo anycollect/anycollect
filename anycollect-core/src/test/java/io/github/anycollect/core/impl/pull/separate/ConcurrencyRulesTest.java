@@ -17,7 +17,7 @@ class ConcurrencyRulesTest {
     @DisplayName("when several rules is accepted")
     class WhenSeveralRulesIsAccepted {
         private ConcurrencyRules rules;
-        private Target<?> target;
+        private Target target;
 
         @BeforeEach
         void setUp() {

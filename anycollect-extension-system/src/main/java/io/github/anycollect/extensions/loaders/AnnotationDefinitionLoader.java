@@ -18,6 +18,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 import static java.util.stream.Collectors.joining;
@@ -130,7 +131,12 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
     private Class<?> resolveCollectionGeneric(final Constructor<?> constructor,
                                               final AnnotatedParameter<?> param) {
         ParameterizedType type = (ParameterizedType) constructor.getGenericParameterTypes()[param.position];
-        return (Class<?>) type.getActualTypeArguments()[0];
+        Type collectionTypeParameter = type.getActualTypeArguments()[0];
+        if (collectionTypeParameter instanceof Class) {
+            return (Class<?>) collectionTypeParameter;
+        } else {
+            return (Class<?>) ((ParameterizedType) collectionTypeParameter).getRawType();
+        }
     }
 
     private void validateConstrictor(final Class extensionClass,
