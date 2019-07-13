@@ -1,7 +1,8 @@
 package io.github.anycollect.meter.registry;
 
 import com.codahale.metrics.Histogram;
-import com.codahale.metrics.SlidingTimeWindowReservoir;
+import com.codahale.metrics.Reservoir;
+import com.codahale.metrics.SlidingTimeWindowArrayReservoir;
 import com.codahale.metrics.Snapshot;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
@@ -31,7 +32,7 @@ public class CodahaleSlidingTimeWindowDistributionSummary extends AbstractMeter 
         super(id);
         this.clock = clock;
         this.quantiles = quantiles;
-        SlidingTimeWindowReservoir reservoir = new SlidingTimeWindowReservoir(window, TimeUnit.SECONDS);
+        Reservoir reservoir = new SlidingTimeWindowArrayReservoir(window, TimeUnit.SECONDS);
         histogram = new Histogram(reservoir);
         PreparedMetricBuilder builder = Metric.prepare()
                 .key(prefix, id.getKey())
