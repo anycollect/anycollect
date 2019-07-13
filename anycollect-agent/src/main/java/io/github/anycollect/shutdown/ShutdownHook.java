@@ -15,10 +15,10 @@ public final class ShutdownHook extends Thread {
 
     @Override
     public void run() {
-        LOG.info("Start graceful shutdown");
         String name = Thread.currentThread().getName();
         try {
             Thread.currentThread().setName("graceful-shutdown");
+            LOG.info("Start graceful shutdown");
             for (ShutdownTask task : tasks) {
                 task.shutdown();
             }
