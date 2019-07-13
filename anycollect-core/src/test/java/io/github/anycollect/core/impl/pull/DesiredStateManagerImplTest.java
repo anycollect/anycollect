@@ -9,7 +9,7 @@ import io.github.anycollect.core.impl.TestQuery;
 import io.github.anycollect.core.impl.TestTarget;
 import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
 import io.github.anycollect.core.impl.pull.availability.HealthChecker;
-import io.github.anycollect.core.impl.scheduler.Cancellation;
+import io.github.anycollect.core.api.internal.Cancellation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

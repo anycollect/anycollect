@@ -5,6 +5,7 @@ import org.immutables.value.Value;
 
 import javax.annotation.Nonnull;
 
+// TODO remove
 @Value.Immutable
 @Value.Style(builder = "new", stagedBuilder = true, passAnnotations = {Nonnull.class})
 public interface HealthCheckConfig {

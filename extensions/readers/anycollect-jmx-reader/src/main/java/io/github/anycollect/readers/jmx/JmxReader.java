@@ -3,6 +3,7 @@ package io.github.anycollect.readers.jmx;
 import io.github.anycollect.core.api.Reader;
 import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
+import io.github.anycollect.core.api.internal.Cancellation;
 import io.github.anycollect.core.api.internal.HealthCheckConfig;
 import io.github.anycollect.core.api.internal.PullManager;
 import io.github.anycollect.core.api.internal.QueryMatcherResolver;
@@ -30,6 +31,7 @@ public class JmxReader implements Reader, Lifecycle {
     private final QueryProvider<JmxQuery> queries;
     private final QueryMatcherResolver matcher;
     private final String id;
+    private volatile Cancellation cancellation;
 
     @ExtCreator
     public JmxReader(
@@ -47,7 +49,15 @@ public class JmxReader implements Reader, Lifecycle {
 
     @Override
     public void start(@Nonnull final Dispatcher dispatcher) {
-        puller.start(discovery, queries, matcher, dispatcher, HealthCheckConfig.builder().tags(Tags.of("check", "jmx")).build());
+        this.cancellation = puller.start(discovery, queries, matcher, dispatcher, HealthCheckConfig.builder().tags(Tags.of("check", "jmx")).build());
+    }
+
+    @Override
+    public void stop() {
+        if (cancellation != null) {
+            cancellation.cancel();
+        }
+        LOG.info("{}({}) has been successfully stopped", id, NAME);
     }
 
     @Override

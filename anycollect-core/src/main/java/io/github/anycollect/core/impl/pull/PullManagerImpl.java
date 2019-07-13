@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.pull;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
@@ -15,7 +16,7 @@ import io.github.anycollect.core.impl.pull.availability.HealthChecker;
 import io.github.anycollect.core.impl.pull.availability.HealthCheckerImpl;
 import io.github.anycollect.core.impl.pull.separate.SchedulerFactory;
 import io.github.anycollect.core.impl.pull.separate.SchedulerFactoryImpl;
-import io.github.anycollect.core.impl.pull.separate.SeparatePullScheduler;
+import io.github.anycollect.core.impl.pull.separate.SeparatePullSchedulerFactory;
 import io.github.anycollect.core.impl.scheduler.MonitoredScheduledThreadPoolExecutor;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import io.github.anycollect.core.impl.scheduler.SchedulerImpl;
@@ -38,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 public final class PullManagerImpl implements PullManager, Lifecycle {
     public static final String NAME = "PullEngine";
     private static final Logger LOG = LoggerFactory.getLogger(PullManagerImpl.class);
-    private final PullScheduler pullScheduler;
+    private final PullSchedulerFactory pullSchedulerFactory;
     private final Scheduler updateDesiredStateScheduler;
     private final Scheduler healthCheckScheduler;
     private final SelfDiscovery selfDiscovery;
@@ -63,7 +64,7 @@ public final class PullManagerImpl implements PullManager, Lifecycle {
         this.updateDesiredStateScheduler = new SchedulerImpl(new MonitoredScheduledThreadPoolExecutor(1, updaterThreads, registry, "state.updater", Tags.empty()));
         SchedulerFactory schedulerFactory = new SchedulerFactoryImpl(
                 config.getConcurrencyRule(), config.getDefaultPoolSize(), registry);
-        this.pullScheduler = new SeparatePullScheduler(schedulerFactory, this.registry, Clock.getDefault());
+        this.pullSchedulerFactory = new SeparatePullSchedulerFactory(schedulerFactory, registry);
         this.healthCheckPeriodInSeconds = config.getHealthCheckPeriodInSeconds();
         ThreadFactory healthCheckThreads = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-health-check-[%d]")
@@ -71,14 +72,15 @@ public final class PullManagerImpl implements PullManager, Lifecycle {
         this.healthCheckScheduler = new SchedulerImpl(new MonitoredScheduledThreadPoolExecutor(1, healthCheckThreads, registry, "health.check", Tags.empty()));
     }
 
-    public PullManagerImpl(@Nonnull final PullScheduler pullScheduler,
-                           @Nonnull final SelfDiscovery selfDiscovery,
-                           @Nonnull final Scheduler updateDesiredStateScheduler,
-                           @Nonnull final Scheduler healthCheckScheduler,
-                           final int updatePeriodInSeconds,
-                           final int defaultPullPeriodInSeconds,
-                           final int healthCheckPeriodInSeconds) {
-        this.pullScheduler = pullScheduler;
+    @VisibleForTesting
+    PullManagerImpl(@Nonnull final PullScheduler pullScheduler,
+                    @Nonnull final SelfDiscovery selfDiscovery,
+                    @Nonnull final Scheduler updateDesiredStateScheduler,
+                    @Nonnull final Scheduler healthCheckScheduler,
+                    final int updatePeriodInSeconds,
+                    final int defaultPullPeriodInSeconds,
+                    final int healthCheckPeriodInSeconds) {
+        this.pullSchedulerFactory = () -> pullScheduler;
         this.selfDiscovery = selfDiscovery;
         this.updateDesiredStateScheduler = updateDesiredStateScheduler;
         this.updatePeriodInSeconds = updatePeriodInSeconds;
@@ -89,40 +91,40 @@ public final class PullManagerImpl implements PullManager, Lifecycle {
     }
 
     @Override
-    public <T extends Target, Q extends Query<T>> void start(@Nonnull final ServiceDiscovery<? extends T> discovery,
-                                                             @Nonnull final QueryProvider<? extends Q> provider,
-                                                             @Nonnull final QueryMatcherResolver resolver,
-                                                             @Nonnull final Dispatcher dispatcher,
-                                                             @Nonnull final HealthCheckConfig healthCheckConfig) {
+    public <T extends Target, Q extends Query<T>> Cancellation start(@Nonnull final ServiceDiscovery<? extends T> discovery,
+                                                                     @Nonnull final QueryProvider<? extends Q> provider,
+                                                                     @Nonnull final QueryMatcherResolver resolver,
+                                                                     @Nonnull final Dispatcher dispatcher,
+                                                                     @Nonnull final HealthCheckConfig healthCheckConfig) {
         DesiredStateProvider<T, Q> stateProvider = new StdDesiredStateProvider<>(
                 discovery,
                 provider,
                 resolver,
                 defaultPullPeriodInSeconds);
-        start(stateProvider, dispatcher, healthCheckConfig);
+        return start(stateProvider, dispatcher, healthCheckConfig);
     }
 
     @Override
-    public <Q extends SelfQuery> void start(@Nonnull final Q selfQuery, @Nonnull final Dispatcher dispatcher) {
-        start(selfQuery, dispatcher, defaultPullPeriodInSeconds);
+    public <Q extends SelfQuery> Cancellation start(@Nonnull final Q selfQuery, @Nonnull final Dispatcher dispatcher) {
+        return start(selfQuery, dispatcher, defaultPullPeriodInSeconds);
     }
 
     @Override
-    public <Q extends SelfQuery> void start(@Nonnull final Q selfQuery,
-                                            @Nonnull final Dispatcher dispatcher,
-                                            final int periodInSeconds) {
+    public <Q extends SelfQuery> Cancellation start(@Nonnull final Q selfQuery,
+                                                    @Nonnull final Dispatcher dispatcher,
+                                                    final int periodInSeconds) {
         DesiredStateProvider<SelfTarget, SelfQuery> stateProvider = new StdDesiredStateProvider<>(
                 selfDiscovery,
                 QueryProvider.singleton(selfQuery),
                 QueryMatcherResolver.consistent(QueryMatcher.all()),
                 defaultPullPeriodInSeconds);
-        start(stateProvider, dispatcher, HealthCheckConfig.DISABLED);
+        return start(stateProvider, dispatcher, HealthCheckConfig.DISABLED);
     }
 
     @Override
-    public <T extends Target, Q extends Query<T>> void start(@Nonnull final DesiredStateProvider<T, Q> stateProvider,
-                                                             @Nonnull final Dispatcher dispatcher,
-                                                             @Nonnull final HealthCheckConfig healthCheckConfig) {
+    public <T extends Target, Q extends Query<T>> Cancellation start(@Nonnull final DesiredStateProvider<T, Q> stateProvider,
+                                                                     @Nonnull final Dispatcher dispatcher,
+                                                                     @Nonnull final HealthCheckConfig healthCheckConfig) {
         HealthChecker<T, Q> checker = HealthChecker.noop();
         if (healthCheckConfig.enabled()) {
             checker = new HealthCheckerImpl<>(
@@ -132,23 +134,28 @@ public final class PullManagerImpl implements PullManager, Lifecycle {
                     healthCheckConfig.tags(),
                     healthCheckConfig.meta());
         }
+        PullScheduler pullScheduler = pullSchedulerFactory.newScheduler();
         DesiredStateManager<T, Q> desiredStateManager = new DesiredStateManagerImpl<>(pullScheduler, dispatcher, checker);
         DesiredStateUpdateJob<T, Q> job = new DesiredStateUpdateJob<>(stateProvider, desiredStateManager);
-        updateDesiredStateScheduler.scheduleAtFixedRate(job, updatePeriodInSeconds, TimeUnit.SECONDS);
+        Cancellation cancellation = updateDesiredStateScheduler.scheduleAtFixedRate(job, updatePeriodInSeconds, TimeUnit.SECONDS);
+        return () -> {
+            cancellation.cancel();
+            LOG.info("Shutdown pull scheduler");
+            pullScheduler.shutdown();
+        };
     }
 
     @Override
     public void init() {
         LOG.info("{} has been successfully initialised", NAME);
     }
+
     @Override
     public void destroy() {
         LOG.info("Stopping update desired state scheduler");
         updateDesiredStateScheduler.shutdown();
         LOG.info("Stopping health check scheduler");
         healthCheckScheduler.shutdown();
-        LOG.info("Stopping pull scheduler");
-        pullScheduler.shutdown();
         LOG.info("{} has been successfully destroyed", NAME);
     }
 }

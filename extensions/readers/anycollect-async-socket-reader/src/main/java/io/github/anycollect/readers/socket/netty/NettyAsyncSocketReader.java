@@ -37,6 +37,11 @@ public final class NettyAsyncSocketReader implements Reader, Lifecycle {
     }
 
     @Override
+    public void stop() {
+        // TODO
+    }
+
+    @Override
     public void init() {
         LOG.info("{}({}) has been successfully initialized", id, NAME);
     }

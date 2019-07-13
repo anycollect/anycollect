@@ -1,5 +1,7 @@
 package io.github.anycollect.core.impl.scheduler;
 
+import io.github.anycollect.core.api.internal.Cancellation;
+
 import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 

@@ -6,4 +6,6 @@ import javax.annotation.Nonnull;
 
 public interface Reader extends Route {
     void start(@Nonnull Dispatcher dispatcher);
+
+    void stop();
 }

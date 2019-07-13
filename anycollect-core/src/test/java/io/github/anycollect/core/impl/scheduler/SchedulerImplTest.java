@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.scheduler;
 
+import io.github.anycollect.core.api.internal.Cancellation;
 import org.junit.jupiter.api.*;
 import org.mockito.stubbing.Answer;
 

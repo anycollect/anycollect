@@ -9,6 +9,8 @@ import javax.annotation.Nonnull;
 public interface SyncReader extends Route {
     void read(@Nonnull Dispatcher dispatcher) throws InterruptedException, QueryException, ConnectionException;
 
+    void stop();
+
     @Nonnull
     default String getTargetId() {
         return getId();

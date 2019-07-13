@@ -3,6 +3,7 @@ package io.github.anycollect.readers.system;
 import io.github.anycollect.core.api.Reader;
 import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
+import io.github.anycollect.core.api.internal.Cancellation;
 import io.github.anycollect.core.api.internal.PullManager;
 import io.github.anycollect.extensions.annotations.*;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ public final class SystemReader implements Reader, Lifecycle {
     private final PullManager puller;
     private final SystemConfig config;
     private final String id;
+    private volatile Cancellation cancellation;
 
     @ExtCreator
     public SystemReader(@ExtDependency(qualifier = "puller") @Nonnull final PullManager puller,
@@ -38,8 +40,17 @@ public final class SystemReader implements Reader, Lifecycle {
         CpuUsage cpuUsage = new CpuUsage(processor, config.cpu());
         FileSystem fileSystem = systemInfo.getOperatingSystem().getFileSystem();
         FileSystemUsage fsUsage = new FileSystemUsage(fileSystem, config.fs());
-        puller.start(cpuUsage, dispatcher, config.cpu().period());
-        puller.start(fsUsage, dispatcher, config.fs().period());
+        this.cancellation = puller.start(cpuUsage, dispatcher, config.cpu().period())
+                .andThen(
+                        puller.start(fsUsage, dispatcher, config.fs().period()));
+    }
+
+    @Override
+    public void stop() {
+        if (cancellation != null) {
+            cancellation.cancel();
+        }
+        LOG.info("{}({}) has been successfully stopped", id, NAME);
     }
 
     @Override

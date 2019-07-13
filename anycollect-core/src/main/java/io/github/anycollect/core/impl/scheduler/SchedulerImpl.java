@@ -1,6 +1,7 @@
 package io.github.anycollect.core.impl.scheduler;
 
 
+import io.github.anycollect.core.api.internal.Cancellation;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.metric.noop.NoopMeterRegistry;

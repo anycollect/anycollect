@@ -36,6 +36,7 @@ public final class StdRouter implements Router, Lifecycle {
     public static final String NAME = "Router";
     private static final Logger LOG = LoggerFactory.getLogger(StdRouter.class);
     private final List<Channel> channels;
+    private final List<Route> routes;
 
     public static StdRouter of(@ExtDependency(qualifier = "readers") @Nonnull final List<Route> routes,
                                @ExtDependency(qualifier = "registry") @Nonnull final MeterRegistry registry,
@@ -82,6 +83,11 @@ public final class StdRouter implements Router, Lifecycle {
         List<MetricConsumer> mappedConsumers = writers.stream()
                 .map(WriterAdapter::new)
                 .collect(toList());
+        this.routes = new ArrayList<>();
+        this.routes.addAll(readers);
+        this.routes.addAll(syncReaders);
+        this.routes.addAll(processors);
+        this.routes.addAll(writers);
 
         Map<String, MetricProducer> producers = new HashMap<>();
         Map<String, MetricConsumer> consumers = new HashMap<>();
@@ -141,6 +147,14 @@ public final class StdRouter implements Router, Lifecycle {
 
     @Override
     public void destroy() {
+        for (Route route : this.routes) {
+            if (route instanceof Reader) {
+                ((Reader) route).stop();
+            }
+            if (route instanceof SyncReader) {
+                ((SyncReader) route).stop();
+            }
+        }
         channels.forEach(Channel::disconnect);
         LOG.info("{} has been successfully destroyed", NAME);
     }

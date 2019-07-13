@@ -51,6 +51,13 @@ public final class InternalReader implements Reader, Lifecycle {
     }
 
     @Override
+    public void stop() {
+        for (Reader reader : internalReaders) {
+            reader.stop();
+        }
+    }
+
+    @Override
     public String getId() {
         return "internal";
     }

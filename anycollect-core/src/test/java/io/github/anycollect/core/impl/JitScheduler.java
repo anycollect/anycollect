@@ -1,6 +1,6 @@
 package io.github.anycollect.core.impl;
 
-import io.github.anycollect.core.impl.scheduler.Cancellation;
+import io.github.anycollect.core.api.internal.Cancellation;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 
 import javax.annotation.Nonnull;

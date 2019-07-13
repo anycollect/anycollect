@@ -3,7 +3,7 @@ package io.github.anycollect.core.impl.pull.availability;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
-import io.github.anycollect.core.impl.scheduler.Cancellation;
+import io.github.anycollect.core.api.internal.Cancellation;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import io.github.anycollect.metric.Tags;
 
