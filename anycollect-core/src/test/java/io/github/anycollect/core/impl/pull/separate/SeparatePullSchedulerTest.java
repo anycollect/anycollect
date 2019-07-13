@@ -23,7 +23,7 @@ class SeparatePullSchedulerTest {
     void createPullScheduler() {
         factory = mock(SchedulerFactory.class);
         scheduler = mock(Scheduler.class);
-        when(factory.create(any())).thenReturn(scheduler);
+        when(factory.create(any(), any())).thenReturn(scheduler);
         Clock clock = mock(Clock.class);
         puller = new SeparatePullScheduler(factory, clock);
     }
@@ -43,7 +43,7 @@ class SeparatePullSchedulerTest {
         @Test
         @DisplayName("scheduler for this target must be created lazily and once")
         void schedulerForEachTargetMustBeCreatedLazilyAndOnce() {
-            verify(factory, times(1)).create(target);
+            verify(factory, times(1)).create(eq(target), anyString());
         }
 
         @Nested

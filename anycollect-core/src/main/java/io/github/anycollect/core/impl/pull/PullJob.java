@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.pull;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.job.Job;
@@ -24,20 +25,23 @@ public final class PullJob<T extends Target, Q extends Query<T>> implements Runn
     private static final Logger LOG = LoggerFactory.getLogger(PullJob.class);
     private final CheckingTarget<T> target;
     private final Q query;
+    private final String group;
     private final Job job;
     private final Dispatcher dispatcher;
     private final Clock clock;
     private final Counter failed;
     private final Counter succeeded;
 
-    public PullJob(@Nonnull final CheckingTarget<T> target,
+    @VisibleForTesting
+    PullJob(@Nonnull final CheckingTarget<T> target,
                    @Nonnull final Q query,
                    @Nonnull final Dispatcher dispatcher) {
-        this(target, query, dispatcher, new NoopMeterRegistry(), Clock.getDefault());
+        this(target, query, "test", dispatcher, new NoopMeterRegistry(), Clock.getDefault());
     }
 
     public PullJob(@Nonnull final CheckingTarget<T> target,
                    @Nonnull final Q query,
+                   @Nonnull final String group,
                    @Nonnull final Dispatcher dispatcher,
                    @Nonnull final MeterRegistry registry,
                    @Nonnull final Clock clock) {
@@ -48,14 +52,17 @@ public final class PullJob<T extends Target, Q extends Query<T>> implements Runn
         Objects.requireNonNull(clock, "clock must not be null");
         this.target = target;
         this.query = query;
+        this.group = group;
         this.job = query.bind(target.get());
         this.dispatcher = dispatcher;
         this.clock = clock;
         this.failed = Counter.key("pull.jobs.failed")
+                .tag("group", group)
                 .tag("target", target.get().getId())
                 .meta(this.getClass())
                 .register(registry);
         this.succeeded = Counter.key("pull.jobs.succeeded")
+                .tag("group", group)
                 .tag("target", target.get().getId())
                 .meta(this.getClass())
                 .register(registry);

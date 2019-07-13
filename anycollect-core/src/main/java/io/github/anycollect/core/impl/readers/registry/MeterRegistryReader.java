@@ -36,7 +36,7 @@ public final class MeterRegistryReader implements Reader, Lifecycle {
 
     @Override
     public void start(@Nonnull final Dispatcher dispatcher) {
-        this.cancellation = pullManager.start(new RegistryQuery(registry, meterId -> true), dispatcher);
+        this.cancellation = pullManager.start(id, new RegistryQuery(registry, meterId -> true), dispatcher);
     }
 
     @Override

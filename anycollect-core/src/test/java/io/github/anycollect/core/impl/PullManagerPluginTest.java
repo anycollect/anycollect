@@ -65,7 +65,7 @@ class PullManagerPluginTest {
         DesiredStateProvider<TestTarget, TestQuery> provider = mock(DesiredStateProvider.class);
         when(provider.current()).thenReturn(state);
         FirstDispatch dispatcher = new FirstDispatch();
-        puller.start(provider, dispatcher, HealthCheckConfig.builder().tags(Tags.of("check", "test")).build());
+        puller.start("test", provider, dispatcher);
         await().until(() -> dispatcher.metric != null);
         Metric metric = dispatcher.metric;
         assertThat(metric.getKey()).isEqualTo("health.check");

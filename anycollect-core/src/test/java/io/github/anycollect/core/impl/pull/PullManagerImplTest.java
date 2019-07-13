@@ -40,7 +40,7 @@ class PullManagerImplTest {
                 .put(target1, query12, 2)
                 .build();
         when(provider.current()).thenReturn(state);
-        manager.start(provider, dispatcher);
+        manager.start("test", provider, dispatcher);
         @SuppressWarnings("unchecked")
         ArgumentCaptor<CheckingTarget<TestTarget>> captor = ArgumentCaptor.forClass(CheckingTarget.class);
         verify(scheduler, times(1)).schedulePull(captor.capture(), eq(query11), any(), eq(1));

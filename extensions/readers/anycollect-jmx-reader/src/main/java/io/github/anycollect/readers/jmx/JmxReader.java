@@ -4,7 +4,6 @@ import io.github.anycollect.core.api.Reader;
 import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.Cancellation;
-import io.github.anycollect.core.api.internal.HealthCheckConfig;
 import io.github.anycollect.core.api.internal.PullManager;
 import io.github.anycollect.core.api.internal.QueryMatcherResolver;
 import io.github.anycollect.core.api.query.QueryProvider;
@@ -13,7 +12,6 @@ import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.annotations.InstanceId;
-import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 import org.slf4j.Logger;
@@ -49,7 +47,7 @@ public class JmxReader implements Reader, Lifecycle {
 
     @Override
     public void start(@Nonnull final Dispatcher dispatcher) {
-        this.cancellation = puller.start(discovery, queries, matcher, dispatcher, HealthCheckConfig.builder().tags(Tags.of("check", "jmx")).build());
+        this.cancellation = puller.start(id, discovery, queries, matcher, dispatcher);
     }
 
     @Override

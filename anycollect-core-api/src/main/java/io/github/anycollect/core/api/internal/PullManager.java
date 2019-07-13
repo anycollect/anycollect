@@ -11,24 +11,24 @@ import javax.annotation.Nonnull;
 
 public interface PullManager {
     <T extends Target, Q extends Query<T>> Cancellation start(
+            @Nonnull String token,
             @Nonnull ServiceDiscovery<? extends T> discovery,
             @Nonnull QueryProvider<? extends Q> provider,
             @Nonnull QueryMatcherResolver resolver,
-            @Nonnull Dispatcher dispatcher,
-            @Nonnull HealthCheckConfig healthCheckConfig
+            @Nonnull Dispatcher dispatcher
     );
 
-    <Q extends SelfQuery> Cancellation start(@Nonnull Q selfQuery, @Nonnull Dispatcher dispatcher);
+    <Q extends SelfQuery> Cancellation start(@Nonnull String token,
+                                             @Nonnull Q selfQuery,
+                                             @Nonnull Dispatcher dispatcher);
 
-    <Q extends SelfQuery> Cancellation start(@Nonnull Q selfQuery, @Nonnull Dispatcher dispatcher, int periodInSeconds);
+    <Q extends SelfQuery> Cancellation start(@Nonnull String token, @Nonnull Q selfQuery,
+                                             @Nonnull Dispatcher dispatcher,
+                                             int periodInSeconds);
 
-    default <T extends Target, Q extends Query<T>> Cancellation start(@Nonnull DesiredStateProvider<T, Q> stateProvider,
+    default <T extends Target, Q extends Query<T>> Cancellation start(@Nonnull String token,
+                                                                      @Nonnull DesiredStateProvider<T, Q> stateProvider,
                                                                       @Nonnull Dispatcher dispatcher) {
-        return start(stateProvider, dispatcher, HealthCheckConfig.DISABLED);
+        return start(token, stateProvider, dispatcher);
     }
-
-    <T extends Target, Q extends Query<T>> Cancellation start(@Nonnull DesiredStateProvider<T, Q> stateProvider,
-                                                              @Nonnull Dispatcher dispatcher,
-                                                              @Nonnull HealthCheckConfig healthCheckConfig);
-
 }

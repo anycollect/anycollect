@@ -7,5 +7,5 @@ import javax.annotation.Nonnull;
 
 public interface SchedulerFactory {
     @Nonnull
-    Scheduler create(Target target);
+    Scheduler create(@Nonnull Target target, @Nonnull String group);
 }

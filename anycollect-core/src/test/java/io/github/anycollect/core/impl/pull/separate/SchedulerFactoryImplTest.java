@@ -28,7 +28,7 @@ class SchedulerFactoryImplTest {
     @DisplayName("when rule found then must return rule pool size")
     void whenRuleFoundThenMustReturnRulePoolSize() {
         when(rule.getPoolSize(eq(target), anyInt())).thenReturn(1);
-        SchedulerImpl scheduler = (SchedulerImpl) factory.create(target);
+        SchedulerImpl scheduler = (SchedulerImpl) factory.create(target, "test");
         assertThat(scheduler.getPoolSize()).isEqualTo(1);
     }
 
@@ -36,7 +36,7 @@ class SchedulerFactoryImplTest {
     @DisplayName("when no rules found then must return default pool size")
     void whenNoRulesFoundThenMustReturnDefaultPoolSize() {
         when(rule.getPoolSize(any(), anyInt())).thenAnswer(invocation -> invocation.getArgument(1));
-        SchedulerImpl scheduler = (SchedulerImpl) factory.create(target);
+        SchedulerImpl scheduler = (SchedulerImpl) factory.create(target, "test");
         assertThat(scheduler.getPoolSize()).isEqualTo(2);
     }
 }

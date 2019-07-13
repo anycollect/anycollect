@@ -3,7 +3,6 @@ package io.github.anycollect.core.impl.router.adapters;
 import io.github.anycollect.core.api.SyncReader;
 import io.github.anycollect.core.api.dispatcher.Accumulator;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
-import io.github.anycollect.core.api.internal.HealthCheckConfig;
 import io.github.anycollect.core.api.internal.PullManager;
 import io.github.anycollect.core.api.internal.QueryMatcherResolver;
 import io.github.anycollect.core.api.job.Job;
@@ -32,11 +31,11 @@ public final class SyncReaderAdapter implements MetricProducer {
     @Override
     public void start(@Nonnull final Dispatcher dispatcher) {
         pullManager.start(
+                reader.getId(),
                 ServiceDiscovery.singleton(new SyncReaderToTargetAdapter(reader)),
                 QueryProvider.singleton(new SyncReaderToQueryAdapter(reader)),
                 QueryMatcherResolver.alwaysAll(reader.getPeriod()),
-                dispatcher,
-                HealthCheckConfig.builder().tags(Tags.of("check", reader.getId())).build());
+                dispatcher);
     }
 
     @Nonnull

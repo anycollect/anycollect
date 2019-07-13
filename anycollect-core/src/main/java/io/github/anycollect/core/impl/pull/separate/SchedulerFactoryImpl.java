@@ -30,13 +30,13 @@ public final class SchedulerFactoryImpl implements SchedulerFactory {
 
     @Nonnull
     @Override
-    public Scheduler create(final Target target) {
+    public Scheduler create(@Nonnull final Target target, @Nonnull final String group) {
         int poolSize = rule.getPoolSize(target, defaultPoolSize);
         LOG.info("Creating scheduler for target {} with pool size {}", target, poolSize);
         ThreadFactory threadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-pull-(" + target.getId() + ")-[%d]")
                 .build();
-        Tags tags = Tags.of("target", target.getId());
+        Tags tags = Tags.of("group", group, "target", target.getId());
         String prefix = "pull";
         ScheduledThreadPoolExecutor executorService = new MonitoredScheduledThreadPoolExecutor(poolSize, threadFactory,
                 registry, prefix, tags);

@@ -3,11 +3,13 @@ package io.github.anycollect.readers.process;
 import io.github.anycollect.core.api.Reader;
 import io.github.anycollect.core.api.common.Lifecycle;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
-import io.github.anycollect.core.api.internal.*;
+import io.github.anycollect.core.api.internal.Cancellation;
+import io.github.anycollect.core.api.internal.PullManager;
+import io.github.anycollect.core.api.internal.QueryMatcher;
+import io.github.anycollect.core.api.internal.QueryMatcherResolver;
 import io.github.anycollect.core.api.query.QueryProvider;
 import io.github.anycollect.core.api.target.ServiceDiscovery;
 import io.github.anycollect.extensions.annotations.*;
-import io.github.anycollect.metric.Tags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import oshi.SystemInfo;
@@ -41,9 +43,8 @@ public final class ProcessReader implements Reader, Lifecycle {
         SystemInfo systemInfo = new SystemInfo();
         GlobalMemory memory = systemInfo.getHardware().getMemory();
         ProcessQuery query = new ProcessQuery(config.prefix(), config.cpuUsageKey(), config.memoryUsageKey(), memory);
-        this.cancellation = pullManager.start(discovery, QueryProvider.singleton(query),
-                QueryMatcherResolver.consistent(QueryMatcher.all(config.period())), dispatcher,
-                HealthCheckConfig.builder().tags(Tags.of("check", "process")).build());
+        this.cancellation = pullManager.start(id, discovery, QueryProvider.singleton(query),
+                QueryMatcherResolver.consistent(QueryMatcher.all(config.period())), dispatcher);
     }
 
     @Override

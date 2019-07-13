@@ -40,9 +40,9 @@ public final class SystemReader implements Reader, Lifecycle {
         CpuUsage cpuUsage = new CpuUsage(processor, config.cpu());
         FileSystem fileSystem = systemInfo.getOperatingSystem().getFileSystem();
         FileSystemUsage fsUsage = new FileSystemUsage(fileSystem, config.fs());
-        this.cancellation = puller.start(cpuUsage, dispatcher, config.cpu().period())
+        this.cancellation = puller.start(id, cpuUsage, dispatcher, config.cpu().period())
                 .andThen(
-                        puller.start(fsUsage, dispatcher, config.fs().period()));
+                        puller.start(id, fsUsage, dispatcher, config.fs().period()));
     }
 
     @Override

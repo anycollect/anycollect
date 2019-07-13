@@ -1,5 +1,6 @@
 package io.github.anycollect.core.impl.pull.separate;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.query.Query;
@@ -25,19 +26,25 @@ public final class SeparatePullScheduler implements PullScheduler {
     private final SchedulerFactory factory;
     private final MeterRegistry registry;
     private final Clock clock;
+    private final String name;
     private volatile boolean stopped = false;
 
-    public SeparatePullScheduler(@Nonnull final SchedulerFactory factory,
-                                 @Nonnull final Clock clock) {
-        this(factory, new NoopMeterRegistry(), clock);
+    @VisibleForTesting
+    SeparatePullScheduler(@Nonnull final SchedulerFactory factory,
+                          @Nonnull final Clock clock) {
+        this.factory = factory;
+        this.registry = new NoopMeterRegistry();
+        this.clock = clock;
+        this.name = "scheduler";
     }
 
     public SeparatePullScheduler(@Nonnull final SchedulerFactory factory,
                                  @Nonnull final MeterRegistry registry,
-                                 @Nonnull final Clock clock) {
+                                 @Nonnull final String name) {
         this.factory = factory;
         this.registry = registry;
-        this.clock = clock;
+        this.name = name;
+        this.clock = Clock.getDefault();
     }
 
     @Nonnull
@@ -50,8 +57,8 @@ public final class SeparatePullScheduler implements PullScheduler {
         if (stopped) {
             return Cancellation.NOOP;
         }
-        PullJob<T, Q> job = new PullJob<>(target, query, dispatcher, registry, clock);
-        Scheduler scheduler = activeSchedulers.computeIfAbsent(target.get(), factory::create);
+        PullJob<T, Q> job = new PullJob<>(target, query, name, dispatcher, registry, clock);
+        Scheduler scheduler = activeSchedulers.computeIfAbsent(target.get(), aTarget -> factory.create(aTarget, name));
         return scheduler.scheduleAtFixedRate(job, periodInSeconds, TimeUnit.SECONDS, false);
     }
 
@@ -74,7 +81,7 @@ public final class SeparatePullScheduler implements PullScheduler {
             return;
         }
         stopped = true;
-        LOG.info("Stopping separate pull scheduler");
+        LOG.info("Stopping separate pull scheduler {}", name);
         for (Map.Entry<Target, Scheduler> entry : activeSchedulers.entrySet()) {
             Target target = entry.getKey();
             Scheduler scheduler = entry.getValue();
