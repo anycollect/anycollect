@@ -7,6 +7,7 @@
     - class: io.github.anycollect.core.impl.writers.socket.SocketWriter
     - class: io.github.anycollect.core.impl.serializers.graphite.GraphiteSerializer
     - class: io.github.anycollect.core.impl.serializers.AnyCollectSerializer
+    - class: io.github.anycollect.core.impl.deserializers.json.JsonDeserializer
     - class: io.github.anycollect.core.impl.readers.registry.MeterRegistryReader
     - class: io.github.anycollect.core.impl.self.StdSelfDiscovery
     - class: io.github.anycollect.core.impl.transform.Transformer

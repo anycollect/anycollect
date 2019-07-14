@@ -7,6 +7,7 @@ import io.github.anycollect.metric.prepared.PreparedMetricBuilder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -162,11 +163,21 @@ public interface Metric {
             return measurement(Stat.VALUE, Type.GAUGE, unit, value);
         }
 
+        public Builder measurement(@Nonnull final Measurement measurement) {
+            measurements.add(measurement);
+            return this;
+        }
+
         public Builder measurement(@Nonnull final Stat stat,
                                    @Nonnull final Type type,
                                    @Nonnull final String unit,
                                    final double value) {
             measurements.add(new ImmutableMeasurement(stat, type, unit, value));
+            return this;
+        }
+
+        public Builder measurements(@Nonnull final Collection<Measurement> measurements) {
+            this.measurements.addAll(measurements);
             return this;
         }
 

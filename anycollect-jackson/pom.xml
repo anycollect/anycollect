@@ -38,6 +38,14 @@
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
+
+        <!-- TESTING -->
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-assertj-extension</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
