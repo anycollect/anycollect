@@ -1,6 +1,6 @@
 package io.github.anycollect.core.impl.writers.socket;
 
-import io.github.anycollect.core.api.serialization.RoundRobinSerializer;
+import io.github.anycollect.core.api.internal.AdaptiveSerializer;
 import io.github.anycollect.core.exceptions.SerialisationException;
 import io.github.anycollect.metric.Metric;
 import org.slf4j.Logger;
@@ -8,33 +8,26 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.net.SocketFactory;
-import java.io.BufferedWriter;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.nio.ByteBuffer;
 
 public final class TcpSender implements Sender {
     private static final Logger LOG = LoggerFactory.getLogger(TcpSender.class);
     private final InetSocketAddress address;
     private final SocketFactory socketFactory;
-    private final Charset charset = StandardCharsets.UTF_8;
-    private final RoundRobinSerializer<StringBuilder> serializer;
-    private final StringBuilder builder;
-    private char[] carrier;
+    private final AdaptiveSerializer serializer;
     private volatile Socket socket;
-    private volatile Writer writer;
+    private volatile OutputStream outputStream;
 
     public TcpSender(final String host, final int port,
-                     final RoundRobinSerializer<StringBuilder> serializer) {
+                     final AdaptiveSerializer serializer) {
         this.socketFactory = SocketFactory.getDefault();
         this.address = new InetSocketAddress(host, port);
         this.serializer = serializer;
-        this.builder = new StringBuilder();
-        this.carrier = new char[1024];
     }
 
     @Override
@@ -43,7 +36,7 @@ public final class TcpSender implements Sender {
             return;
         }
         this.socket = socketFactory.createSocket(address.getAddress(), address.getPort());
-        this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), charset));
+        this.outputStream = new BufferedOutputStream(socket.getOutputStream());
     }
 
     @Override
@@ -53,31 +46,31 @@ public final class TcpSender implements Sender {
 
     @Override
     public void send(@Nonnull final Metric metric) throws SerialisationException, IOException {
-        serializer.serialize(metric, builder);
-        if (carrier.length < builder.length()) {
-            carrier = new char[builder.length()];
+        ByteBuffer buffer = serializer.serialize(metric);
+        try {
+            outputStream.write(buffer.array(), 0, buffer.limit());
+        } finally {
+            serializer.release(buffer);
         }
-        builder.getChars(0, builder.length(), carrier, 0);
-        writer.write(carrier, 0, builder.length());
     }
 
     @Override
     public void flush() throws IOException {
-        if (writer != null) {
-            writer.flush();
+        if (outputStream != null) {
+            outputStream.flush();
         }
     }
 
     @Override
     public void closed() {
         try {
-            if (writer != null) {
-                writer.close();
+            if (outputStream != null) {
+                outputStream.close();
             }
         } catch (IOException e) {
-            LOG.debug("unable to close writer", e);
+            LOG.debug("unable to close output stream", e);
         } finally {
-            this.writer = null;
+            this.outputStream = null;
         }
         try {
             if (socket != null) {

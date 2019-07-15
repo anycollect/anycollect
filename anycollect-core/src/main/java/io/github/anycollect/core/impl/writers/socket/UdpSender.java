@@ -1,6 +1,6 @@
 package io.github.anycollect.core.impl.writers.socket;
 
-import io.github.anycollect.core.api.serialization.RoundRobinSerializer;
+import io.github.anycollect.core.api.internal.AdaptiveSerializer;
 import io.github.anycollect.core.exceptions.SerialisationException;
 import io.github.anycollect.metric.Metric;
 import org.slf4j.Logger;
@@ -16,16 +16,15 @@ public final class UdpSender implements Sender {
     private static final Logger LOG = LoggerFactory.getLogger(UdpSender.class);
     private final String host;
     private final int port;
-    private final RoundRobinSerializer<ByteBuffer> serializer;
-    private final ByteBuffer carrier;
+    private final AdaptiveSerializer serializer;
     private InetSocketAddress address;
     private DatagramChannel channel = null;
 
-    public UdpSender(final String host, final int port, final RoundRobinSerializer<ByteBuffer> serializer) {
+    public UdpSender(final String host, final int port,
+                     final AdaptiveSerializer serializer) {
         this.host = host;
         this.port = port;
         this.serializer = serializer;
-        this.carrier = ByteBuffer.allocate(2048);
         address = null;
     }
 
@@ -45,8 +44,12 @@ public final class UdpSender implements Sender {
 
     @Override
     public void send(@Nonnull final Metric metric) throws SerialisationException, IOException {
-        serializer.serialize(metric, carrier);
-        channel.send(carrier, address);
+        ByteBuffer buffer = serializer.serialize(metric);
+        try {
+            channel.send(buffer, address);
+        } finally {
+            serializer.release(buffer);
+        }
     }
 
     @Override

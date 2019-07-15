@@ -9,19 +9,26 @@ import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
 import java.util.Iterator;
 import java.util.List;
 
 @Extension(name = AnyCollectSerializer.NAME, point = Serializer.class)
 public final class AnyCollectSerializer implements Serializer {
     public static final String NAME = "AnyCollectSerializer";
+    private final StringBuilder builder = new StringBuilder(1024);
+    private final CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
 
     @ExtCreator
     public AnyCollectSerializer() {
     }
 
     @Override
-    public void serialize(@Nonnull final Metric metric, @Nonnull final StringBuilder builder) {
+    public CoderResult serialize(@Nonnull final Metric metric, @Nonnull final ByteBuffer buffer) {
         builder.setLength(0);
         builder.append(metric.getKey()).append(";");
         serialize(metric.getTags(), builder);
@@ -29,6 +36,8 @@ public final class AnyCollectSerializer implements Serializer {
         serialize(metric.getMeta(), builder);
         builder.append(";");
         serialize(metric.getMeasurements(), builder);
+        CoderResult coderResult = encoder.encode(CharBuffer.wrap(builder), buffer, true);
+        return coderResult;
     }
 
     private void serialize(final List<? extends Measurement> measurements, final StringBuilder builder) {

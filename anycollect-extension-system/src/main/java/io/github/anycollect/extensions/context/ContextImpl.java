@@ -94,6 +94,7 @@ public final class ContextImpl implements ExtendableContext {
 
     @Override
     public void addInstance(@Nonnull final Instance instance) {
+        // TODO check if name is unique in the scope
         this.instances.add(instance);
     }
 

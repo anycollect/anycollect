@@ -1,10 +1,10 @@
 extensions:
 - !load
   extension: AnyCollectSerializer
-  instance: anycollectSerializer
+  instance: slf4j.anycollectSerializer
 - !load
   extension: GraphiteSerializer
-  instance: graphiteSerializer
+  instance: slf4j.graphiteSerializer
   config:
     tagSupport: !var graphite.tag.support
     prefix: !var graphite.prefix
@@ -12,7 +12,7 @@ extensions:
   extension: Slf4jWriter
   instance: slf4j
   dependencies:
-    serializer: !ref anycollectSerializer
+    serializer: !ref slf4j.anycollectSerializer
   activation:
     type: property
     name: slf4j.serializer
@@ -21,7 +21,7 @@ extensions:
   extension: Slf4jWriter
   instance: slf4j
   dependencies:
-    serializer: !ref graphiteSerializer
+    serializer: !ref slf4j.graphiteSerializer
   activation:
     type: property
     name: slf4j.serializer

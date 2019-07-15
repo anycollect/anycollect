@@ -1,6 +1,7 @@
 package io.github.anycollect.core.impl.serializers.graphite;
 
 import io.github.anycollect.core.api.Serializer;
+import io.github.anycollect.core.exceptions.SerialisationException;
 import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
@@ -8,12 +9,19 @@ import io.github.anycollect.metric.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
 import java.util.concurrent.TimeUnit;
 
 @Extension(name = GraphiteSerializer.NAME, point = Serializer.class)
 public final class GraphiteSerializer implements Serializer {
     public static final String NAME = "GraphiteSerializer";
     private final GraphiteSerializerConfig config;
+    private final StringBuilder builder = new StringBuilder(1024);
+    private final CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
 
     @ExtCreator
     public GraphiteSerializer(@ExtConfig(optional = true) @Nullable final GraphiteSerializerConfig optConfig) {
@@ -21,7 +29,15 @@ public final class GraphiteSerializer implements Serializer {
     }
 
     @Override
-    public void serialize(@Nonnull final Metric metric, @Nonnull final StringBuilder builder) {
+    public CoderResult serialize(@Nonnull final Metric metric, @Nonnull final ByteBuffer buffer)
+            throws SerialisationException {
+        builder.setLength(0);
+        doSerialize(metric);
+        CoderResult coderResult = encoder.encode(CharBuffer.wrap(builder), buffer, true);
+        return coderResult;
+    }
+
+    private void doSerialize(@Nonnull final Metric metric) {
         Tags tags = config.tags().concat(metric.getTags());
         String key = metric.getKey();
         long timestamp = TimeUnit.MILLISECONDS.toSeconds(metric.getTimestamp());

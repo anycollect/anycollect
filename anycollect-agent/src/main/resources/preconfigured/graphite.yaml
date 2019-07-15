@@ -1,7 +1,7 @@
 extensions:
 - !load
   extension: GraphiteSerializer
-  instance: graphiteSerializer
+  instance: graphite.serializer
   config:
     tagSupport: !var graphite.tag.support
     prefix: !var graphite.prefix
@@ -11,7 +11,7 @@ extensions:
   extension: SocketWriter
   instance: graphite
   dependencies:
-    format: !ref graphiteSerializer
+    format: !ref graphite.serializer
   config:
     host: !var graphite.host
     port: !var graphite.port

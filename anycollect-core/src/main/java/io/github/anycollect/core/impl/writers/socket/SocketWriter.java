@@ -1,9 +1,9 @@
 package io.github.anycollect.core.impl.writers.socket;
 
-import io.github.anycollect.core.api.serialization.RoundRobinSerializer;
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.api.Writer;
 import io.github.anycollect.core.api.common.Lifecycle;
+import io.github.anycollect.core.api.internal.AdaptiveSerializer;
 import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.core.exceptions.SerialisationException;
 import io.github.anycollect.extensions.annotations.*;
@@ -21,7 +21,6 @@ import java.util.List;
 public final class SocketWriter implements Writer, Lifecycle {
     public static final String NAME = "SocketWriter";
     private static final Logger LOG = LoggerFactory.getLogger(SocketWriter.class);
-    private final Serializer serializer;
     private final Sender sender;
     private final String id;
 
@@ -29,13 +28,11 @@ public final class SocketWriter implements Writer, Lifecycle {
     public SocketWriter(@ExtDependency(qualifier = "format") @Nonnull final Serializer serializer,
                         @InstanceId @Nonnull final String id,
                         @ExtConfig @Nonnull final SocketConfig config) {
-        this.serializer = serializer;
+        AdaptiveSerializer adaptiveSerializer = AdaptiveSerializer.wrap(serializer);
         if (config.getProtocol() == Protocol.TCP) {
-            this.sender = new TcpSender(config.getHost(), config.getPort(),
-                    RoundRobinSerializer.toStringBuilder(serializer));
+            this.sender = new TcpSender(config.getHost(), config.getPort(), adaptiveSerializer);
         } else if (config.getProtocol() == Protocol.UDP) {
-            this.sender = new UdpSender(config.getHost(), config.getPort(),
-                    RoundRobinSerializer.toByteBuffer(serializer));
+            this.sender = new UdpSender(config.getHost(), config.getPort(), adaptiveSerializer);
         } else {
             LOG.error("protocol {} is not supported", config.getProtocol());
             throw new ConfigurationException("protocol " + config.getProtocol() + " is not supported");
@@ -57,9 +54,9 @@ public final class SocketWriter implements Writer, Lifecycle {
             // TODO schedule flush
             sender.flush();
         } catch (SerialisationException e) {
-            LOG.debug("could not serialize metric {}", metric);
+            LOG.debug("could not serialize metric {}", metric, e);
         } catch (IOException e) {
-            LOG.trace("fail to send metric family: {}", metric);
+            LOG.trace("fail to send metric: {}", metric, e);
             sender.closed();
         }
     }
