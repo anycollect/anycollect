@@ -39,6 +39,10 @@ while (( "$#" )); do
             ACTION=run
             shift
             ;;
+        --print-exec-line)
+            ACTION=printExecLine
+            shift
+            ;;
         --) # end argument parsing
             shift
             break
@@ -128,6 +132,10 @@ run() {
     sh -c "$(createExecLine)"
 }
 
+printExecLine() {
+    echo $(createExecLine)
+}
+
 status() {
     pid=$(getAnyCollectPid)
     if [[ ! -z ${pid} ]]; then
@@ -176,6 +184,9 @@ case ${ACTION} in
     ;;
     status)
         status
+    ;;
+    printExecLine)
+        printExecLine
     ;;
     *)
         echo $"Usage: $0 {start|stop|restart|run|status}"
