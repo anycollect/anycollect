@@ -50,9 +50,12 @@ while (( "$#" )); do
     esac
 done
 
+SCRIPT_FILE=$(realpath $0)
+ANYCOLLECT_HOME=${SCRIPT_FILE%/bin/*}
+
 # Java
 JAVA_HOME=${JAVA_HOME:-"/usr"}
-ANYCOLLECT_JAR=${ANYCOLLECT_JAR:-"./lib/anycollect.jar"}
+ANYCOLLECT_JAR=${ANYCOLLECT_JAR:-"${ANYCOLLECT_HOME}/lib/anycollect.jar"}
 JAVA_OPTS=${JAVA_OPTS:-""}
 JAVA=${JAVA:-"${JAVA_HOME}/bin/java"}
 
@@ -69,27 +72,29 @@ if [[ ${ENABLE_DEBUG} = true ]]; then
 fi
 
 # Class-Path
-ANYCOLLECT_EXT=${ANYCOLLECT_EXT:-"./extensions/*"}
+ANYCOLLECT_EXT=${ANYCOLLECT_EXT:-"${ANYCOLLECT_HOME}/extensions/*"}
 TOOLS_JAR="${JAVA_HOME}/lib/tools.jar"
 CLASSPATH=${CLASSPATH:-"${TOOLS_JAR}:${ANYCOLLECT_EXT}:${ANYCOLLECT_JAR}"}
 
 # pid
-PID_FILE=${PID_FILE:-"./var/run/anycollect.pid"}
+PID_FILE=${PID_FILE:-"${ANYCOLLECT_HOME}/var/run/anycollect.pid"}
+PID_FILE_DIR=${PID_FILE%/*}
+mkdir -p PID_FILE_DIR
 
 # AnyCollect
-LOG_DIR=${LOG_DIR:-"./logs"}
+LOG_DIR=${LOG_DIR:-"${ANYCOLLECT_HOME}/logs"}
 LOG_LEVEL=${LOG_LEVEL:-"debug"}
 ANYCOLLECT_OPTS=${ANYCOLLECT_OPTS:-"-Danycollect.log.dir=${LOG_DIR} -Danycollect.log.level=${LOG_LEVEL}"}
-ANYCOLLECT_CONF_FILE=${ANYCOLLECT_CONF_FILE:-"./etc/anycollect.yaml"}
-LOGBACK_CONF_FILE=${LOGBACK_CONF_FILE:-"./etc/logback.xml"}
+ANYCOLLECT_CONF_FILE=${ANYCOLLECT_CONF_FILE:-"${ANYCOLLECT_HOME}/etc/anycollect.yaml"}
+LOGBACK_CONF_FILE=${LOGBACK_CONF_FILE:-"${ANYCOLLECT_HOME}/etc/logback.xml"}
 ADDITIONAL_ANYCOLLECT_ARGS=${ADDITIONAL_ANYCOLLECT_ARGS:-""}
 ANYCOLLECT_ARGS=${ANYCOLLECT_ARGS:-"--logback-conf=${LOGBACK_CONF_FILE} --pid-file=${PID_FILE} ${ADDITIONAL_ANYCOLLECT_ARGS}"}
 MAIN_CLASS="io.github.anycollect.Init"
 
 getAnyCollectPid() {
-    JPS=${JPS:-"${JAVA_HOME}/bin/jps -l"}
-    PID_EXEC="$JPS | grep anycollect | awk '{print \$1};'"
-    echo $(eval ${PID_EXEC})
+    if [[ -f ${PID_FILE} ]]; then
+        echo $(cat ${PID_FILE})
+    fi
 }
 
 # JMX
