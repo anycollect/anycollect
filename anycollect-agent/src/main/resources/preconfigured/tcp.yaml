@@ -1,0 +1,11 @@
+extensions:
+- !load
+  extension: JsonDeserializer
+  instance: jsonDeserializer
+- !load
+  extension: NettyAsyncSocketReader
+  instance: tcp
+  dependencies:
+    deserializer: !ref jsonDeserializer
+  config:
+    port: !var readers.tcp.port
