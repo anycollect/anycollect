@@ -146,7 +146,7 @@ public final class StdRouter implements Router, Lifecycle {
     }
 
     @Override
-    public void destroy() {
+    public void stop() {
         for (Route route : this.routes) {
             if (route instanceof Reader) {
                 ((Reader) route).stop();
@@ -156,6 +156,11 @@ public final class StdRouter implements Router, Lifecycle {
             }
         }
         channels.forEach(Channel::disconnect);
+    }
+
+    @Override
+    public void destroy() {
+        stop();
         LOG.info("{} has been successfully destroyed", NAME);
     }
 }
