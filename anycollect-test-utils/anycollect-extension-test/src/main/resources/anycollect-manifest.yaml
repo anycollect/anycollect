@@ -1,0 +1,3 @@
+- manifest: test
+  extensions:
+  - class: io.github.anycollect.test.InterceptorImpl
