@@ -40,12 +40,17 @@ public final class Init {
                     VarSubstitutor.env(),
                     VarSubstitutor.ofClassPathFile("preconfigured/default-vars.properties")
         );
-        List<String> extensionNames = config.getEnabledPreconfiguredExtensions();
-        extensionNames.add(0, "core");
-        extensionNames.add("router");
-        List<String> extensionClassPathFiles = extensionNames.stream()
-                .map(extensionName -> "preconfigured" + File.separator + extensionName + ".yaml")
-                .collect(Collectors.toList());
+        final List<String> extensionClassPathFiles;
+        if (!config.getEnabledPreconfiguredExtensions().isEmpty()) {
+            List<String> extensionNames = config.getEnabledPreconfiguredExtensions();
+            extensionNames.add(0, "core");
+            extensionNames.add("router");
+            extensionClassPathFiles = extensionNames.stream()
+                    .map(extensionName -> "preconfigured" + File.separator + extensionName + ".yaml")
+                    .collect(Collectors.toList());
+        } else {
+            extensionClassPathFiles = Collections.emptyList();
+        }
         AnyCollect anyCollect = new AnyCollect(config.getConfigFile(), extensionClassPathFiles, substitutor);
         shutdownTasks.add(anyCollect::shutdown);
         Runtime.getRuntime().addShutdownHook(new ShutdownHook(shutdownTasks));
