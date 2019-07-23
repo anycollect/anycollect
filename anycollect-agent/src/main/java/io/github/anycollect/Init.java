@@ -28,32 +28,36 @@ public final class Init {
             System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, config.getLogbackConfig().getAbsolutePath());
         }
         List<ShutdownTask> shutdownTasks = new ArrayList<>();
-        if (config.getPidFile() != null) {
-            int pid = new SystemInfo().getOperatingSystem().getProcessId();
-            Path path = config.getPidFile().toPath();
-            Files.write(path, Collections.singletonList(Integer.toString(pid)),
-                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-            shutdownTasks.add(new RemoveFileShutdownTask(path));
-        }
-        VarSubstitutor substitutor = VarSubstitutor.firstNonNull(
+        AnyCollect anyCollect;
+        try {
+            if (config.getPidFile() != null) {
+                int pid = new SystemInfo().getOperatingSystem().getProcessId();
+                Path path = config.getPidFile().toPath();
+                Files.write(path, Collections.singletonList(Integer.toString(pid)),
+                        StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                shutdownTasks.add(new RemoveFileShutdownTask(path));
+            }
+            VarSubstitutor substitutor = VarSubstitutor.firstNonNull(
                     VarSubstitutor.ofMap(config.getEnv()),
                     VarSubstitutor.env(),
                     VarSubstitutor.ofClassPathFile("preconfigured/default-vars.properties")
-        );
-        final List<String> extensionClassPathFiles;
-        if (!config.getEnabledPreconfiguredExtensions().isEmpty()) {
-            List<String> extensionNames = config.getEnabledPreconfiguredExtensions();
-            extensionNames.add(0, "core");
-            extensionNames.add("router");
-            extensionClassPathFiles = extensionNames.stream()
-                    .map(extensionName -> "preconfigured" + File.separator + extensionName + ".yaml")
-                    .collect(Collectors.toList());
-        } else {
-            extensionClassPathFiles = Collections.emptyList();
+            );
+            final List<String> extensionClassPathFiles;
+            if (!config.getEnabledPreconfiguredExtensions().isEmpty()) {
+                List<String> extensionNames = config.getEnabledPreconfiguredExtensions();
+                extensionNames.add(0, "core");
+                extensionNames.add("router");
+                extensionClassPathFiles = extensionNames.stream()
+                        .map(extensionName -> "preconfigured" + File.separator + extensionName + ".yaml")
+                        .collect(Collectors.toList());
+            } else {
+                extensionClassPathFiles = Collections.emptyList();
+            }
+            anyCollect = new AnyCollect(config.getConfigFile(), extensionClassPathFiles, substitutor);
+            shutdownTasks.add(anyCollect::shutdown);
+        } finally {
+            Runtime.getRuntime().addShutdownHook(new ShutdownHook(shutdownTasks));
         }
-        AnyCollect anyCollect = new AnyCollect(config.getConfigFile(), extensionClassPathFiles, substitutor);
-        shutdownTasks.add(anyCollect::shutdown);
-        Runtime.getRuntime().addShutdownHook(new ShutdownHook(shutdownTasks));
         anyCollect.run();
     }
 }
