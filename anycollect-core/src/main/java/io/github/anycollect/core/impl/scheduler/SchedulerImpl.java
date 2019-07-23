@@ -36,31 +36,23 @@ public final class SchedulerImpl implements Scheduler {
 
     @Override
     public Cancellation scheduleAtFixedRate(@Nonnull final Runnable runnable,
-                                            final long period,
-                                            @Nonnull final TimeUnit unit) {
-        if (isShutdown()) {
-            throw new IllegalStateException("scheduler is shutdown");
-        }
-        ScheduledFuture<?> future = service.scheduleAtFixedRate(runnable, 0L, period, unit);
-        return new ScheduledFeatureAdapter(future);
-    }
-
-    @Override
-    public Cancellation scheduleAtFixedRate(@Nonnull final Runnable runnable,
+                                            final long delay,
                                             final long period,
                                             @Nonnull final TimeUnit unit,
                                             final boolean allowOverworkAfterPause) {
-        if (allowOverworkAfterPause) {
-            return scheduleAtFixedRate(runnable, period, unit);
-        } else {
-            if (isShutdown()) {
-                throw new IllegalStateException("scheduler is shutdown");
-            }
-            ThrottledRunnable throttledRunnable = new ThrottledRunnable(runnable, unit.toNanos(period), registry, prefix, tags);
-            ScheduledFuture<?> future = service.scheduleAtFixedRate(throttledRunnable, 0L, period, unit);
-            throttledRunnable.setDelayed(future);
-            return new ScheduledFeatureAdapter(future);
+        if (isShutdown()) {
+            throw new IllegalStateException("scheduler is shutdown");
         }
+        ScheduledFuture<?> future;
+        if (allowOverworkAfterPause) {
+            future = service.scheduleAtFixedRate(runnable, delay, period, unit);
+        } else {
+            ThrottledRunnable throttled
+                    = new ThrottledRunnable(runnable, unit.toNanos(period), registry, prefix, tags);
+            future = service.scheduleAtFixedRate(throttled, delay, period, unit);
+            throttled.setDelayed(future);
+        }
+        return new ScheduledFeatureAdapter(future);
     }
 
     @Override

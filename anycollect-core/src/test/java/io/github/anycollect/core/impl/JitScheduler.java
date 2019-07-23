@@ -10,13 +10,7 @@ public class JitScheduler implements Scheduler {
     private volatile boolean shutdown = false;
 
     @Override
-    public Cancellation scheduleAtFixedRate(@Nonnull Runnable runnable, long period, @Nonnull TimeUnit unit) {
-        runnable.run();
-        return new NoopCancelation();
-    }
-
-    @Override
-    public Cancellation scheduleAtFixedRate(@Nonnull Runnable runnable, long period, @Nonnull TimeUnit unit, boolean allowOverworkAfterPause) {
+    public Cancellation scheduleAtFixedRate(@Nonnull Runnable runnable, long delay, long period, @Nonnull TimeUnit unit, boolean allowOverworkAfterPause) {
         runnable.run();
         return new NoopCancelation();
     }

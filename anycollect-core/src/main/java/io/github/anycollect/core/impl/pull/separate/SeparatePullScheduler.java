@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public final class SeparatePullScheduler implements PullScheduler {
@@ -59,7 +60,8 @@ public final class SeparatePullScheduler implements PullScheduler {
         }
         PullJob<T, Q> job = new PullJob<>(target, query, name, dispatcher, registry, clock);
         Scheduler scheduler = activeSchedulers.computeIfAbsent(target.get(), aTarget -> factory.create(aTarget, name));
-        return scheduler.scheduleAtFixedRate(job, periodInSeconds, TimeUnit.SECONDS, false);
+        long initialDelay = ThreadLocalRandom.current().nextLong(periodInSeconds);
+        return scheduler.scheduleAtFixedRate(job, initialDelay, periodInSeconds, TimeUnit.SECONDS, false);
     }
 
     @Override
