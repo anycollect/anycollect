@@ -11,7 +11,7 @@ public interface Scheduler {
     }
 
     default Cancellation scheduleAtFixedRate(@Nonnull Runnable runnable, long delay, long period, @Nonnull TimeUnit unit) {
-        return scheduleAtFixedRate(runnable, delay, period, unit, false);
+        return scheduleAtFixedRate(runnable, delay, period, unit, true);
     }
 
     default Cancellation scheduleAtFixedRate(@Nonnull Runnable runnable,

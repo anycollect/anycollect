@@ -45,7 +45,7 @@ class SchedulerImplTest {
                     future = mock(ScheduledFuture.class);
                     return future;
                 });
-                cancellation = scheduler.scheduleAtFixedRate(job, 10, TimeUnit.MILLISECONDS);
+                cancellation = scheduler.scheduleAtFixedRate(job, 0L, 10L, TimeUnit.MILLISECONDS);
             }
 
             @Test
