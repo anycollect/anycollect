@@ -125,7 +125,7 @@ public final class StdJmxQuery extends JmxQuery {
                         for (int part = 1; part < valuePath.size(); part++) {
                             String node = valuePath.get(part);
                             if (value instanceof CompositeData) {
-                                ((CompositeData) value).get(node);
+                                value = ((CompositeData) value).get(node);
                             } else if (value instanceof TabularData) {
                                 TabularData tabularValue = (TabularData) value;
                                 @SuppressWarnings("unchecked")
