@@ -35,7 +35,7 @@ public final class LiveProcess extends AbstractTarget implements Process {
                 .tag("user", process.getUser())
                 .tag("group", process.getGroup())
                 .tag("process.name", process.getName())
-                .tag("command.line", process.getCommandLine())
+                .tag("command.line", process.getCommandLine().replaceAll("\0", " "))
                 .tag("target.kind", "process")
                 .build();
     }
