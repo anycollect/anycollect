@@ -16,6 +16,7 @@ import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.noop.NoopMeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -70,29 +71,36 @@ public final class PullJob<T extends Target, Q extends Query<T>> implements Runn
 
     @Override
     public void run() {
-        long start = clock.wallTime();
+        MDC.put("target.id", target.get().getId());
+        MDC.put("query.id", query.getId());
         try {
-            List<Metric> metrics;
-            synchronized (job) {
-                metrics = job.execute();
+            long start = clock.wallTime();
+            try {
+                List<Metric> metrics;
+                synchronized (job) {
+                    metrics = job.execute();
+                }
+                succeeded.increment();
+                dispatcher.dispatch(metrics);
+                LOG.debug("success: {}.execute({}) taken {}ms and produces {} metrics",
+                        target.get().getId(), query.getId(), clock.wallTime() - start, metrics.size());
+                target.update(Check.passed(start));
+            } catch (InterruptedException e) {
+                LOG.debug("thread {} is interrupted", Thread.currentThread(), e);
+                Thread.currentThread().interrupt();
+            } catch (QueryException | ConnectionException | RuntimeException e) {
+                failed.increment();
+                LOG.debug("failed: {}.execute({}) taken {}ms and failed",
+                        target.get().getId(), query.getId(), clock.wallTime() - start, e);
+                if (e instanceof ConnectionException) {
+                    target.update(Check.failed(start));
+                } else {
+                    target.update(Check.unknown(start));
+                }
             }
-            succeeded.increment();
-            dispatcher.dispatch(metrics);
-            LOG.debug("success: {}.execute({}) taken {}ms and produces {} metrics", target.get().getId(), query.getId(),
-                    clock.wallTime() - start, metrics.size());
-            target.update(Check.passed(start));
-        } catch (InterruptedException e) {
-            LOG.debug("thread {} is interrupted", Thread.currentThread(), e);
-            Thread.currentThread().interrupt();
-        } catch (QueryException | ConnectionException | RuntimeException e) {
-            failed.increment();
-            LOG.debug("failed: {}.execute({}) taken {}ms and failed", target.get().getId(), query.getId(),
-                    clock.wallTime() - start, e);
-            if (e instanceof ConnectionException) {
-                target.update(Check.failed(start));
-            } else {
-                target.update(Check.unknown(start));
-            }
+        } finally {
+            MDC.remove("target.id");
+            MDC.remove("query.id");
         }
     }
 }
