@@ -1,7 +1,6 @@
 package io.github.anycollect.readers.jmx.query;
 
 import io.github.anycollect.core.api.job.Job;
-import io.github.anycollect.core.api.measurable.MeasurementPath;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.metric.Type;

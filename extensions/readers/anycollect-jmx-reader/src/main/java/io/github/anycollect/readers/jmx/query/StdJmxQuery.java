@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.job.Job;
-import io.github.anycollect.core.api.measurable.MeasurementPath;
 import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
@@ -26,6 +25,8 @@ import javax.annotation.Nullable;
 import javax.management.Attribute;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.TabularData;
 import java.util.*;
 
 @Getter
@@ -59,7 +60,7 @@ public final class StdJmxQuery extends JmxQuery {
         this.tagKeys = tagKeys != null ? tagKeys : Collections.emptyList();
         List<String> activeAttributes = new ArrayList<>();
         for (MeasurementPath measurement : paths) {
-            activeAttributes.add(measurement.getValuePath());
+            activeAttributes.add(measurement.getAttribute());
         }
         try {
             this.objectPattern = new ObjectName(objectPattern);
@@ -95,10 +96,23 @@ public final class StdJmxQuery extends JmxQuery {
         @Override
         public List<Metric> execute() throws QueryException, ConnectionException {
             Set<ObjectName> objectNames = app.operate(queryNames);
+            if (objectNames.isEmpty()) {
+                LOG.warn("No mbeans matched to {}", objectPattern);
+            }
             List<Metric> metrics = new ArrayList<>();
             for (ObjectName objectName : objectNames) {
                 if (restriction.allows(objectName)) {
                     List<Attribute> attributes = app.operate(new QueryAttributes(objectName, attributeNames));
+                    if (attributes.size() != attributeNames.length) {
+                        List<String> missingAttributes = Arrays.asList(attributeNames);
+                        for (final Attribute attribute : attributes) {
+                            missingAttributes.remove(attribute.getName());
+                        }
+                        LOG.warn("Missing some attributes in {}, did not retrieve: {}. This mbean will be skipped",
+                                objectName,
+                                missingAttributes);
+                        continue;
+                    }
                     long timestamp = clock.wallTime();
                     PreparedMetric metric = cache.computeIfAbsent(objectName, this::prepare);
                     if (metric == null) {
@@ -106,7 +120,29 @@ public final class StdJmxQuery extends JmxQuery {
                     }
                     double[] values = new double[attributes.size()];
                     for (int i = 0; i < attributes.size(); ++i) {
-                        values[i] = ((Number) attributes.get(i).getValue()).doubleValue();
+                        Object value = attributes.get(i).getValue();
+                        List<String> valuePath = paths.get(i).getValuePath();
+                        for (int part = 1; part < valuePath.size(); part++) {
+                            String node = valuePath.get(part);
+                            if (value instanceof CompositeData) {
+                                ((CompositeData) value).get(node);
+                            } else if (value instanceof TabularData) {
+                                TabularData tabularValue = (TabularData) value;
+                                @SuppressWarnings("unchecked")
+                                Collection<CompositeData> tableData = (Collection<CompositeData>) tabularValue.values();
+                                for (CompositeData compositeData : tableData) {
+                                    if (compositeData.get("key").equals(node)) {
+                                        value = compositeData.get("value");
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (value instanceof Number) {
+                            values[i] = ((Number) value).doubleValue();
+                        } else if (value instanceof Boolean) {
+                            values[i] = ((boolean) value) ? 1 : 0;
+                        }
                     }
                     metrics.add(metric.compile(timestamp, values));
                 }
@@ -124,8 +160,8 @@ public final class StdJmxQuery extends JmxQuery {
             for (String tagKey : tagKeys) {
                 String tagValue = objectName.getKeyProperty(tagKey);
                 if (tagValue == null) {
-                    LOG.debug("Could not create metric from {}, property {} is missing. Query key is {}",
-                            objectName, tagKey, key);
+                    LOG.warn("Could not create metric from {}, property {} is missing.",
+                            objectName, tagKey);
                     return null;
                 }
                 builder.tag(tagKey, tagValue);

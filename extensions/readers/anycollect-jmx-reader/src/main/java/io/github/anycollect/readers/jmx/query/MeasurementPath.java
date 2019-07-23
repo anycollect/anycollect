@@ -1,4 +1,4 @@
-package io.github.anycollect.core.api.measurable;
+package io.github.anycollect.readers.jmx.query;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,11 +8,13 @@ import lombok.Getter;
 import lombok.ToString;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @ToString
 public final class MeasurementPath {
-    private final String valuePath;
+    private final List<String> valuePath;
     private final Stat stat;
     private final Type type;
 
@@ -20,8 +22,12 @@ public final class MeasurementPath {
     public MeasurementPath(@JsonProperty(value = "path", required = true) @Nonnull final String valuePath,
                            @JsonProperty(value = "stat", required = true) @Nonnull final Stat stat,
                            @JsonProperty(value = "type", required = true) @Nonnull final Type type) {
-        this.valuePath = valuePath;
+        this.valuePath = Arrays.asList(valuePath.split("\\."));
         this.stat = stat;
         this.type = type;
+    }
+
+    public String getAttribute() {
+        return valuePath.get(0);
     }
 }
