@@ -116,7 +116,6 @@ public final class JavaApplication {
     }
 
     public static void main(final String... args) throws Exception {
-        System.out.println(System.getProperty("anycollect.serviceId"));
         while (true) {
             Thread.sleep(1000);
         }

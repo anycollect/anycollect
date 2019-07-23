@@ -78,7 +78,6 @@ public final class InterceptorImpl implements Interceptor {
                 .atMost(awaitSeconds, TimeUnit.SECONDS)
                 .ignoreExceptions()
                 .until(() -> {
-                    System.out.println("intercept");
                     MetricAssert metricAssert = callable.call();
                     metricAssert.isNotNull();
                     future.complete(metricAssert);
