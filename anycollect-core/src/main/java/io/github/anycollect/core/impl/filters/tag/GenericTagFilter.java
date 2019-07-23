@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import io.github.anycollect.core.api.filter.Filter;
 import io.github.anycollect.core.api.filter.FilterReply;
+import io.github.anycollect.metric.Tags;
 import io.github.anycollect.metric.frame.MetricFrame;
 
 import javax.annotation.Nonnull;
@@ -16,19 +17,22 @@ public final class GenericTagFilter implements Filter {
     private final FilterReply reply;
     private final String key;
     private final TagExistence state;
+    private final boolean meta;
 
     private GenericTagFilter(final Builder builder) {
         this.reply = builder.reply;
         this.key = builder.key;
         this.state = builder.state;
+        this.meta = builder.meta;
     }
 
     @Override
     public FilterReply accept(@Nonnull final MetricFrame frame) {
+        Tags tags = meta ? frame.getMeta() : frame.getTags();
         if (state == TagExistence.PRESENT) {
-            return frame.getTags().hasTagKey(key) ? reply : FilterReply.NEUTRAL;
+            return tags.hasTagKey(key) ? reply : FilterReply.NEUTRAL;
         } else {
-            return !frame.getTags().hasTagKey(key) ? reply : FilterReply.NEUTRAL;
+            return !tags.hasTagKey(key) ? reply : FilterReply.NEUTRAL;
         }
     }
 
@@ -37,6 +41,7 @@ public final class GenericTagFilter implements Filter {
         private FilterReply reply = FilterReply.ACCEPT;
         private String key;
         private TagExistence state = TagExistence.PRESENT;
+        private boolean meta = false;
 
         @JsonProperty(value = "key", required = true)
         public Builder key(final String key) {
@@ -53,6 +58,12 @@ public final class GenericTagFilter implements Filter {
         @JsonProperty("state")
         public Builder state(final TagExistence state) {
             this.state = state;
+            return this;
+        }
+
+        @JsonProperty("meta")
+        public Builder state(final boolean meta) {
+            this.meta = meta;
             return this;
         }
 
