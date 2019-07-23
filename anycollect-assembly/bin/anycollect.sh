@@ -19,6 +19,10 @@ while (( "$#" )); do
             DEBUG_PORT=$2
             shift 2
             ;;
+        --log-level)
+            LOG_LEVEL=$2
+            shift 2
+            ;;
         --start)
             ACTION=start
             shift
