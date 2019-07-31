@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.transform.transformations;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 
@@ -15,5 +15,5 @@ import javax.annotation.Nonnull;
 })
 public interface Transformation {
     @Nonnull
-    Metric transform(@Nonnull Metric source);
+    Sample transform(@Nonnull Sample source);
 }

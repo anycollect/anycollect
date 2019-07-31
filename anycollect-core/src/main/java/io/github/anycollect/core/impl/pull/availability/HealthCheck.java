@@ -5,17 +5,16 @@ import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.metric.prepared.PreparedMetric;
 
 import javax.annotation.Nonnull;
 
 public final class HealthCheck implements Runnable {
     private final Dispatcher dispatcher;
     private final CheckingTarget<? extends Target> checkingTarget;
-    private final PreparedMetric state;
-    private final PreparedMetric up;
-    private final PreparedMetric down;
-    private final PreparedMetric unknown;
+    private final Metric state;
+    private final Metric up;
+    private final Metric down;
+    private final Metric unknown;
     private final long timeout;
     private final Clock clock;
 
@@ -42,19 +41,18 @@ public final class HealthCheck implements Runnable {
                 .concat(meta)
                 .concat(target.getMeta());
         this.state = make("health.check", resultTags, resultMeta);
-        this.up = make("instances.up", resultTags, resultMeta);
-        this.down = make("instances.down", resultTags, resultMeta);
-        this.unknown = make("instances.unknown", resultTags, resultMeta);
+        this.up = make("instances/up", resultTags, resultMeta);
+        this.down = make("instances/down", resultTags, resultMeta);
+        this.unknown = make("instances/unknown", resultTags, resultMeta);
         this.clock = clock;
     }
 
-    private static PreparedMetric make(final String key, final Tags tags, final Tags meta) {
-        return Metric.prepare()
+    private static Metric make(final String key, final Tags tags, final Tags meta) {
+        return Metric.builder()
                 .key(key)
-                .concatTags(tags)
-                .concatMeta(meta)
-                .gauge()
-                .build();
+                .tags(tags)
+                .meta(meta)
+                .gauge();
     }
 
     public void run() {
@@ -66,9 +64,9 @@ public final class HealthCheck implements Runnable {
         } else {
             health = check.getHealth();
         }
-        dispatcher.dispatch(state.compile(now, health.getStatusCode()));
-        dispatcher.dispatch(up.compile(now, health == Health.PASSED ? 1 : 0));
-        dispatcher.dispatch(down.compile(now, health == Health.FAILED ? 1 : 0));
-        dispatcher.dispatch(unknown.compile(now, health == Health.UNKNOWN ? 1 : 0));
+        dispatcher.dispatch(state.sample(health.getStatusCode(), now));
+        dispatcher.dispatch(up.sample(health == Health.PASSED ? 1 : 0, now));
+        dispatcher.dispatch(down.sample(health == Health.FAILED ? 1 : 0, now));
+        dispatcher.dispatch(unknown.sample(health == Health.UNKNOWN ? 1 : 0, now));
     }
 }

@@ -6,11 +6,11 @@ public interface Counter {
     Counter NOOP = amount -> { };
 
     static CounterBuilder key(@Nonnull final String key) {
-        return new CounterBuilder(key);
+        return new CounterBuilder(Key.of(key));
     }
 
-    static CounterBuilder key(@Nonnull final String... keyParts) {
-        return new CounterBuilder(keyParts);
+    static CounterBuilder key(@Nonnull final Key key) {
+        return new CounterBuilder(key);
     }
 
     default void increment() {
@@ -21,12 +21,8 @@ public interface Counter {
 
 
     final class CounterBuilder extends BaseMeterBuilder<CounterBuilder> {
-        CounterBuilder(@Nonnull final String key) {
+        CounterBuilder(@Nonnull final Key key) {
             super(key);
-        }
-
-        public CounterBuilder(@Nonnull final String... keyParts) {
-            super(keyParts);
         }
 
         @Override

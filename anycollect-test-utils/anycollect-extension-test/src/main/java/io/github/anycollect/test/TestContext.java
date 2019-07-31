@@ -1,6 +1,6 @@
 package io.github.anycollect.test;
 
-import io.github.anycollect.assertj.MetricAssert;
+import io.github.anycollect.assertj.SampleAssert;
 import io.github.anycollect.core.api.Reader;
 import io.github.anycollect.core.api.Router;
 import io.github.anycollect.extensions.Instance;
@@ -14,7 +14,7 @@ import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
 import io.github.anycollect.extensions.scope.Scope;
 import io.github.anycollect.extensions.scope.SimpleScope;
 import io.github.anycollect.extensions.substitution.VarSubstitutor;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tags;
 import org.apache.commons.io.FileUtils;
 
@@ -105,22 +105,22 @@ public final class TestContext extends DelegatingContext {
         }
 
         @Override
-        public MetricAssert intercepted(final String key) {
+        public SampleAssert intercepted(final String key) {
             return interceptor.intercepted(key);
         }
 
         @Override
-        public MetricAssert intercepted(final String key, final Tags tags) {
+        public SampleAssert intercepted(final String key, final Tags tags) {
             return interceptor.intercepted(key, tags);
         }
 
         @Override
-        public MetricAssert intercepted(final String key, final Tags tags, final Tags meta) {
+        public SampleAssert intercepted(final String key, final Tags tags, final Tags meta) {
             return interceptor.intercepted(key, tags, meta);
         }
 
         @Override
-        public void write(@Nonnull final List<? extends Metric> metrics) {
+        public void write(@Nonnull final List<? extends Sample> metrics) {
             interceptor.write(metrics);
         }
 

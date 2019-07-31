@@ -26,7 +26,7 @@ import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.metric.noop.NoopMeterRegistry;
+import io.github.anycollect.metric.NoopMeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.writers.socket;
 
 import io.github.anycollect.core.api.internal.AdaptiveSerializer;
 import io.github.anycollect.core.exceptions.SerialisationException;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +45,8 @@ public final class TcpSender implements Sender {
     }
 
     @Override
-    public void send(@Nonnull final Metric metric) throws SerialisationException, IOException {
-        ByteBuffer buffer = serializer.serialize(metric);
+    public void send(@Nonnull final Sample sample) throws SerialisationException, IOException {
+        ByteBuffer buffer = serializer.serialize(sample);
         try {
             outputStream.write(buffer.array(), 0, buffer.limit());
         } finally {

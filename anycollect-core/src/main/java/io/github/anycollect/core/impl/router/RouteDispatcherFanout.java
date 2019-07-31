@@ -1,6 +1,6 @@
 package io.github.anycollect.core.impl.router;
 
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -14,16 +14,16 @@ public final class RouteDispatcherFanout implements RouteDispatcher {
     }
 
     @Override
-    public void dispatch(@Nonnull final Metric metric) {
+    public void dispatch(@Nonnull final Sample sample) {
         for (MetricConsumer consumer : consumers) {
-            consumer.consume(Collections.singletonList(metric));
+            consumer.consume(Collections.singletonList(sample));
         }
     }
 
     @Override
-    public void dispatch(@Nonnull final List<Metric> metrics) {
+    public void dispatch(@Nonnull final List<Sample> samples) {
         for (MetricConsumer consumer : consumers) {
-            consumer.consume(metrics);
+            consumer.consume(samples);
         }
     }
 

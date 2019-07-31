@@ -2,7 +2,7 @@ package io.github.anycollect.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.anycollect.assertj.AnyCollectAssertions;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Type;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,12 +21,28 @@ class AnyCollectModuleTest {
     }
 
     @Test
-    void metricDeserializeTest() throws IOException  {
-        Metric metric = mapper.readValue("{\"key\":\"test\",\"tags\":{\"host\":\"localhost\",\"tag1\":\"val1\"},\"meta\":{\"meta1\":\"val2\"},\"measurements\":[{\"stat\":\"value\",\"mtype\":\"gauge\",\"unit\":\"ms\",\"value\":1}],\"timestamp\":15630695420000}", Metric.class);
-        AnyCollectAssertions.assertThat(metric)
-                .hasKey("test")
-                .hasTags("host", "localhost", "tag1", "val1")
-                .hasMeta("meta1", "val2")
-                .hasMeasurement(Stat.VALUE, Type.GAUGE, "ms", 1);
+    void metricDeserializeTest() throws IOException {
+        String json = "" +
+                "{\n" +
+                "  \"key\": \"anycollect/pull.manager/processing.time\",\n" +
+                "  \"tags\": {\n" +
+                "    \"host\": \"localhost\"\n" +
+                "  },\n" +
+                "  \"meta\": {\n" +
+                "    \"test\": \"true\"\n" +
+                "  },\n" +
+                "  \"stat\": \"mean\",\n" +
+                "  \"mtype\": \"aggregate\",\n" +
+                "  \"unit\": \"ms\",\n" +
+                "  \"timestamp\": 123,\n" +
+                "  \"value\": 1.3\n" +
+                "}";
+        Sample sample = mapper.readValue(json, Sample.class);
+        System.out.println(sample);
+        AnyCollectAssertions.assertThat(sample)
+                .hasKey("anycollect/pull.manager/processing.time")
+                .hasTags("host", "localhost")
+                .hasMeta("test", "true")
+                .hasMetric(Stat.MEAN, Type.AGGREGATE, "ms", 1.3);
     }
 }

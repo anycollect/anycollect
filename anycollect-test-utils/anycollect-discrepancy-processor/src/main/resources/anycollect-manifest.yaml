@@ -1,3 +1,0 @@
-- manifest: disrepancy-processor
-  extensions:
-    - class: io.github.anycollect.processors.discrepancy.DiscrepancyProcessor

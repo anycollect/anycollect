@@ -3,7 +3,7 @@ package io.github.anycollect.readers.jmx.query;
 import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 
 import javax.annotation.Nonnull;
@@ -20,7 +20,7 @@ public class NoopQuery extends JmxQuery {
     public Job bind(@Nonnull JavaApp app) {
         return new Job() {
             @Override
-            public List<Metric> execute() throws QueryException, ConnectionException {
+            public List<Sample> execute() throws QueryException, ConnectionException {
                 return Collections.emptyList();
             }
         };

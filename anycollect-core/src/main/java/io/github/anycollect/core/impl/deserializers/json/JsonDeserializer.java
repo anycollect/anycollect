@@ -7,7 +7,7 @@ import io.github.anycollect.core.exceptions.SerialisationException;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.jackson.AnyCollectModule;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -25,9 +25,9 @@ public final class JsonDeserializer implements Deserializer {
 
     @Nonnull
     @Override
-    public Metric deserialize(@Nonnull final String string) throws SerialisationException {
+    public Sample deserialize(@Nonnull final String string) throws SerialisationException {
         try {
-            return objectMapper.readValue(string, Metric.class);
+            return objectMapper.readValue(string, Sample.class);
         } catch (IOException e) {
             throw new SerialisationException("could not deserializer metric", e);
         }

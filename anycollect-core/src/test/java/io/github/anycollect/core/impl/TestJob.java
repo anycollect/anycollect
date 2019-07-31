@@ -3,7 +3,7 @@ package io.github.anycollect.core.impl;
 import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class TestJob implements Job {
     }
 
     @Override
-    public List<Metric> execute() throws QueryException, ConnectionException {
+    public List<Sample> execute() throws QueryException, ConnectionException {
         return target.execute(query);
     }
 }

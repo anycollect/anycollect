@@ -2,17 +2,15 @@ package io.github.anycollect.metric;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.function.ToDoubleFunction;
+import java.util.function.ToLongFunction;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class FunctionCounterTest {
     @Test
     void registerFunctionCounter() {
         Object obj = new Object();
-        ToDoubleFunction<Object> value = o -> 1.0;
+        ToLongFunction<Object> value = o -> 1;
         MeterRegistry registry = mock(MeterRegistry.class);
         FunctionCounter.make("test", obj, value)
                 .unit("tests")

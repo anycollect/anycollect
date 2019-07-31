@@ -27,7 +27,7 @@ import io.github.anycollect.extensions.substitution.VarSubstitutor;
 import io.github.anycollect.meter.registry.AnyCollectMeterRegistry;
 import io.github.anycollect.meter.registry.AnyCollectMeterRegistryConfig;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.noop.NoopMeterRegistry;
+import io.github.anycollect.metric.NoopMeterRegistry;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

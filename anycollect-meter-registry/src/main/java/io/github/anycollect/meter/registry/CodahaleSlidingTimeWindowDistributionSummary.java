@@ -6,12 +6,10 @@ import com.codahale.metrics.SlidingTimeWindowArrayReservoir;
 import com.codahale.metrics.Snapshot;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
-import io.github.anycollect.metric.prepared.PreparedMetric;
-import io.github.anycollect.metric.prepared.PreparedMetricBuilder;
 import lombok.Builder;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -19,7 +17,7 @@ public class CodahaleSlidingTimeWindowDistributionSummary extends AbstractMeter 
     private final Clock clock;
     private final Histogram histogram;
     private final double[] quantiles;
-    private final PreparedMetric preparedHistogram;
+    private final List<Metric> ids;
 
     @Builder
     public CodahaleSlidingTimeWindowDistributionSummary(@Nonnull final MeterId id,
@@ -34,19 +32,17 @@ public class CodahaleSlidingTimeWindowDistributionSummary extends AbstractMeter 
         this.quantiles = quantiles;
         Reservoir reservoir = new SlidingTimeWindowArrayReservoir(window, TimeUnit.SECONDS);
         histogram = new Histogram(reservoir);
-        PreparedMetricBuilder builder = Metric.prepare()
-                .key(prefix, id.getKey())
-                .concatTags(tags)
-                .concatTags(id.getTags())
-                .concatMeta(meta)
-                .concatMeta(id.getMetaTags());
-        builder.measurement(Stat.max(), Type.GAUGE, id.getUnit())
-                .measurement(Stat.mean(), Type.GAUGE, id.getUnit())
-                .measurement(Stat.std(), Type.GAUGE, id.getUnit());
+        this.ids = new ArrayList<>();
+        Metric.MetricBuilder builder = Metric.builder()
+                .key(id.getKey().withPrefix(prefix))
+                .tags(tags.concat(id.getTags()))
+                .meta(meta.concat(id.getMetaTags()));
+        this.ids.add(builder.max(id.getUnit()));
+        this.ids.add(builder.mean(id.getUnit()));
+        this.ids.add(builder.std(id.getUnit()));
         for (double quantile : quantiles) {
-            builder.measurement(Stat.percentile(quantile), Type.GAUGE, id.getUnit());
+            this.ids.add(builder.percentile(quantile, id.getUnit()));
         }
-        this.preparedHistogram = builder.build();
     }
 
     @Override
@@ -56,15 +52,16 @@ public class CodahaleSlidingTimeWindowDistributionSummary extends AbstractMeter 
 
     @Nonnull
     @Override
-    public List<Metric> measure() {
+    public List<Sample> measure() {
         Snapshot snapshot = histogram.getSnapshot();
-        double[] values = new double[3 + quantiles.length];
-        values[0] = snapshot.getMax();
-        values[1] = snapshot.getMean();
-        values[2] = snapshot.getStdDev();
+        long timestamp = clock.wallTime();
+        List<Sample> samples = new ArrayList<>();
+        samples.add(ids.get(0).sample(snapshot.getMax(), timestamp));
+        samples.add(ids.get(1).sample(snapshot.getMean(), timestamp));
+        samples.add(ids.get(2).sample(snapshot.getStdDev(), timestamp));
         for (int bucket = 0; bucket < quantiles.length; bucket++) {
-            values[3 + bucket] = snapshot.getValue(quantiles[bucket]);
+            samples.add(ids.get(3 + bucket).sample(snapshot.getValue(quantiles[bucket]), timestamp));
         }
-        return Collections.singletonList(preparedHistogram.compile(clock.wallTime(), values));
+        return samples;
     }
 }

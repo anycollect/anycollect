@@ -17,11 +17,11 @@ public interface Timer {
     };
 
     static Builder key(@Nonnull final String key) {
-        return new Builder(key);
+        return new Builder(Key.of(key));
     }
 
-    static Builder key(@Nonnull final String... keyParts) {
-        return new Builder(keyParts);
+    static Builder key(@Nonnull final Key key) {
+        return new Builder(key);
     }
 
     void record(long amount, @Nonnull TimeUnit timeUnit);
@@ -31,12 +31,8 @@ public interface Timer {
     final class Builder extends BaseMeterBuilder<Builder> {
         private TimeUnit timeUnit = TimeUnit.NANOSECONDS;
 
-        Builder(@Nonnull final String value) {
-            super(value);
-        }
-
-        public Builder(@Nonnull final String... keyParts) {
-            super(keyParts);
+        Builder(@Nonnull final Key key) {
+            super(key);
         }
 
         @Override

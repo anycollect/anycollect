@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.router;
 
 import io.github.anycollect.metric.Counter;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Timer;
 
 import javax.annotation.Nonnull;
@@ -17,12 +17,12 @@ public final class MonitoredMetricConsumer implements MetricConsumer {
     public MonitoredMetricConsumer(@Nonnull final MetricConsumer delegate,
                                    @Nonnull final MeterRegistry registry) {
         this.delegate = delegate;
-        this.consumedMetrics = Counter.key("router.route.delivery")
+        this.consumedMetrics = Counter.key("router/route/delivery")
                 .unit("metrics")
                 .tag("route", getAddress())
                 .meta(this.getClass())
                 .register(registry);
-        this.processingTime = Timer.key("router.route.processing.time")
+        this.processingTime = Timer.key("router/route/processing.time")
                 .unit(TimeUnit.MILLISECONDS)
                 .tag("route", getAddress())
                 .meta(this.getClass())
@@ -30,9 +30,9 @@ public final class MonitoredMetricConsumer implements MetricConsumer {
     }
 
     @Override
-    public void consume(@Nonnull final List<? extends Metric> metrics) {
-        consumedMetrics.increment(metrics.size());
-        processingTime.record(() -> delegate.consume(metrics));
+    public void consume(@Nonnull final List<? extends Sample> samples) {
+        consumedMetrics.increment(samples.size());
+        processingTime.record(() -> delegate.consume(samples));
     }
 
     @Override

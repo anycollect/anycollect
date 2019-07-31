@@ -2,7 +2,7 @@ package io.github.anycollect.readers.process;
 
 import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.core.exceptions.ConnectionException;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import oshi.software.os.OSProcess;
 
 import javax.annotation.Nonnull;
@@ -19,11 +19,11 @@ public final class ProcessJob implements Job {
     }
 
     @Override
-    public List<Metric> execute() throws ConnectionException {
+    public List<Sample> execute() throws ConnectionException {
         OSProcess current = copy(process.snapshot());
-        List<Metric> metrics = stats.execute(last, current);
+        List<Sample> samples = stats.execute(last, current);
         last = current;
-        return metrics;
+        return samples;
     }
 
     // we need to make a copy of important fields because oshi can modify this object

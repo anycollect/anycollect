@@ -1,6 +1,7 @@
 package io.github.anycollect.core.impl.scheduler;
 
 import io.github.anycollect.metric.Counter;
+import io.github.anycollect.metric.Key;
 import io.github.anycollect.metric.MeterRegistry;
 import io.github.anycollect.metric.Tags;
 
@@ -20,7 +21,7 @@ public final class ThrottledRunnable implements Runnable {
                              final Tags tags) {
         this.delegate = delegate;
         this.periodInNanos = periodInNanos;
-        this.throttledJobsCounter = Counter.key(prefix, "scheduler.jobs.throttled")
+        this.throttledJobsCounter = Counter.key(Key.of("scheduler/jobs/throttled").withPrefix(prefix))
                 .concatTags(tags)
                 .meta(this.getClass())
                 .register(registry);

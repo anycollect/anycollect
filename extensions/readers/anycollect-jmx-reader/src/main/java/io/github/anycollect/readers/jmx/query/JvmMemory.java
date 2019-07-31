@@ -6,6 +6,7 @@ import io.github.anycollect.core.api.job.TaggingJob;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.query.operations.QueryAttributes;
 import io.github.anycollect.readers.jmx.query.operations.QueryObjectNames;
@@ -69,8 +70,8 @@ public final class JvmMemory extends JmxQuery {
         }
 
         @Override
-        public List<Metric> execute() throws QueryException, ConnectionException {
-            List<Metric> metrics = new ArrayList<>();
+        public List<Sample> execute() throws QueryException, ConnectionException {
+            List<Sample> samples = new ArrayList<>();
             for (ObjectName objectName : app.operate(queryNames)) {
                 List<Attribute> attributes = app.operate(new QueryAttributes(objectName, ATTRIBUTES));
                 long timestamp = clock.wallTime();
@@ -78,15 +79,13 @@ public final class JvmMemory extends JmxQuery {
                 CompositeData usage = (CompositeData) attributes.get(1).getValue();
                 long used = (Long) usage.get(USED);
                 String type = HEAP_TYPE.equals(attributes.get(2).getValue()) ? "heap" : "nonheap";
-                metrics.add(Metric.builder()
-                        .key("jvm.memory.used")
-                        .tag("pool", name)
-                        .tag("type", type)
-                        .at(timestamp)
-                        .gauge("bytes", used)
-                        .build());
+                samples.add(Metric.builder()
+                        .key("jvm/memory/used")
+                        .tags(Tags.of("pool", name, "type", type))
+                        .gauge("bytes")
+                        .sample(used, timestamp));
             }
-            return metrics;
+            return samples;
         }
     }
 }

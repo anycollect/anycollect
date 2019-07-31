@@ -8,7 +8,7 @@ public interface MeterId extends Id {
     }
 
     @Nonnull
-    String getKey();
+    Key getKey();
 
     @Nonnull
     String getUnit();

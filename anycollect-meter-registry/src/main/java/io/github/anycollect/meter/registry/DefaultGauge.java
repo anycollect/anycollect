@@ -2,7 +2,6 @@ package io.github.anycollect.meter.registry;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
-import io.github.anycollect.metric.prepared.PreparedMetric;
 import lombok.Builder;
 
 import javax.annotation.Nonnull;
@@ -14,7 +13,7 @@ public class DefaultGauge<T> extends AbstractMeter implements Gauge, Meter {
     private final Clock clock;
     private final T obj;
     private final ToDoubleFunction<T> value;
-    private final PreparedMetric preparedGauge;
+    private final Metric id;
 
     @Builder
     public DefaultGauge(@Nonnull final MeterId id,
@@ -28,20 +27,17 @@ public class DefaultGauge<T> extends AbstractMeter implements Gauge, Meter {
         this.clock = clock;
         this.obj = obj;
         this.value = value;
-        this.preparedGauge = Metric.prepare()
-                .key(prefix, id.getKey())
-                .concatTags(tags)
-                .concatTags(id.getTags())
-                .concatMeta(meta)
-                .concatMeta(id.getMetaTags())
-                .measurement(Stat.value(), Type.GAUGE, id.getUnit())
-                .build();
+        this.id = Metric.builder()
+                .key(id.getKey().withPrefix(prefix))
+                .tags(tags.concat(id.getTags()))
+                .meta(meta.concat(id.getMetaTags()))
+                .gauge(id.getUnit());
     }
 
     @Nonnull
     @Override
-    public List<Metric> measure() {
+    public List<Sample> measure() {
         double value = this.value.applyAsDouble(obj);
-        return Collections.singletonList(preparedGauge.compile(clock.wallTime(), value));
+        return Collections.singletonList(id.sample(value, clock.wallTime()));
     }
 }

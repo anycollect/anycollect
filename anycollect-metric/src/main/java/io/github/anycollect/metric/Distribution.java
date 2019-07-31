@@ -6,22 +6,18 @@ public interface Distribution {
     Distribution NOOP = amount -> { };
 
     static DistributionBuilder key(@Nonnull final String key) {
-        return new DistributionBuilder(key);
+        return new DistributionBuilder(Key.of(key));
     }
 
-    static DistributionBuilder key(@Nonnull final String... keyParts) {
-        return new DistributionBuilder(keyParts);
+    static DistributionBuilder key(@Nonnull final Key key) {
+        return new DistributionBuilder(key);
     }
 
     void record(long amount);
 
     final class DistributionBuilder extends BaseMeterBuilder<DistributionBuilder> {
-        DistributionBuilder(@Nonnull final String value) {
-            super(value);
-        }
-
-        public DistributionBuilder(@Nonnull final String... keyParts) {
-            super(keyParts);
+        DistributionBuilder(@Nonnull final Key key) {
+            super(key);
         }
 
         @Override

@@ -3,6 +3,7 @@ package io.github.anycollect.core.impl.transform;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.extensions.Instance;
 import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.test.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,17 +47,18 @@ class TransformerTest {
             long timestamp = System.currentTimeMillis();
             transformer.submit(Collections.singletonList(
                     Metric.builder()
+                            .key("test")
                             .tag("pid.file", "/home/test/anycollect.pid")
-                            .at(timestamp)
-                            .build()
+                            .gauge()
+                            .sample(1.0, timestamp)
             ));
-            ArgumentCaptor<Metric> captor = ArgumentCaptor.forClass(Metric.class);
+            ArgumentCaptor<Sample> captor = ArgumentCaptor.forClass(Sample.class);
             verify(dispatcher, times(1)).dispatch(captor.capture());
-            assertThat(captor.getValue().getFrame())
+            assertThat(captor.getValue().getMetric())
                     .isEqualTo(Metric.builder()
+                            .key("test")
                             .tag("process", "anycollect")
-                            .at(timestamp)
-                            .build().getFrame());
+                            .gauge());
         }
     }
 }

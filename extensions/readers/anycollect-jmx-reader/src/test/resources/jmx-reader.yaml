@@ -30,7 +30,6 @@ extensions:
     - key: histogram
       mbean: "test:name=Test,k1=*,k2=*"
       tagKeys: [k1, k2]
-      unit: events
       tags:
         key1: value1
       meta:
@@ -40,15 +39,15 @@ extensions:
         values:
         - [k1val2, k2val1]
       measurements:
-        - { path: Min, type: gauge, stat: min }
-        - { path: Max, type: gauge, stat: max }
-        - { path: Mean, type: gauge, stat: mean }
-        - { path: StdDev, type: gauge, stat: std }
-        - { path: 50thPercentile, type: gauge, stat: max_50 }
-        - { path: 75thPercentile, type: gauge, stat: max_75 }
-        - { path: 90thPercentile, type: gauge, stat: max_90 }
-        - { path: 95thPercentile, type: gauge, stat: max_95 }
-        - { path: 99thPercentile, type: gauge, stat: max_99 }
+        - { path: Min, type: aggregate, stat: min, unit: events }
+        - { path: Max, type: aggregate, stat: max, unit: events }
+        - { path: Mean, type: aggregate, stat: mean, unit: events }
+        - { path: StdDev, type: aggregate, stat: std, unit: events }
+        - { path: 50thPercentile, type: aggregate, stat: max_50, unit: events }
+        - { path: 75thPercentile, type: aggregate, stat: max_75, unit: events }
+        - { path: 90thPercentile, type: aggregate, stat: max_90, unit: events }
+        - { path: 95thPercentile, type: aggregate, stat: max_95, unit: events }
+        - { path: 99thPercentile, type: aggregate, stat: max_99, unit: events }
 - !load
   extension: StaticQueryMatcherResolver
   instance: matcher

@@ -1,8 +1,5 @@
 package io.github.anycollect.metric;
 
-import io.github.anycollect.tags.ConcatTags;
-import io.github.anycollect.tags.RemoveTags;
-
 import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.Set;
@@ -35,13 +32,13 @@ public interface Tags extends Iterable<Tag> {
         return builder.build();
     }
 
-    boolean hasTagKey(String key);
+    boolean hasTagKey(CharSequence key);
 
     @Nonnull
-    Tag getTag(String key);
+    Tag getTag(CharSequence key);
 
     @Nonnull
-    default String getTagValue(String key) {
+    default String getTagValue(CharSequence key) {
         return getTag(key).getValue();
     }
 
@@ -56,10 +53,14 @@ public interface Tags extends Iterable<Tag> {
     }
 
     default Tags remove(String key) {
+        return remove(Key.of(key));
+    }
+
+    default Tags remove(Key key) {
         return RemoveTags.of(this, key);
     }
 
-    default Tags remove(Set<String> keys) {
+    default Tags remove(Set<Key> keys) {
         return RemoveTags.of(this, keys);
     }
 
@@ -80,5 +81,21 @@ public interface Tags extends Iterable<Tag> {
             return true;
         }
         return left.contains(right) && right.contains(left);
+    }
+
+    static String toString(@Nonnull final Tags tags) {
+        if (tags.isEmpty()) {
+            return "{}";
+        }
+        StringBuilder output = new StringBuilder();
+        boolean first = true;
+        for (final Tag tag : tags) {
+            if (!first) {
+                output.append(',');
+            }
+            output.append(tag.getKey()).append("=").append(tag.getValue());
+            first = false;
+        }
+        return output.toString();
     }
 }

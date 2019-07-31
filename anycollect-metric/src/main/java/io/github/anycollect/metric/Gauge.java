@@ -9,31 +9,24 @@ public interface Gauge {
     static <T> GaugeBuilder<T> make(@Nonnull final String key,
                                     @Nonnull final T obj,
                                     @Nonnull final ToDoubleFunction<T> value) {
-        return new GaugeBuilder<>(key, obj, value);
+        return make(Key.of(key), obj, value);
     }
 
-    static <T> GaugeBuilder<T> make(@Nonnull final T obj,
-                                    @Nonnull final ToDoubleFunction<T> value,
-                                    @Nonnull final String... keyParts) {
-        return new GaugeBuilder<>(obj, value, keyParts);
+
+    static <T> GaugeBuilder<T> make(@Nonnull final Key key,
+                                    @Nonnull final T obj,
+                                    @Nonnull final ToDoubleFunction<T> value) {
+        return new GaugeBuilder<>(key, obj, value);
     }
 
     final class GaugeBuilder<T> extends BaseMeterBuilder<GaugeBuilder<T>> {
         private final T obj;
         private final ToDoubleFunction<T> value;
 
-        GaugeBuilder(@Nonnull final String key,
+        GaugeBuilder(@Nonnull final Key key,
                      @Nonnull final T obj,
                      @Nonnull final ToDoubleFunction<T> value) {
             super(key);
-            this.obj = obj;
-            this.value = value;
-        }
-
-        GaugeBuilder(@Nonnull final T obj,
-                     @Nonnull final ToDoubleFunction<T> value,
-                     @Nonnull final String... keyParts) {
-            super(keyParts);
             this.obj = obj;
             this.value = value;
         }

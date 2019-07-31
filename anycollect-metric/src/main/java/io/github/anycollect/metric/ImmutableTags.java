@@ -1,13 +1,11 @@
 package io.github.anycollect.metric;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
-
-import static java.util.stream.Collectors.joining;
 
 public final class ImmutableTags implements Tags {
     public static final ImmutableTags EMPTY = new ImmutableTags.Builder().build();
-    private final Map<String, String> tags;
     private final List<Tag> tagList;
     private final int hash;
 
@@ -16,43 +14,45 @@ public final class ImmutableTags implements Tags {
     }
 
     private ImmutableTags(final Builder builder) {
-        Map<String, String> tmpTagMap = new LinkedHashMap<>(builder.tags);
+        Map<Key, String> tmpTagMap = new LinkedHashMap<>(builder.tags);
         List<Tag> tmpTagList = new ArrayList<>();
-        for (Map.Entry<String, String> entry : tmpTagMap.entrySet()) {
+        for (Map.Entry<Key, String> entry : tmpTagMap.entrySet()) {
             tmpTagList.add(Tag.of(entry.getKey(), entry.getValue()));
         }
-        this.tags = Collections.unmodifiableMap(tmpTagMap);
         this.tagList = Collections.unmodifiableList(tmpTagList);
-        this.hash = Objects.hash(this.tags, this.tagList);
+        this.hash = Objects.hash(this.tagList);
     }
 
     private ImmutableTags(final String key, final String value) {
-        this.tagList = Collections.singletonList(Tag.of(key, value));
-        this.tags = Collections.singletonMap(key, value);
-        this.hash = Objects.hash(this.tags, this.tagList);
+        this.tagList = Collections.singletonList(Tag.of(Key.of(key), value));
+        this.hash = Objects.hash(this.tagList);
     }
 
     @Override
-    public boolean hasTagKey(final String key) {
+    public boolean hasTagKey(final CharSequence key) {
         Objects.requireNonNull(key, "tag key must not be null");
-        return tags.containsKey(key);
+        return findTagOrNull(key) != null;
     }
 
     @Nonnull
     @Override
-    public Tag getTag(final String key) {
-        return Tag.of(key, getTagValue(key));
-    }
-
-    @Nonnull
-    @Override
-    public String getTagValue(final String key) {
+    public Tag getTag(final CharSequence key) {
         Objects.requireNonNull(key, "tag key must not be null");
-        String value = tags.get(key);
-        if (value == null) {
+        Tag tag = findTagOrNull(key);
+        if (tag == null) {
             throw new IllegalArgumentException("there is no tag value associated with " + key + " key");
         }
-        return value;
+        return tag;
+    }
+
+    @Nullable
+    private Tag findTagOrNull(final CharSequence key) {
+        for (final Tag tag : tagList) {
+            if (tag.getKey().contentEquals(key)) {
+                return tag;
+            }
+        }
+        return null;
     }
 
     @Nonnull
@@ -68,7 +68,7 @@ public final class ImmutableTags implements Tags {
 
     @Override
     public String toString() {
-        return tagList.stream().map(Tag::toString).collect(joining(","));
+        return Tags.toString(this);
     }
 
     @Override
@@ -88,7 +88,7 @@ public final class ImmutableTags implements Tags {
     }
 
     public static final class Builder {
-        private final Map<String, String> tags = new LinkedHashMap<>();
+        private final Map<Key, String> tags = new LinkedHashMap<>();
 
         public Builder tag(@Nonnull final String key, final int value) {
             return tag(key, Integer.toString(value));
@@ -97,7 +97,7 @@ public final class ImmutableTags implements Tags {
         public Builder tag(@Nonnull final String key, @Nonnull final String value) {
             Objects.requireNonNull(key, "tag key must not be null");
             Objects.requireNonNull(value, "tag value must not be null");
-            tags.put(key, value);
+            tags.put(Key.of(key), value);
             return this;
         }
 

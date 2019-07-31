@@ -10,12 +10,12 @@ import javax.annotation.Nonnull;
 @ToString(of = {"key", "unit", "tags"}, includeFieldNames = false)
 @EqualsAndHashCode(of = {"key", "unit", "tags"})
 public final class ImmutableMeterId implements MeterId {
-    private final String key;
+    private final Key key;
     private final String unit;
     private final ImmutableTags tags;
     private final ImmutableTags metaTags;
 
-    public ImmutableMeterId(@Nonnull final String key, @Nonnull final String unit,
+    public ImmutableMeterId(@Nonnull final Key key, @Nonnull final String unit,
                             @Nonnull final ImmutableTags tags, @Nonnull final ImmutableTags meta) {
         this.key = key;
         this.unit = unit;
@@ -36,7 +36,7 @@ public final class ImmutableMeterId implements MeterId {
             return this;
         }
 
-        public Builder key(@Nonnull final String key) {
+        public Builder key(@Nonnull final Key key) {
             return super.key(key);
         }
 

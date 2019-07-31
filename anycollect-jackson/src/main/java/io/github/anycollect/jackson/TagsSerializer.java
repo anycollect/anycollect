@@ -18,7 +18,7 @@ public final class TagsSerializer extends StdSerializer<Tags> {
             throws IOException {
         gen.writeStartObject();
         for (Tag tag : value) {
-            gen.writeStringField(tag.getKey(), tag.getValue());
+            gen.writeStringField(tag.getKey().normalize(), tag.getValue());
         }
         gen.writeEndObject();
     }

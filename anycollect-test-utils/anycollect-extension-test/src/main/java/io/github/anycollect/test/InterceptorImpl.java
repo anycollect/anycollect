@@ -1,11 +1,11 @@
 package io.github.anycollect.test;
 
 import io.github.anycollect.assertj.AnyCollectAssertions;
-import io.github.anycollect.assertj.MetricAssert;
+import io.github.anycollect.assertj.SampleAssert;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.annotations.InstanceId;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
@@ -22,7 +22,7 @@ public final class InterceptorImpl implements Interceptor {
     private final String id;
     private final Object lock = new Object();
     @GuardedBy("lock")
-    private final List<Metric> intercepted = new ArrayList<>();
+    private final List<Sample> intercepted = new ArrayList<>();
     private final int awaitSeconds = 10;
 
     @ExtCreator
@@ -31,7 +31,7 @@ public final class InterceptorImpl implements Interceptor {
     }
 
     @Override
-    public void write(@Nonnull final List<? extends Metric> metrics) {
+    public void write(@Nonnull final List<? extends Sample> metrics) {
         synchronized (lock) {
             intercepted.addAll(metrics);
         }
@@ -43,44 +43,44 @@ public final class InterceptorImpl implements Interceptor {
     }
 
     @Override
-    public MetricAssert intercepted(final String key) {
+    public SampleAssert intercepted(final String key) {
         return retryIntercepted(() -> {
             synchronized (lock) {
-                return AnyCollectAssertions.assertThatMetrics(intercepted)
+                return AnyCollectAssertions.assertThatSamples(intercepted)
                         .contains(key);
             }
         });
     }
 
     @Override
-    public MetricAssert intercepted(final String key, final Tags tags) {
+    public SampleAssert intercepted(final String key, final Tags tags) {
         return retryIntercepted(() -> {
             synchronized (lock) {
-                return AnyCollectAssertions.assertThatMetrics(intercepted)
+                return AnyCollectAssertions.assertThatSamples(intercepted)
                         .contains(key, tags);
             }
         });
     }
 
     @Override
-    public MetricAssert intercepted(final String key, final Tags tags, final Tags meta) {
+    public SampleAssert intercepted(final String key, final Tags tags, final Tags meta) {
         return retryIntercepted(() -> {
             synchronized (lock) {
-                return AnyCollectAssertions.assertThatMetrics(intercepted)
+                return AnyCollectAssertions.assertThatSamples(intercepted)
                         .contains(key, tags, meta);
             }
         });
     }
 
-    private MetricAssert retryIntercepted(final Callable<MetricAssert> callable) {
-        CompletableFuture<MetricAssert> future = new CompletableFuture<>();
+    private SampleAssert retryIntercepted(final Callable<SampleAssert> callable) {
+        CompletableFuture<SampleAssert> future = new CompletableFuture<>();
         await()
                 .atMost(awaitSeconds, TimeUnit.SECONDS)
                 .ignoreExceptions()
                 .until(() -> {
-                    MetricAssert metricAssert = callable.call();
-                    metricAssert.isNotNull();
-                    future.complete(metricAssert);
+                    SampleAssert sampleAssert = callable.call();
+                    sampleAssert.isNotNull();
+                    future.complete(sampleAssert);
                     return true;
                 });
         try {

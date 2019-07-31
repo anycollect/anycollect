@@ -3,7 +3,7 @@ package io.github.anycollect.core.impl.router;
 import io.github.anycollect.metric.Counter;
 import io.github.anycollect.metric.Gauge;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,16 +49,16 @@ public final class BackgroundMetricConsumer implements MetricConsumer {
     }
 
     @Override
-    public void consume(@Nonnull final List<? extends Metric> metrics) {
+    public void consume(@Nonnull final List<? extends Sample> samples) {
         if (!stopped) {
             try {
-                inputSize.addAndGet(metrics.size());
+                inputSize.addAndGet(samples.size());
                 executor.submit(() -> {
-                    inputSize.getAndAdd(-metrics.size());
-                    delegate.consume(metrics);
+                    inputSize.getAndAdd(-samples.size());
+                    delegate.consume(samples);
                 });
             } catch (RejectedExecutionException e) {
-                rejected.increment(metrics.size());
+                rejected.increment(samples.size());
             }
         }
     }

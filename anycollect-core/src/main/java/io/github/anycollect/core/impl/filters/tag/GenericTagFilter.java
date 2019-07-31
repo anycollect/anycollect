@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import io.github.anycollect.core.api.filter.Filter;
 import io.github.anycollect.core.api.filter.FilterReply;
+import io.github.anycollect.metric.Metric;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.metric.frame.MetricFrame;
 
 import javax.annotation.Nonnull;
 
@@ -27,8 +27,8 @@ public final class GenericTagFilter implements Filter {
     }
 
     @Override
-    public FilterReply accept(@Nonnull final MetricFrame frame) {
-        Tags tags = meta ? frame.getMeta() : frame.getTags();
+    public FilterReply accept(@Nonnull final Metric metric) {
+        Tags tags = meta ? metric.getMeta() : metric.getTags();
         if (state == TagExistence.PRESENT) {
             return tags.hasTagKey(key) ? reply : FilterReply.NEUTRAL;
         } else {

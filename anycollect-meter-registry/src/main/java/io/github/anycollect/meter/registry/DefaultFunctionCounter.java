@@ -2,24 +2,23 @@ package io.github.anycollect.meter.registry;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
-import io.github.anycollect.metric.prepared.PreparedMetric;
 import lombok.Builder;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.ToDoubleFunction;
+import java.util.function.ToLongFunction;
 
 public class DefaultFunctionCounter<T> extends AbstractMeter implements FunctionCounter, Meter {
     private final Clock clock;
     private final T obj;
-    private final ToDoubleFunction<T> value;
-    private final PreparedMetric preparedCounter;
+    private final ToLongFunction<T> value;
+    private final Metric id;
 
     @Builder
     public DefaultFunctionCounter(@Nonnull final MeterId id,
                                   @Nonnull final T obj,
-                                  @Nonnull final ToDoubleFunction<T> value,
+                                  @Nonnull final ToLongFunction<T> value,
                                   @Nonnull final String prefix,
                                   @Nonnull final Tags tags,
                                   @Nonnull final Tags meta,
@@ -28,19 +27,16 @@ public class DefaultFunctionCounter<T> extends AbstractMeter implements Function
         this.clock = clock;
         this.obj = obj;
         this.value = value;
-        this.preparedCounter = Metric.prepare()
-                .key(prefix, id.getKey())
-                .concatTags(tags)
-                .concatTags(id.getTags())
-                .concatMeta(meta)
-                .concatMeta(id.getMetaTags())
-                .measurement(Stat.value(), Type.GAUGE, id.getUnit())
-                .build();
+        this.id = Metric.builder()
+                .key(id.getKey().withPrefix(prefix))
+                .tags(tags.concat(id.getTags()))
+                .meta(meta.concat(id.getMetaTags()))
+                .counter(id.getUnit());
     }
 
     @Nonnull
     @Override
-    public List<Metric> measure() {
-        return Collections.singletonList(preparedCounter.compile(clock.wallTime(), value.applyAsDouble(obj)));
+    public List<Sample> measure() {
+        return Collections.singletonList(id.sample(value.applyAsLong(obj), clock.wallTime()));
     }
 }

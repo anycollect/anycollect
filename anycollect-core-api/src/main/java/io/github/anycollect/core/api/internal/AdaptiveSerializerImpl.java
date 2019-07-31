@@ -2,7 +2,7 @@ package io.github.anycollect.core.api.internal;
 
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.exceptions.SerialisationException;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 import java.nio.ByteBuffer;
@@ -28,8 +28,8 @@ public final class AdaptiveSerializerImpl implements AdaptiveSerializer {
     }
 
     @Override
-    public ByteBuffer serialize(@Nonnull final Metric metric) throws SerialisationException {
-        serializer.serialize(metric, buffer);
+    public ByteBuffer serialize(@Nonnull final Sample sample) throws SerialisationException {
+        serializer.serialize(sample, buffer);
 
         if (buffer == null) {
             throw new IllegalStateException("buffer has not been released yet");
@@ -38,7 +38,7 @@ public final class AdaptiveSerializerImpl implements AdaptiveSerializer {
         CoderResult coderResult;
         do {
             buffer.clear();
-            coderResult = serializer.serialize(metric, buffer);
+            coderResult = serializer.serialize(sample, buffer);
             buffer.flip();
             if (coderResult.isOverflow()) {
                 if (buffer.capacity() == maxBufferSize) {

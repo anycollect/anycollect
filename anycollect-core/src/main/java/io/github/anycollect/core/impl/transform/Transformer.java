@@ -11,7 +11,7 @@ import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.annotations.InstanceId;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -40,16 +40,16 @@ public final class Transformer implements Processor {
     }
 
     @Override
-    public void submit(@Nonnull final List<? extends Metric> sources) {
+    public void submit(@Nonnull final List<? extends Sample> sources) {
         if (dispatcher == null) {
             return;
         }
-        for (Metric source : sources) {
+        for (Sample source : sources) {
             if (forwardSourceMetric) {
                 dispatcher.dispatch(source);
             }
-            if (filter.accept(source.getFrame()) == FilterReply.ACCEPT) {
-                Metric target = transformation.transform(source);
+            if (filter.accept(source.getMetric()) == FilterReply.ACCEPT) {
+                Sample target = transformation.transform(source);
                 dispatcher.dispatch(target);
             }
         }

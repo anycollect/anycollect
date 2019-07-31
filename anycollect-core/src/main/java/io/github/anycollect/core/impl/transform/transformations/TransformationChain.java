@@ -1,6 +1,6 @@
 package io.github.anycollect.core.impl.transform.transformations;
 
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -14,8 +14,8 @@ public final class TransformationChain implements Transformation {
 
     @Nonnull
     @Override
-    public Metric transform(@Nonnull final Metric source) {
-        Metric target = source;
+    public Sample transform(@Nonnull final Sample source) {
+        Sample target = source;
         for (Transformation transformation : transformations) {
             target = transformation.transform(target);
         }

@@ -1,7 +1,7 @@
 package io.github.anycollect.core.impl.scheduler;
 
 import io.github.anycollect.metric.*;
-import io.github.anycollect.metric.noop.NoopMeterRegistry;
+import io.github.anycollect.metric.NoopMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ScheduledFuture;
@@ -25,7 +25,7 @@ class MonitoredScheduledThreadPoolExecutorTest {
             }
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
-        verify(registry, times(1)).distribution(MeterId.key("scheduler.discrepancy").unit("percents").build());
+        verify(registry, times(1)).distribution(MeterId.key("scheduler/discrepancy").unit("percents").build());
     }
 
     @Test
@@ -39,7 +39,7 @@ class MonitoredScheduledThreadPoolExecutorTest {
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         future.cancel(true);
         Thread.sleep(1000);
-        verify(registry, times(1)).counter(MeterId.key("scheduler.jobs.failed").build());
+        verify(registry, times(1)).counter(MeterId.key("scheduler/jobs/failed").build());
     }
 
     @Test
@@ -53,6 +53,6 @@ class MonitoredScheduledThreadPoolExecutorTest {
             }
         }, 0L, 70L, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
-        verify(registry, times(1)).counter(MeterId.key("scheduler.jobs.failed").build());
+        verify(registry, times(1)).counter(MeterId.key("scheduler/jobs/failed").build());
     }
 }

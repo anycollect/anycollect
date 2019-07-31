@@ -1,11 +1,11 @@
 package io.github.anycollect.core.api;
 
 import io.github.anycollect.core.exceptions.SerialisationException;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 
 public interface Deserializer {
     @Nonnull
-    Metric deserialize(@Nonnull String string) throws SerialisationException;
+    Sample deserialize(@Nonnull String string) throws SerialisationException;
 }

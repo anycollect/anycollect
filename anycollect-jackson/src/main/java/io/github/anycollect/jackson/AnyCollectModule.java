@@ -30,16 +30,16 @@ public final class AnyCollectModule extends Module {
     public void setupModule(final SetupContext context) {
         SimpleSerializers serializers = new SimpleSerializers();
         serializers.addSerializer(Tags.class, new TagsSerializer());
-        serializers.addSerializer(Measurement.class, new MeasurementSerializer());
-        serializers.addSerializer(Metric.class, new MetricSerializer());
+        serializers.addSerializer(Key.class, new KeySerializer());
+        serializers.addSerializer(Sample.class, new SampleSerializer());
         serializers.addSerializer(Stat.class, new StatSerializer());
         serializers.addSerializer(Type.class, new TypeSerializer());
         context.addSerializers(serializers);
 
         SimpleDeserializers deserializers = new SimpleDeserializers();
         deserializers.addDeserializer(Tags.class, new TagsDeserializer());
-        deserializers.addDeserializer(Measurement.class, new MeasurementDeserializer());
-        deserializers.addDeserializer(Metric.class, new MetricDeserializer());
+        deserializers.addDeserializer(Key.class, new KeyDeserializer());
+        deserializers.addDeserializer(Sample.class, new SampleDeserializer());
         deserializers.addDeserializer(Stat.class, new StatDeserializer());
         deserializers.addDeserializer(Type.class, new TypeDeserializer());
         context.addDeserializers(deserializers);

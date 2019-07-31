@@ -19,7 +19,7 @@ class TagTest {
     @Test
     @DisplayName("there is no way to create tag with null key or value")
     void nullsIsForbidden() {
-        NullPointerException ex1 = Assertions.assertThrows(NullPointerException.class, () -> Tag.of(null, "value1"));
+        NullPointerException ex1 = Assertions.assertThrows(NullPointerException.class, () -> Tag.of((String) null, "value1"));
         assertThat(ex1).hasMessageContaining("key");
         NullPointerException ex2 = Assertions.assertThrows(NullPointerException.class, () -> Tag.of("key1", null));
         assertThat(ex2).hasMessageContaining("value");

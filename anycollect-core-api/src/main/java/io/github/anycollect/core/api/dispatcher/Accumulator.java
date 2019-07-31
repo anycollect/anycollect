@@ -1,6 +1,6 @@
 package io.github.anycollect.core.api.dispatcher;
 
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -9,23 +9,23 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class Accumulator implements Dispatcher {
-    private final Queue<Metric> metrics;
+    private final Queue<Sample> samples;
 
     public Accumulator() {
-        metrics = new ConcurrentLinkedQueue<>();
+        samples = new ConcurrentLinkedQueue<>();
     }
 
-    public List<Metric> purge() {
-        return new ArrayList<>(metrics);
-    }
-
-    @Override
-    public void dispatch(@Nonnull final Metric metric) {
-        this.metrics.add(metric);
+    public List<Sample> purge() {
+        return new ArrayList<>(samples);
     }
 
     @Override
-    public void dispatch(@Nonnull final List<Metric> metrics) {
-        this.metrics.addAll(metrics);
+    public void dispatch(@Nonnull final Sample sample) {
+        this.samples.add(sample);
+    }
+
+    @Override
+    public void dispatch(@Nonnull final List<Sample> samples) {
+        this.samples.addAll(samples);
     }
 }

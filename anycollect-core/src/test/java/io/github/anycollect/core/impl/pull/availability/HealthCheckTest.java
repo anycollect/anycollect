@@ -1,11 +1,11 @@
 package io.github.anycollect.core.impl.pull.availability;
 
-import io.github.anycollect.assertj.MetricsAssert;
+import io.github.anycollect.assertj.SamplesAssert;
 import io.github.anycollect.core.api.dispatcher.Accumulator;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.impl.TestTarget;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tags;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -48,11 +48,11 @@ class HealthCheckTest {
         when(clock.wallTime()).thenReturn(now);
         checkingTarget.update(check);
         healthCheck.run();
-        List<Metric> metrics = accumulator.purge();
-        assertMetric(metrics, "health.check", status);
-        assertMetric(metrics,"instances.up", up);
-        assertMetric(metrics,"instances.down", down);
-        assertMetric(metrics,"instances.unknown", unknown);
+        List<Sample> samples = accumulator.purge();
+        assertMetric(samples, "health.check", status);
+        assertMetric(samples,"instances/up", up);
+        assertMetric(samples,"instances/down", down);
+        assertMetric(samples,"instances/unknown", unknown);
     }
 
     private static Stream<Arguments> arguments() {
@@ -66,7 +66,7 @@ class HealthCheckTest {
         );
     }
 
-    private void assertMetric(List<Metric> metrics, String key, double value) {
-        MetricsAssert.assertThat(metrics).contains(key, expectedTags, expectedMeta).hasValue(value);
+    private void assertMetric(List<Sample> samples, String key, double value) {
+        SamplesAssert.assertThat(samples).contains(key, expectedTags, expectedMeta).hasValue(value);
     }
 }

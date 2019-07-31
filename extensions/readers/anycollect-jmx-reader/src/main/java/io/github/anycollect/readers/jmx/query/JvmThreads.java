@@ -8,6 +8,7 @@ import io.github.anycollect.core.api.job.TaggingJob;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.query.operations.InvokeOperation;
 import io.github.anycollect.readers.jmx.query.operations.QueryAttributes;
@@ -48,9 +49,9 @@ public final class JvmThreads extends JmxQuery {
         }
     }
 
-    private static final String LIVE_THREADS_KEY = "jvm.threads.live";
-    private static final String THREADS_STARTED_KEY = "jvm.threads.started";
-    private static final String THREADS_BY_STATE_KEY = "jvm.threads.states";
+    private static final String LIVE_THREADS_KEY = "jvm/threads/live";
+    private static final String THREADS_STARTED_KEY = "jvm/threads/started";
+    private static final String THREADS_BY_STATE_KEY = "jvm/threads/states";
 
     private final String prefix;
     private final Clock clock;
@@ -83,7 +84,7 @@ public final class JvmThreads extends JmxQuery {
         }
 
         @Override
-        public List<Metric> execute() throws QueryException, ConnectionException {
+        public List<Sample> execute() throws QueryException, ConnectionException {
             List<Attribute> attributes = app.operate(queryAttributes);
             int threadCount = (int) attributes.get(0).getValue();
             int daemonThreadCount = (int) attributes.get(1).getValue();
@@ -97,38 +98,34 @@ public final class JvmThreads extends JmxQuery {
                     new String[]{long[].class.getName()});
             threadInfos = (CompositeData[]) app.operate(invoke);
             long timestamp = clock.wallTime();
-            List<Metric> metrics = new ArrayList<>();
-            metrics.add(Metric.builder()
+            List<Sample> samples = new ArrayList<>();
+            samples.add(Metric.builder()
                     .key(THREADS_STARTED_KEY)
-                    .at(timestamp)
-                    .counter(totalStartedThreadCount)
-                    .build());
-            metrics.add(Metric.builder()
+                    .counter()
+                    .sample(totalStartedThreadCount, timestamp));
+            samples.add(Metric.builder()
                     .key(LIVE_THREADS_KEY)
                     .tag("type", "daemon")
-                    .at(timestamp)
-                    .gauge(daemonThreadCount)
-                    .build());
-            metrics.add(Metric.builder()
+                    .gauge()
+                    .sample(daemonThreadCount, timestamp));
+            samples.add(Metric.builder()
                     .key(LIVE_THREADS_KEY)
                     .tag("type", "nondaemon")
-                    .at(timestamp)
-                    .gauge(threadCount - daemonThreadCount)
-                    .build());
+                    .gauge()
+                    .sample(threadCount - daemonThreadCount, timestamp));
             Multiset<String> numberOfThreadsByState = HashMultiset.create();
             for (CompositeData threadInfo : threadInfos) {
                 String state = (String) threadInfo.get(THREAD_STATE_PROP);
                 numberOfThreadsByState.add(state);
             }
             for (String state : numberOfThreadsByState.elementSet()) {
-                metrics.add(Metric.builder()
+                samples.add(Metric.builder()
                         .key(THREADS_BY_STATE_KEY)
                         .tag("state", state)
-                        .at(timestamp)
-                        .gauge(numberOfThreadsByState.count(state))
-                        .build());
+                        .gauge()
+                        .sample(numberOfThreadsByState.count(state), timestamp));
             }
-            return metrics;
+            return samples;
         }
     }
 }

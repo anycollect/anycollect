@@ -3,12 +3,8 @@ package io.github.anycollect.metric;
 import javax.annotation.Nonnull;
 
 public abstract class BaseMeterBuilder<T extends BaseMeterBuilder<T>> extends BaseBuilder<T> {
-    public BaseMeterBuilder(@Nonnull final String key) {
+    public BaseMeterBuilder(@Nonnull final Key key) {
         key(key);
-    }
-
-    public BaseMeterBuilder(@Nonnull final String... keyParts) {
-        key(keyParts);
     }
 
     /**

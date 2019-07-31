@@ -2,7 +2,7 @@ package io.github.anycollect.core.api.internal;
 
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.core.exceptions.SerialisationException;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
@@ -20,8 +20,8 @@ class AdaptiveSerializerImplTest {
     void mustIncreaseBufferSizeWhenOverflow() throws SerialisationException {
         Serializer under = mock(Serializer.class);
         AdaptiveSerializerImpl serializer = new AdaptiveSerializerImpl(under, 1, 100);
-        Metric metric = mock(Metric.class);
-        when(under.serialize(eq(metric), any(ByteBuffer.class)))
+        Sample sample = mock(Sample.class);
+        when(under.serialize(eq(sample), any(ByteBuffer.class)))
                 .thenAnswer((Answer<CoderResult>) invocation -> {
                     ByteBuffer buffer = invocation.getArgument(1);
                     if (buffer.capacity() < 10) {
@@ -30,7 +30,7 @@ class AdaptiveSerializerImplTest {
                         return CoderResult.UNDERFLOW;
                     }
                 });
-        ByteBuffer buffer = serializer.serialize(metric);
+        ByteBuffer buffer = serializer.serialize(sample);
         assertThat(buffer.capacity()).isGreaterThanOrEqualTo(10);
     }
 
@@ -38,9 +38,9 @@ class AdaptiveSerializerImplTest {
     void mustThrowExceptionWhenSerializationFail() throws SerialisationException {
         Serializer under = mock(Serializer.class);
         AdaptiveSerializerImpl serializer = new AdaptiveSerializerImpl(under, 1, 100);
-        Metric metric = mock(Metric.class);
+        Sample sample = mock(Sample.class);
         when(under.serialize(any(), any())).thenReturn(CoderResult.malformedForLength(1));
-        assertThatThrownBy(() -> serializer.serialize(metric)).isInstanceOf(SerialisationException.class);
+        assertThatThrownBy(() -> serializer.serialize(sample)).isInstanceOf(SerialisationException.class);
     }
 
     @Test
@@ -48,9 +48,9 @@ class AdaptiveSerializerImplTest {
         Serializer under = mock(Serializer.class);
         when(under.serialize(any(), any())).thenReturn(CoderResult.UNDERFLOW);
         AdaptiveSerializerImpl serializer = new AdaptiveSerializerImpl(under, 1, 100);
-        Metric metric = mock(Metric.class);
-        serializer.serialize(metric);
-        assertThatThrownBy(() -> serializer.serialize(metric)).isInstanceOf(IllegalStateException.class);
+        Sample sample = mock(Sample.class);
+        serializer.serialize(sample);
+        assertThatThrownBy(() -> serializer.serialize(sample)).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -58,10 +58,10 @@ class AdaptiveSerializerImplTest {
         Serializer under = mock(Serializer.class);
         when(under.serialize(any(), any())).thenReturn(CoderResult.UNDERFLOW);
         AdaptiveSerializerImpl serializer = new AdaptiveSerializerImpl(under, 1, 100);
-        Metric metric = mock(Metric.class);
-        ByteBuffer buffer = serializer.serialize(metric);
+        Sample sample = mock(Sample.class);
+        ByteBuffer buffer = serializer.serialize(sample);
         serializer.release(buffer);
-        assertThatCode(() -> serializer.serialize(metric)).doesNotThrowAnyException();
+        assertThatCode(() -> serializer.serialize(sample)).doesNotThrowAnyException();
         serializer.release(buffer);
     }
 
@@ -70,7 +70,7 @@ class AdaptiveSerializerImplTest {
         Serializer under = mock(Serializer.class);
         when(under.serialize(any(), any())).thenReturn(CoderResult.OVERFLOW);
         AdaptiveSerializerImpl serializer = new AdaptiveSerializerImpl(under, 1, 100);
-        Metric metric = mock(Metric.class);
-        assertThatThrownBy(() -> serializer.serialize(metric)).isInstanceOf(SerialisationException.class);
+        Sample sample = mock(Sample.class);
+        assertThatThrownBy(() -> serializer.serialize(sample)).isInstanceOf(SerialisationException.class);
     }
 }

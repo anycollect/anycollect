@@ -2,7 +2,7 @@ package io.github.anycollect.meter.registry;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.MeterId;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Timer;
 
 import javax.annotation.Nonnull;
@@ -38,7 +38,7 @@ public class DistributionDelegatingTimer extends AbstractMeter implements Timer 
     }
 
     @Override
-    public List<Metric> measure() {
+    public List<Sample> measure() {
         return distribution.measure();
     }
 }

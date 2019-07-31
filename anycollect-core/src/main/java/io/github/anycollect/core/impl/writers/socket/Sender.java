@@ -1,7 +1,7 @@
 package io.github.anycollect.core.impl.writers.socket;
 
 import io.github.anycollect.core.exceptions.SerialisationException;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -11,7 +11,7 @@ public interface Sender {
 
     boolean isConnected();
 
-    void send(@Nonnull Metric metric) throws SerialisationException, IOException;
+    void send(@Nonnull Sample sample) throws SerialisationException, IOException;
 
     void flush() throws IOException;
 

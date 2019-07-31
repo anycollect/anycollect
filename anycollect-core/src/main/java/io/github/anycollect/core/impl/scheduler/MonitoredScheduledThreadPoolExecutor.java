@@ -34,29 +34,29 @@ public final class MonitoredScheduledThreadPoolExecutor extends ScheduledThreadP
                                                 @Nonnull final Tags tags) {
         super(corePoolSize, threadFactory);
         this.clock = Clock.getDefault();
-        discrepancySummary = Distribution.key(prefix, "scheduler.discrepancy")
+        discrepancySummary = Distribution.key(Key.of("scheduler/discrepancy").withPrefix(prefix))
                 .unit("percents")
                 .concatTags(tags)
                 .meta(this.getClass())
                 .register(registry);
-        processingTimeSummary = Timer.key(prefix, "scheduler.processing.time")
+        processingTimeSummary = Timer.key(Key.of("scheduler/processing.time").withPrefix(prefix))
                 .unit(TimeUnit.MILLISECONDS)
                 .concatTags(tags)
                 .meta(this.getClass())
                 .register(registry);
-        failedJobsCounter = Counter.key(prefix, "scheduler.jobs.failed")
+        failedJobsCounter = Counter.key(Key.of("scheduler/jobs/failed").withPrefix(prefix))
                 .concatTags(tags)
                 .meta(this.getClass())
                 .register(registry);
-        succeededJobsCounter = Counter.key(prefix, "scheduler.jobs.succeeded")
+        succeededJobsCounter = Counter.key(Key.of("scheduler/jobs/succeeded").withPrefix(prefix))
                 .concatTags(tags)
                 .meta(this.getClass())
                 .register(registry);
-        Gauge.make(this, executor -> executor.getQueue().size(), prefix, "scheduler.queue.size")
+        Gauge.make(Key.of("scheduler/queue.size").withPrefix(prefix), this, executor -> executor.getQueue().size())
                 .concatTags(tags)
                 .meta(this.getClass())
                 .register(registry);
-        Gauge.make(this, executor -> getPoolSize(), prefix, "scheduler.threads.live")
+        Gauge.make(Key.of("scheduler/threads.live").withPrefix(prefix), this, executor -> getPoolSize())
                 .concatTags(tags)
                 .meta(this.getClass())
                 .register(registry);

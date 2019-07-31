@@ -1,7 +1,7 @@
 package io.github.anycollect.core.api;
 
 import io.github.anycollect.core.exceptions.SerialisationException;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 import java.nio.ByteBuffer;
@@ -12,9 +12,9 @@ import java.nio.charset.CoderResult;
 
 public interface Serializer {
     @Nonnull
-    default String serialize(@Nonnull Metric metric) throws SerialisationException {
+    default String serialize(@Nonnull Sample sample) throws SerialisationException {
         ByteBuffer buffer = ByteBuffer.allocate(2048);
-        serialize(metric, buffer);
+        serialize(sample, buffer);
         buffer.flip();
         try {
             CharBuffer decode = Charset.forName("UTF-8").newDecoder().decode(buffer);
@@ -24,5 +24,5 @@ public interface Serializer {
         }
     }
 
-    CoderResult serialize(@Nonnull Metric metric, @Nonnull ByteBuffer buffer) throws SerialisationException;
+    CoderResult serialize(@Nonnull Sample sample, @Nonnull ByteBuffer buffer) throws SerialisationException;
 }

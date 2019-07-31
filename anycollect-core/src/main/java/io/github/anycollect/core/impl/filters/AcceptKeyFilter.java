@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.anycollect.core.api.filter.Filter;
 import io.github.anycollect.core.api.filter.FilterReply;
-import io.github.anycollect.metric.frame.MetricFrame;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,7 +25,7 @@ public final class AcceptKeyFilter implements Filter {
 
 
     @Override
-    public FilterReply accept(@Nonnull final MetricFrame frame) {
-        return accept.accept(frame);
+    public FilterReply accept(@Nonnull final Metric metric) {
+        return accept.accept(metric);
     }
 }

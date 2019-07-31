@@ -8,6 +8,7 @@ import io.github.anycollect.core.api.job.TaggingJob;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.query.operations.QueryObjectNames;
 import io.github.anycollect.readers.jmx.query.operations.SubscribeOperation;
@@ -69,7 +70,7 @@ public final class JvmGc extends JmxQuery {
         }
 
         @Override
-        public List<Metric> execute() throws QueryException, ConnectionException {
+        public List<Sample> execute() throws QueryException, ConnectionException {
             // renew subscription if needed
             if (subscription == null || !subscription.isValid()) {
                 Set<ObjectName> garbageCollectors = app.operate(new QueryObjectNames(GARBAGE_COLLECTORS));
@@ -92,7 +93,7 @@ public final class JvmGc extends JmxQuery {
             }
         }
 
-        private List<Metric> aggregate() {
+        private List<Sample> aggregate() {
             long timestamp = clock.wallTime();
             Map<GcId, GcData> accumulator = new HashMap<>();
             List<GarbageCollectionNotificationInfo> accumulated;
@@ -124,26 +125,24 @@ public final class JvmGc extends JmxQuery {
                 gcData.freed += totalFreed;
                 gcData.duration += duration;
             }
-            List<Metric> metrics = new ArrayList<>();
+            List<Sample> samples = new ArrayList<>();
             for (GcId id : ids) {
                 GcData data = accumulator.get(id);
                 String gcName = id.gcName;
                 long duration = data != null ? data.duration : 0;
                 long freed = data != null ? data.freed : 0;
-                metrics.add(Metric.builder()
-                        .key(id.concurrent ? "jvm.gc.concurrent.phase.duration" : "jvm.gc.pause")
-                        .at(timestamp)
+                samples.add(Metric.builder()
+                        .key(id.concurrent ? "jvm/gc/concurrent.phase/duration" : "jvm/gc/pause/duration")
                         .tag("gc.name", gcName)
-                        .gauge("ms", duration)
-                        .build());
-                metrics.add(Metric.builder()
-                        .key("jvm.gc.memory.freed")
-                        .at(timestamp)
+                        .gauge("ms")
+                        .sample(duration, timestamp));
+                samples.add(Metric.builder()
+                        .key("jvm/gc/memory.freed")
                         .tag("gc.name", gcName)
-                        .gauge("bytes", freed)
-                        .build());
+                        .gauge("bytes")
+                        .sample(freed, timestamp));
             }
-            return metrics;
+            return samples;
         }
     }
 

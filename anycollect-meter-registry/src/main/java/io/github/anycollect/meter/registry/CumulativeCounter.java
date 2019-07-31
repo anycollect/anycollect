@@ -2,7 +2,6 @@ package io.github.anycollect.meter.registry;
 
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.metric.*;
-import io.github.anycollect.metric.prepared.PreparedMetric;
 import lombok.Builder;
 
 import javax.annotation.Nonnull;
@@ -13,7 +12,7 @@ import java.util.concurrent.atomic.DoubleAdder;
 public class CumulativeCounter extends AbstractMeter implements Counter, Meter {
     private final Clock clock;
     private final DoubleAdder adder = new DoubleAdder();
-    private final PreparedMetric preparedCounter;
+    private final Metric id;
 
     @Builder
     public CumulativeCounter(@Nonnull final MeterId id,
@@ -23,14 +22,11 @@ public class CumulativeCounter extends AbstractMeter implements Counter, Meter {
                              @Nonnull final Clock clock) {
         super(id);
         this.clock = clock;
-        this.preparedCounter = Metric.prepare()
-                .key(prefix, id.getKey())
-                .concatTags(tags)
-                .concatTags(id.getTags())
-                .concatMeta(meta)
-                .concatMeta(id.getMetaTags())
-                .counter(id.getUnit())
-                .build();
+        this.id = Metric.builder()
+                .key(id.getKey().withPrefix(prefix))
+                .tags(tags.concat(id.getTags()))
+                .meta(meta.concat(id.getMetaTags()))
+                .counter(id.getUnit());
     }
 
     @Override
@@ -40,7 +36,7 @@ public class CumulativeCounter extends AbstractMeter implements Counter, Meter {
 
     @Nonnull
     @Override
-    public List<Metric> measure() {
-        return Collections.singletonList(preparedCounter.compile(clock.wallTime(), adder.doubleValue()));
+    public List<Sample> measure() {
+        return Collections.singletonList(id.sample(adder.longValue(), clock.wallTime()));
     }
 }

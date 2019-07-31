@@ -3,7 +3,7 @@ package io.guthub.anycollect;
 import io.github.anycollect.metric.ImmutableTags;
 import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.tags.ConcatTags;
+import io.github.anycollect.metric.ConcatTags;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;

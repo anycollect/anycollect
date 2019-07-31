@@ -12,8 +12,8 @@ import io.github.anycollect.core.impl.pull.availability.Check;
 import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
 import io.github.anycollect.metric.Counter;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.Metric;
-import io.github.anycollect.metric.noop.NoopMeterRegistry;
+import io.github.anycollect.metric.Sample;
+import io.github.anycollect.metric.NoopMeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -57,12 +57,12 @@ public final class PullJob<T extends Target, Q extends Query<T>> implements Runn
         this.job = query.bind(target.get());
         this.dispatcher = dispatcher;
         this.clock = clock;
-        this.failed = Counter.key("pull.jobs.failed")
+        this.failed = Counter.key("pull/jobs/failed")
                 .tag("group", group)
                 .tag("target", target.get().getId())
                 .meta(this.getClass())
                 .register(registry);
-        this.succeeded = Counter.key("pull.jobs.succeeded")
+        this.succeeded = Counter.key("pull/jobs/succeeded")
                 .tag("group", group)
                 .tag("target", target.get().getId())
                 .meta(this.getClass())
@@ -76,14 +76,14 @@ public final class PullJob<T extends Target, Q extends Query<T>> implements Runn
         try {
             long start = clock.wallTime();
             try {
-                List<Metric> metrics;
+                List<Sample> samples;
                 synchronized (job) {
-                    metrics = job.execute();
+                    samples = job.execute();
                 }
                 succeeded.increment();
-                dispatcher.dispatch(metrics);
+                dispatcher.dispatch(samples);
                 LOG.debug("success: {}.execute({}) taken {}ms and produces {} metrics",
-                        target.get().getId(), query.getId(), clock.wallTime() - start, metrics.size());
+                        target.get().getId(), query.getId(), clock.wallTime() - start, samples.size());
                 target.update(Check.passed(start));
             } catch (InterruptedException e) {
                 LOG.debug("thread {} is interrupted", Thread.currentThread(), e);

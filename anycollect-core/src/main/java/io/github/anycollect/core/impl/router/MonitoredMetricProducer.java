@@ -3,7 +3,7 @@ package io.github.anycollect.core.impl.router;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
 import io.github.anycollect.metric.Counter;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -42,7 +42,7 @@ public final class MonitoredMetricProducer implements MetricProducer {
                             @Nonnull final MeterRegistry registry,
                             @Nonnull final MetricProducer producer) {
             this.delegate = delegate;
-            this.producedMetrics = Counter.key("router.route.dispatch")
+            this.producedMetrics = Counter.key("router/route/dispatch")
                     .unit("metrics")
                     .tag("route", producer.getAddress())
                     .meta(this.getClass())
@@ -50,15 +50,15 @@ public final class MonitoredMetricProducer implements MetricProducer {
         }
 
         @Override
-        public void dispatch(@Nonnull final Metric metric) {
+        public void dispatch(@Nonnull final Sample sample) {
             producedMetrics.increment();
-            delegate.dispatch(metric);
+            delegate.dispatch(sample);
         }
 
         @Override
-        public void dispatch(@Nonnull final List<Metric> metrics) {
-            producedMetrics.increment(metrics.size());
-            delegate.dispatch(metrics);
+        public void dispatch(@Nonnull final List<Sample> samples) {
+            producedMetrics.increment(samples.size());
+            delegate.dispatch(samples);
         }
     }
 }

@@ -1,6 +1,6 @@
 package io.github.anycollect.core.api.filter;
 
-import io.github.anycollect.metric.frame.MetricFrame;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -13,12 +13,12 @@ public final class FilterChain implements Filter {
     }
 
     @Override
-    public FilterReply accept(@Nonnull final MetricFrame frame) {
+    public FilterReply accept(@Nonnull final Metric metric) {
         for (Filter filter : chain) {
-            if (filter.accept(frame) == FilterReply.ACCEPT) {
+            if (filter.accept(metric) == FilterReply.ACCEPT) {
                 return FilterReply.ACCEPT;
             }
-            if (filter.accept(frame) == FilterReply.DENY) {
+            if (filter.accept(metric) == FilterReply.DENY) {
                 return FilterReply.DENY;
             }
         }

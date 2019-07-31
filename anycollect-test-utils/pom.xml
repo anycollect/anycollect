@@ -15,8 +15,6 @@
     <modules>
         <module>anycollect-assertj-extension</module>
         <module>anycollect-jmx-stub</module>
-        <module>anycollect-discrepancy-processor</module>
-        <module>anycollect-dummy-deserializer</module>
         <module>anycollect-extension-test</module>
     </modules>
 

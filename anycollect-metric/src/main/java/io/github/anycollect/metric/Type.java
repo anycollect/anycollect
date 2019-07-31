@@ -1,7 +1,12 @@
 package io.github.anycollect.metric;
 
 public enum Type {
-    RATE("rate", "r"), GAUGE("gauge", "g"), COUNTER("counter", "c"), TIMESTAMP("timestamp", "t");
+    RATE("rate", "r"),
+    GAUGE("gauge", "g"),
+    COUNTER("counter", "c"),
+    TIMESTAMP("timestamp", "t"),
+    AGGREGATE("aggregate", "a");
+
     private final String tagValue;
     private final String shortString;
 

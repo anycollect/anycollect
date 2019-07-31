@@ -3,7 +3,8 @@ package io.github.anycollect.core.impl.transform.transformations;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.anycollect.core.impl.transform.SourceTagAction;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.MutableMetric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
@@ -25,7 +26,7 @@ public final class TagTransformation implements Transformation {
 
     @Nonnull
     @Override
-    public Metric transform(@Nonnull final Metric source) {
+    public Sample transform(@Nonnull final Sample source) {
         if (!source.getTags().hasTagKey(key.getSource())) {
             return source;
         }
@@ -42,7 +43,7 @@ public final class TagTransformation implements Transformation {
         }
         String sourceKey = key.getSource();
         String targetKey = key.getTarget();
-        Metric target = source;
+        MutableMetric target = source.getMetric().modify();
         if (sourceTagAction == SourceTagAction.META) {
             target = target.backMeta(Tags.of(sourceKey, sourceValue));
         }
@@ -50,6 +51,6 @@ public final class TagTransformation implements Transformation {
             target = target.removeTag(sourceKey);
         }
         target = target.backTags(Tags.of(targetKey, targetValue));
-        return target;
+        return target.commit().sample(source.getValue(), source.getTimestamp());
     }
 }

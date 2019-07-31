@@ -9,7 +9,7 @@ import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.annotations.InstanceId;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -39,13 +39,13 @@ public class Slf4jWriter implements Writer, Lifecycle {
     }
 
     @Override
-    public void write(@Nonnull final List<? extends Metric> metrics) {
-        for (Metric metric : metrics) {
+    public void write(@Nonnull final List<? extends Sample> metrics) {
+        for (Sample sample : metrics) {
             try {
                 MDC.put("slf4j.writer.instance.id", id);
-                WRITER.info("{}", serializer.serialize(metric));
+                WRITER.info("{}", serializer.serialize(sample));
             } catch (SerialisationException e) {
-                LOG.debug("could not serialize metric {}", metric);
+                LOG.debug("could not serialize metric {}", sample);
             } finally {
                 MDC.clear();
             }

@@ -1,192 +1,189 @@
 package io.github.anycollect.metric;
 
-import io.github.anycollect.metric.frame.MetricFrame;
-import io.github.anycollect.metric.frame.Reframer;
-import io.github.anycollect.metric.prepared.PreparedMetricBuilder;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static java.util.stream.Collectors.joining;
 
 public interface Metric {
-    static Builder builder() {
+    static KeyStageBuilder builder() {
         return new Builder();
     }
 
-    static PreparedMetricBuilder prepare() {
-        return new PreparedMetricBuilder();
-    }
-
-    static Metric of(@Nonnull String key,
-                     @Nonnull Tags tags,
-                     @Nonnull Tags meta,
-                     @Nonnull Measurement measurement,
-                     long timestamp) {
-        return of(key, tags, meta, Collections.singletonList(measurement), timestamp);
-    }
-
-    static Metric of(@Nonnull String key,
-                     @Nonnull Tags tags,
-                     @Nonnull Tags meta,
-                     @Nonnull List<Measurement> measurements,
-                     long timestamp) {
-        return new ImmutableMetric(
-                key, timestamp, measurements, tags, meta
-        );
-    }
-
-    static Metric empty(@Nonnull MeterId id, long timestamp) {
-        return of(id, Collections.emptyList(), timestamp);
-    }
-
-    static Metric of(@Nonnull MeterId id, Measurement measurement, long timestamp) {
-        return of(id, Collections.singletonList(measurement), timestamp);
-    }
-
-    static Metric of(@Nonnull MeterId id, List<Measurement> measurements, long timestamp) {
-        return new ImmutableMetric(id.getKey(), timestamp,
-                measurements, id.getTags(), id.getMetaTags());
-    }
+    @Nonnull
+    Key getKey();
 
     @Nonnull
-    List<? extends Measurement> getMeasurements();
+    Tags getTags();
 
     @Nonnull
-    default String getKey() {
-        return getFrame().getKey();
+    Tags getMeta();
+
+    @Nonnull
+    Stat getStat();
+
+    @Nonnull
+    Type getType();
+
+    @Nonnull
+    String getUnit();
+
+    @Nonnull
+    default MutableMetric modify() {
+        return new MutableMetricImpl(this);
     }
 
-    @Nonnull
-    default Tags getTags() {
-        return getFrame().getTags();
+    default Sample sample(double value, long timestamp) {
+        return new DoubleSample(this, value, timestamp);
     }
 
-    @Nonnull
-    default Tags getMeta() {
-        return getFrame().getMeta();
+    interface KeyStageBuilder extends MetricBuilder {
+        TagsStageBuilder key(@Nonnull String key);
+
+        TagsStageBuilder key(@Nonnull Key key);
     }
 
-    @Nonnull
-    MetricFrame getFrame();
+    interface TagsStageBuilder extends MetricBuilder {
+        default MetaStageBuilder empty() {
+            return tags(Tags.empty());
+        }
 
-    long getTimestamp();
+        MetaStageBuilder tag(@Nonnull String key, @Nonnull String value);
 
-    int size();
-
-    @Nonnull
-    Metric reframe(@Nonnull MetricFrame frame);
-
-    @Nonnull
-    default Metric reframe(@Nonnull Reframer reframer) {
-        return reframe(reframer.reframe(getFrame()));
+        MetaStageBuilder tags(@Nonnull Tags tags);
     }
 
-    @Nonnull
-    default Metric prefix(@Nullable final String prefix) {
-        return reframe(getFrame().prefix(prefix));
+    interface MetaStageBuilder extends MetricBuilder {
+        default MetricBuilder empty() {
+            return meta(Tags.empty());
+        }
+
+        MetricBuilder meta(@Nonnull String key, @Nonnull String value);
+
+        MetricBuilder meta(@Nonnull Tags meta);
     }
 
-    @Nonnull
-    default Metric frontTags(@Nonnull final Tags tags) {
-        return reframe(getFrame().frontTags(tags));
+    interface MetricBuilder {
+        default Metric counter() {
+            return counter("");
+        }
+
+        default Metric counter(@Nonnull final String unit) {
+            return metric(Stat.VALUE, Type.COUNTER, unit);
+        }
+
+        default Metric min() {
+            return min("");
+        }
+
+        default Metric min(@Nonnull final String unit) {
+            return metric(Stat.MIN, Type.AGGREGATE, unit);
+        }
+
+        default Metric max() {
+            return max("");
+        }
+
+        default Metric max(@Nonnull final String unit) {
+            return metric(Stat.MAX, Type.AGGREGATE, unit);
+        }
+
+        default Metric mean() {
+            return mean("");
+        }
+
+        default Metric mean(@Nonnull final String unit) {
+            return metric(Stat.MEAN, Type.AGGREGATE, unit);
+        }
+
+        default Metric std() {
+            return std("");
+        }
+
+        default Metric std(@Nonnull final String unit) {
+            return metric(Stat.STD, Type.AGGREGATE, unit);
+        }
+
+        default Metric percentile(final double quantile) {
+            return percentile(quantile, "");
+        }
+
+        default Metric percentile(final double quantile, @Nonnull final String unit) {
+            return metric(Percentile.of(quantile), Type.AGGREGATE, unit);
+        }
+
+        default Metric percentile(final int percentile) {
+            return percentile(percentile, "");
+        }
+
+        default Metric percentile(final int percentile, @Nonnull final String unit) {
+            return metric(Percentile.of(percentile), Type.AGGREGATE, unit);
+        }
+
+        default Metric gauge() {
+            return gauge("");
+        }
+
+        default Metric gauge(@Nonnull final String unit) {
+            return metric(Stat.VALUE, Type.GAUGE, unit);
+        }
+
+        Metric metric(Stat stat, Type type, String unit);
     }
 
-    @Nonnull
-    default Metric backTags(@Nonnull final Tags tags) {
-        return reframe(getFrame().backTags(tags));
-    }
-
-    @Nonnull
-    default Metric frontMeta(@Nonnull final Tags meta) {
-        return reframe(getFrame().frontMeta(meta));
-    }
-
-    @Nonnull
-    default Metric backMeta(@Nonnull final Tags meta) {
-        return reframe(getFrame().backMeta(meta));
-    }
-
-    @Nonnull
-    default Metric removeTag(@Nonnull final String key) {
-        return reframe(getFrame().removeTag(key));
-    }
-
-    static String toString(Metric metric) {
-        MetricFrame frame = metric.getFrame();
-        List<? extends Measurement> measurements = metric.getMeasurements();
-        return frame.getKey() + ";" + (!frame.getTags().isEmpty() ? frame.getTags() + ";" : "") + measurements.stream()
-                .map(measurement -> Measurement.toString(measurement))
-                .collect(joining(","));
-    }
-
-    class Builder extends BaseBuilder<Builder> {
-        private long timestamp = -1;
-        private final List<Measurement> measurements = new ArrayList<>();
+    class Builder implements KeyStageBuilder, TagsStageBuilder, MetaStageBuilder, MetricBuilder {
+        private Key key;
+        private Tags tags = Tags.empty();
+        private Tags meta = Tags.empty();
 
         @Override
-        protected Builder self() {
+        public TagsStageBuilder key(@Nonnull final String key) {
+            this.key = Key.of(key);
             return this;
-        }
-
-        public Builder key(@Nonnull final String key) {
-            return super.key(key);
         }
 
         @Override
-        public Builder key(@Nonnull final String... keyParts) {
-            return super.key(keyParts);
-        }
-
-        public Builder at(final long timestamp) {
-            this.timestamp = timestamp;
+        public TagsStageBuilder key(@Nonnull final Key key) {
+            this.key = key;
             return this;
         }
 
-        public Builder counter(final double value) {
-            return counter("", value);
-        }
-
-        public Builder counter(@Nonnull final String unit, final double value) {
-            return measurement(Stat.VALUE, Type.COUNTER, unit, value);
-        }
-
-        public Builder gauge(final double value) {
-            return gauge("", value);
-        }
-
-        public Builder gauge(@Nonnull final String unit, final double value) {
-            return measurement(Stat.VALUE, Type.GAUGE, unit, value);
-        }
-
-        public Builder measurement(@Nonnull final Measurement measurement) {
-            measurements.add(measurement);
+        @Override
+        public Builder empty() {
             return this;
         }
 
-        public Builder measurement(@Nonnull final Stat stat,
-                                   @Nonnull final Type type,
-                                   @Nonnull final String unit,
-                                   final double value) {
-            measurements.add(new ImmutableMeasurement(stat, type, unit, value));
+        @Override
+        public MetaStageBuilder tag(@Nonnull final String key, @Nonnull final String value) {
+            this.tags = Tags.of(key, value);
             return this;
         }
 
-        public Builder measurements(@Nonnull final Collection<Measurement> measurements) {
-            this.measurements.addAll(measurements);
+        @Override
+        public MetaStageBuilder tags(@Nonnull final Tags tags) {
+            this.tags = tags;
             return this;
         }
 
-        public Metric build() {
-            if (timestamp == -1) {
-                throw new IllegalStateException("timestamp must be set");
-            }
-            return new ImmutableMetric(getKey(), timestamp, measurements,
-                    getTagsBuilder().build(), getMetaBuilder().build());
+        @Override
+        public MetricBuilder meta(@Nonnull final String key, @Nonnull final String value) {
+            this.meta = Tags.of(key, value);
+            return this;
+        }
+
+        @Override
+        public MetricBuilder meta(@Nonnull final Tags meta) {
+            this.meta = meta;
+            return this;
+        }
+
+        @Override
+        public Metric metric(final Stat stat, final Type type, final String unit) {
+            return ImmutableMetric.builder()
+                    .key(key)
+                    .tags(tags)
+                    .meta(meta)
+                    .stat(stat)
+                    .type(type)
+                    .unit(unit)
+                    .build();
         }
     }
 }

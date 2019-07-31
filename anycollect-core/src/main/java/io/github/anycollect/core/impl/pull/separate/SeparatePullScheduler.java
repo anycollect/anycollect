@@ -11,7 +11,7 @@ import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
 import io.github.anycollect.core.api.internal.Cancellation;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.noop.NoopMeterRegistry;
+import io.github.anycollect.metric.NoopMeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

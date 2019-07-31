@@ -1,7 +1,7 @@
 package io.github.anycollect.core.api.filter;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.github.anycollect.metric.frame.MetricFrame;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nonnull;
 
@@ -9,5 +9,5 @@ import javax.annotation.Nonnull;
         use = JsonTypeInfo.Id.NAME,
         property = "type")
 public interface Filter {
-    FilterReply accept(@Nonnull MetricFrame frame);
+    FilterReply accept(@Nonnull Metric metric);
 }

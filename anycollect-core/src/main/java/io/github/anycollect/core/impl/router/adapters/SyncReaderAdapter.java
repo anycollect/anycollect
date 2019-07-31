@@ -13,7 +13,7 @@ import io.github.anycollect.core.api.target.ServiceDiscovery;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.core.impl.router.MetricProducer;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tags;
 
 import javax.annotation.Nonnull;
@@ -73,7 +73,7 @@ public final class SyncReaderAdapter implements MetricProducer {
         }
 
         @Override
-        public List<Metric> execute() throws InterruptedException, QueryException, ConnectionException {
+        public List<Sample> execute() throws InterruptedException, QueryException, ConnectionException {
             Accumulator accumulator = Dispatcher.accumulator();
             reader.read(accumulator);
             return accumulator.purge();

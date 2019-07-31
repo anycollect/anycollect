@@ -1,6 +1,6 @@
 package io.github.anycollect.assertj;
 
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tags;
 import org.assertj.core.api.Assertions;
 
@@ -14,11 +14,11 @@ public final class AnyCollectAssertions extends Assertions {
         return TagsAssert.assertThat(actual);
     }
 
-    public static MetricAssert assertThat(final Metric actual) {
-        return MetricAssert.assertThat(actual);
+    public static SampleAssert assertThat(final Sample actual) {
+        return SampleAssert.assertThat(actual);
     }
 
-    public static MetricsAssert assertThatMetrics(final List<Metric> actual) {
-        return new MetricsAssert(actual);
+    public static SamplesAssert assertThatSamples(final List<Sample> actual) {
+        return new SamplesAssert(actual);
     }
 }

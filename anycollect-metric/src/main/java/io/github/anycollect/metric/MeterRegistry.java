@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
+import java.util.function.ToLongFunction;
 
 public interface MeterRegistry {
     @Nonnull
@@ -24,7 +25,7 @@ public interface MeterRegistry {
     }
 
     @Nonnull
-    <T> FunctionCounter counter(@Nonnull MeterId id, @Nonnull T obj, @Nonnull ToDoubleFunction<T> value);
+    <T> FunctionCounter counter(@Nonnull MeterId id, @Nonnull T obj, @Nonnull ToLongFunction<T> value);
 
     @Nonnull
     Distribution distribution(@Nonnull MeterId id);
@@ -32,5 +33,5 @@ public interface MeterRegistry {
     @Nonnull
     Timer timer(@Nonnull MeterId id, @Nonnull TimeUnit timeUnit);
 
-    List<Metric> measure(@Nonnull Predicate<MeterId> filter);
+    List<Sample> measure(@Nonnull Predicate<MeterId> filter);
 }

@@ -3,8 +3,7 @@ package io.github.anycollect.core.impl.serializers;
 import io.github.anycollect.core.api.Serializer;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
-import io.github.anycollect.metric.Measurement;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
 
@@ -15,7 +14,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.util.Iterator;
-import java.util.List;
 
 @Extension(name = AnyCollectSerializer.NAME, point = Serializer.class)
 public final class AnyCollectSerializer implements Serializer {
@@ -28,39 +26,23 @@ public final class AnyCollectSerializer implements Serializer {
     }
 
     @Override
-    public CoderResult serialize(@Nonnull final Metric metric, @Nonnull final ByteBuffer buffer) {
+    public CoderResult serialize(@Nonnull final Sample sample, @Nonnull final ByteBuffer buffer) {
         builder.setLength(0);
-        builder.append(metric.getKey()).append(";");
-        serialize(metric.getTags(), builder);
+        builder.append(sample.getKey()).append(";");
+        serialize(sample.getTags(), builder);
         builder.append(";");
-        serialize(metric.getMeta(), builder);
+        serialize(sample.getMeta(), builder);
         builder.append(";");
-        serialize(metric.getMeasurements(), builder);
-        CoderResult coderResult = encoder.encode(CharBuffer.wrap(builder), buffer, true);
-        return coderResult;
-    }
-
-    private void serialize(final List<? extends Measurement> measurements, final StringBuilder builder) {
-        Iterator<? extends Measurement> iterator = measurements.iterator();
-        while (iterator.hasNext()) {
-            Measurement measurement = iterator.next();
-            serialize(measurement, builder);
-            if (iterator.hasNext()) {
-                builder.append(",");
-            }
-        }
-    }
-
-    private void serialize(final Measurement measurement, final StringBuilder builder) {
-        builder.append(measurement.getStat())
+        builder.append(sample.getStat())
                 .append("[")
-                .append(measurement.getType())
+                .append(sample.getType())
                 .append("]")
                 .append("=")
-                .append(measurement.getValue())
+                .append(sample.getValue())
                 .append("(")
-                .append(measurement.getUnit())
+                .append(sample.getUnit())
                 .append(")");
+        return encoder.encode(CharBuffer.wrap(builder), buffer, true);
     }
 
     private void serialize(final Tags tags, final StringBuilder builder) {

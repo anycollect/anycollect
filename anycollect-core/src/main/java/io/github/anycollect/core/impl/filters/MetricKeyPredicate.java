@@ -2,13 +2,13 @@ package io.github.anycollect.core.impl.filters;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.anycollect.metric.frame.MetricFrame;
+import io.github.anycollect.metric.Metric;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-public final class MetricKeyPredicate implements Predicate<MetricFrame> {
+public final class MetricKeyPredicate implements Predicate<Metric> {
     private final Pattern pattern;
     private final String equals;
     private final String startsWith;
@@ -33,17 +33,17 @@ public final class MetricKeyPredicate implements Predicate<MetricFrame> {
     }
 
     @Override
-    public boolean test(final MetricFrame frame) {
+    public boolean test(final Metric frame) {
         if (equals != null && !frame.getKey().equals(equals)) {
             return false;
         }
-        if (startsWith != null && !frame.getKey().startsWith(startsWith)) {
+        if (startsWith != null && !frame.getKey().normalize().startsWith(startsWith)) {
             return false;
         }
-        if (endsWith != null && !frame.getKey().endsWith(endsWith)) {
+        if (endsWith != null && !frame.getKey().normalize().endsWith(endsWith)) {
             return false;
         }
-        if (contains != null && !frame.getKey().contains(contains)) {
+        if (contains != null && !frame.getKey().normalize().contains(contains)) {
             return false;
         }
         if (pattern != null) {

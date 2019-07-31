@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
+import java.util.function.ToLongFunction;
 
 import static java.util.stream.Collectors.toList;
 
@@ -60,7 +61,7 @@ public class AnyCollectMeterRegistry implements MeterRegistry {
     @Override
     public <T> FunctionCounter counter(@Nonnull final MeterId id,
                                        @Nonnull final T obj,
-                                       @Nonnull final ToDoubleFunction<T> value) {
+                                       @Nonnull final ToLongFunction<T> value) {
         return (FunctionCounter) meters.computeIfAbsent(id, meterId -> DefaultFunctionCounter.<T>builder()
                 .id(meterId)
                 .obj(obj)
@@ -100,7 +101,7 @@ public class AnyCollectMeterRegistry implements MeterRegistry {
     }
 
     @Override
-    public List<Metric> measure(@Nonnull final Predicate<MeterId> filter) {
+    public List<Sample> measure(@Nonnull final Predicate<MeterId> filter) {
         return meters.values().stream().filter(meter -> filter.test(meter.getId()))
                 .flatMap(measurable -> measurable.measure().stream())
                 .collect(toList());

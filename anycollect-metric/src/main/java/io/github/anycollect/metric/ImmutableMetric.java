@@ -1,57 +1,61 @@
 package io.github.anycollect.metric;
 
-import io.github.anycollect.metric.frame.ImmutableMetricFrame;
-import io.github.anycollect.metric.frame.MetricFrame;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-@Getter
+@Builder
+@EqualsAndHashCode(exclude = "meta")
 public final class ImmutableMetric implements Metric {
-    private final MetricFrame frame;
-    private final long timestamp;
-    private final List<Measurement> measurements;
+    private final Key key;
+    private final Tags tags;
+    private final Tags meta;
+    private final Stat stat;
+    private final Type type;
+    private final String unit;
 
-    public ImmutableMetric(@Nonnull final String key,
-                           final long timestamp,
-                           @Nonnull final List<? extends Measurement> measurements,
-                           @Nonnull final Tags tags,
-                           @Nonnull final Tags meta) {
-        this.frame = new ImmutableMetricFrame(key, tags, meta);
-        this.timestamp = timestamp;
-        this.measurements = Collections.unmodifiableList(new ArrayList<>(measurements));
+    @Nonnull
+    @Override
+    public Key getKey() {
+        return key;
     }
 
-    private ImmutableMetric(@Nonnull final MetricFrame frame,
-                            final long timestamp,
-                            @Nonnull final List<? extends Measurement> measurements) {
-        this.frame = frame;
-        this.timestamp = timestamp;
-        this.measurements = Collections.unmodifiableList(new ArrayList<>(measurements));
+    @Nonnull
+    @Override
+    public Tags getTags() {
+        return tags;
+    }
+
+    @Nonnull
+    @Override
+    public Tags getMeta() {
+        return meta;
+    }
+
+    @Nonnull
+    @Override
+    public Stat getStat() {
+        return stat;
+    }
+
+    @Nonnull
+    @Override
+    public Type getType() {
+        return type;
+    }
+
+    @Nonnull
+    @Override
+    public String getUnit() {
+        return unit;
     }
 
     @Override
     public String toString() {
-        return Metric.toString(this);
-    }
-
-    @Nonnull
-    @Override
-    public MetricFrame getFrame() {
-        return frame;
-    }
-
-    @Override
-    public int size() {
-        return measurements.size();
-    }
-
-    @Nonnull
-    @Override
-    public Metric reframe(@Nonnull final MetricFrame frame) {
-        return new ImmutableMetric(frame, timestamp, measurements);
+        return getKey() + ";"
+                + (!getTags().isEmpty() ? getTags() + ";" : "")
+                + getStat() + "[" + getType() + "]"
+                + (getUnit().isEmpty() ? "" : "(" + getUnit() + ")");
     }
 }

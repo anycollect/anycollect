@@ -1,6 +1,6 @@
 package io.github.anycollect.test;
 
-import io.github.anycollect.assertj.MetricAssert;
+import io.github.anycollect.assertj.SampleAssert;
 import io.github.anycollect.core.api.Writer;
 import io.github.anycollect.metric.Tags;
 
@@ -13,9 +13,9 @@ public interface Interceptor extends Writer {
 
     }
 
-    MetricAssert intercepted(String key);
+    SampleAssert intercepted(String key);
 
-    MetricAssert intercepted(String key, Tags tags);
+    SampleAssert intercepted(String key, Tags tags);
 
-    MetricAssert intercepted(String key, Tags tags, Tags meta);
+    SampleAssert intercepted(String key, Tags tags, Tags meta);
 }

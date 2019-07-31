@@ -11,7 +11,7 @@ import io.github.anycollect.extensions.loaders.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.loaders.DefinitionLoader;
 import io.github.anycollect.extensions.loaders.InstanceLoader;
 import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Tags;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,25 +66,25 @@ class PullManagerPluginTest {
         when(provider.current()).thenReturn(state);
         FirstDispatch dispatcher = new FirstDispatch();
         puller.start("test", provider, dispatcher);
-        await().until(() -> dispatcher.metric != null);
-        Metric metric = dispatcher.metric;
-        assertThat(metric.getKey()).isEqualTo("health.check");
-        assertThat(metric.getTags()).isEqualTo(Tags.of("check", "test"));
-        assertThat(metric.getMeta()).isEqualTo(Tags.of("target.id", target1.getId()));
+        await().until(() -> dispatcher.sample != null);
+        Sample sample = dispatcher.sample;
+        assertThat(sample.getKey().normalize()).isEqualTo("health.check");
+        assertThat(sample.getTags()).isEqualTo(Tags.of("check", "test"));
+        assertThat(sample.getMeta()).isEqualTo(Tags.of("target.id", target1.getId()));
     }
 
     private static final class FirstDispatch implements Dispatcher {
-        private volatile Metric metric = null;
+        private volatile Sample sample = null;
 
         @Override
-        public void dispatch(@Nonnull Metric metric) {
-            if (this.metric == null) {
-                this.metric = metric;
+        public void dispatch(@Nonnull Sample sample) {
+            if (this.sample == null) {
+                this.sample = sample;
             }
         }
 
         @Override
-        public void dispatch(@Nonnull List<Metric> metrics) {
+        public void dispatch(@Nonnull List<Sample> samples) {
         }
     }
 }

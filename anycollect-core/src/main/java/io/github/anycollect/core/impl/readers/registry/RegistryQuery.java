@@ -3,7 +3,7 @@ package io.github.anycollect.core.impl.readers.registry;
 import io.github.anycollect.core.api.query.SelfQuery;
 import io.github.anycollect.metric.MeterId;
 import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -21,7 +21,7 @@ public final class RegistryQuery extends SelfQuery {
     }
 
     @Override
-    public List<Metric> execute() {
+    public List<Sample> execute() {
         return registry.measure(filter);
     }
 }

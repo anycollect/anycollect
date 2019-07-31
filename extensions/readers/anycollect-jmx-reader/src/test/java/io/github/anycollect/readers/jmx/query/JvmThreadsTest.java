@@ -1,9 +1,6 @@
 package io.github.anycollect.readers.jmx.query;
 
-import io.github.anycollect.metric.Metric;
-import io.github.anycollect.metric.Stat;
-import io.github.anycollect.metric.Tags;
-import io.github.anycollect.metric.Type;
+import io.github.anycollect.metric.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,8 +10,9 @@ import javax.management.ObjectName;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static io.github.anycollect.assertj.AnyCollectAssertions.assertThatMetrics;
+import static io.github.anycollect.assertj.SamplesAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,18 +41,13 @@ class JvmThreadsTest {
         ThreadInfo[] infos = new ThreadInfo[]{info};
         when(thread.getThreadInfo(ids)).thenReturn(infos);
         server.registerMBean(thread, new ObjectName("java.lang:type=Threading"));
-        List<Metric> families = new MockJavaApp(server).bind(jvmThreads).execute();
-        assertThatMetrics(families)
-                .contains("jvm.threads.live", Tags.of("type", "daemon"))
-                .hasMeasurement(Stat.value(), Type.GAUGE, "", 1);
-        assertThatMetrics(families)
-                .contains("jvm.threads.live", Tags.of("type", "nondaemon"))
-                .hasMeasurement(Stat.value(), Type.GAUGE, "", 2);
-        assertThatMetrics(families)
-                .contains("jvm.threads.started")
-                .hasMeasurement(Stat.value(), Type.COUNTER, "", 5);
-        assertThatMetrics(families)
-                .contains("jvm.threads.states", Tags.of("state", "RUNNABLE"))
-                .hasMeasurement(Stat.value(), Type.GAUGE, "", 1);
+        List<Sample> samples = new MockJavaApp(server).bind(jvmThreads).execute()
+                .stream().map(sample -> sample.getMetric().sample(sample.getValue(), 0))
+                .collect(Collectors.toList());
+        assertThat(samples)
+                .contains(Metric.builder().key("jvm/threads/live").tag("type", "daemon").empty().gauge().sample(1, 0))
+                .contains(Metric.builder().key("jvm/threads/live").tag("type", "nondaemon").empty().gauge().sample(2, 0))
+                .contains(Metric.builder().key("jvm/threads/started").empty().empty().counter().sample(5, 0))
+                .contains(Metric.builder().key("jvm/threads/states").tag("state", "RUNNABLE").empty().gauge().sample(1, 0));
     }
 }

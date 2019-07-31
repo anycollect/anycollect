@@ -3,6 +3,8 @@ package io.github.anycollect.readers.system;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.query.SelfQuery;
 import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
+import io.github.anycollect.metric.Tags;
 import oshi.software.os.FileSystem;
 import oshi.software.os.OSFileStore;
 
@@ -24,18 +26,17 @@ public final class FileSystemUsage extends SelfQuery {
     }
 
     @Override
-    public List<Metric> execute() {
-        List<Metric> metrics = new ArrayList<>();
+    public List<Sample> execute() {
+        List<Sample> samples = new ArrayList<>();
+        long timestamp = clock.wallTime();
         if (config.reportOpenDescriptors()) {
             long openFileDescriptors = fileSystem.getOpenFileDescriptors();
-            metrics.add(Metric.builder()
-                    .key("fs.open.descriptors")
-                    .at(clock.wallTime())
-                    .gauge("descriptors", openFileDescriptors)
-                    .build()
+            samples.add(Metric.builder()
+                    .key("fs/open.descriptors")
+                    .gauge()
+                    .sample(openFileDescriptors, timestamp)
             );
         }
-        long timestamp = clock.wallTime();
         for (OSFileStore fileStore : fileSystem.getFileStores()) {
             long usableSpace = fileStore.getUsableSpace();
             long totalSpace = fileStore.getTotalSpace();
@@ -46,15 +47,13 @@ public final class FileSystemUsage extends SelfQuery {
             double usage = 100.0 * (totalSpace - usableSpace) / totalSpace;
             String mount = fileStore.getMount();
             String device = fileStore.getVolume();
-            metrics.add(Metric.builder()
-                    .key("fs.usage")
-                    .tag("mount", mount)
-                    .tag("fs", fileSystem)
-                    .tag("device", device)
-                    .gauge("percents", usage)
-                    .at(timestamp)
-                    .build());
+            samples.add(Metric.builder()
+                    .key("fs/usage")
+                    .tags(Tags.of("mount", mount, "fs", fileSystem, "device", device))
+                    .gauge("percents")
+                    .sample(usage, timestamp)
+            );
         }
-        return metrics;
+        return samples;
     }
 }

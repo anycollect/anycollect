@@ -7,7 +7,7 @@ import io.github.anycollect.core.api.internal.AdaptiveSerializer;
 import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.core.exceptions.SerialisationException;
 import io.github.anycollect.extensions.annotations.*;
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,22 +41,22 @@ public final class SocketWriter implements Writer, Lifecycle {
     }
 
     @Override
-    public void write(@Nonnull final List<? extends Metric> metrics) {
-        for (Metric metric : metrics) {
-            write(metric);
+    public void write(@Nonnull final List<? extends Sample> metrics) {
+        for (Sample sample : metrics) {
+            write(sample);
         }
     }
 
-    private void write(@Nonnull final Metric metric) {
+    private void write(@Nonnull final Sample sample) {
         try {
             sender.connected();
-            sender.send(metric);
+            sender.send(sample);
             // TODO schedule flush
             sender.flush();
         } catch (SerialisationException e) {
-            LOG.debug("could not serialize metric {}", metric, e);
+            LOG.debug("could not serialize metric {}", sample, e);
         } catch (IOException e) {
-            LOG.trace("fail to send metric: {}", metric, e);
+            LOG.trace("fail to send metric: {}", sample, e);
             sender.closed();
         }
     }

@@ -2,7 +2,7 @@ package io.github.anycollect.jmh;
 
 import io.github.anycollect.metric.Tag;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.tags.ConcatTags;
+import io.github.anycollect.metric.ConcatTags;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;

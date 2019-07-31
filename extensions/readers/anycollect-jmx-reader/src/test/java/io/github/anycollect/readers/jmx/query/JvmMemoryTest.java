@@ -1,6 +1,6 @@
 package io.github.anycollect.readers.jmx.query;
 
-import io.github.anycollect.metric.Metric;
+import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.metric.Type;
@@ -37,11 +37,11 @@ class JvmMemoryTest {
         when(memoryPool.getType()).thenReturn(MemoryType.HEAP);
         when(memoryPool.getUsage()).thenReturn(heap);
         server.registerMBean(memoryPool, new ObjectName("java.lang:type=MemoryPool,name=Test"));
-        List<Metric> families = new MockJavaApp(server, Tags.of("instance", "test")).bind(jvmMemory).execute();
-        assertThat(families).hasSize(1);
-        assertThat(families.get(0))
-                .hasKey("jvm.memory.used")
-                .hasMeasurement(Stat.value(), Type.GAUGE, "bytes", 2.0)
+        List<Sample> samples = new MockJavaApp(server, Tags.of("instance", "test")).bind(jvmMemory).execute();
+        assertThat(samples).hasSize(1);
+        assertThat(samples.get(0))
+                .hasKey("jvm/memory/used")
+                .hasMetric(Stat.value(), Type.GAUGE, "bytes", 2.0)
                 .hasTags("instance", "test",
                         "pool", "Test",
                         "type", "heap");
