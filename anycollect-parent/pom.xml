@@ -57,6 +57,7 @@
 
         <!-- CODE ANALYSIS-->
         <findbugs-annotations.version>3.0.1</findbugs-annotations.version>
+        <apiguardian-api.version>1.1.0</apiguardian-api.version>
 
         <!-- TESTING -->
         <junit.version>5.3.1</junit.version>
@@ -227,6 +228,12 @@
 
             <!-- CODE ANALYSIS -->
             <dependency>
+                <groupId>org.apiguardian</groupId>
+                <artifactId>apiguardian-api</artifactId>
+                <version>${apiguardian-api.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>annotations</artifactId>
                 <version>${findbugs-annotations.version}</version>
@@ -301,6 +308,11 @@
         </dependency>
 
         <!-- CODE ANALYSIS -->
+        <dependency>
+            <groupId>org.apiguardian</groupId>
+            <artifactId>apiguardian-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
