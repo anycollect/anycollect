@@ -39,7 +39,7 @@ public final class ContextImpl implements ExtendableContext {
     @Nullable
     @Override
     public Instance getInstance(@Nonnull final Class<?> type, @Nonnull final Scope scope) {
-        return getInstance(instance -> instance.getDefinition().getExtensionPointClass().equals(type)
+        return getInstance(instance -> instance.getDefinition().getContracts().contains(type)
                 && instance.getInjectMode() == InjectMode.AUTO, scope);
     }
 

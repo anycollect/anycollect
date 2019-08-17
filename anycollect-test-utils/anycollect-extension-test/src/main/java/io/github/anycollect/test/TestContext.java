@@ -53,7 +53,7 @@ public final class TestContext extends DelegatingContext {
 
     public List<Instance> getInstances(final Class<?> type) {
         return getInstances().stream()
-                .filter(instance -> instance.getDefinition().getExtensionPointClass().isAssignableFrom(type))
+                .filter(instance -> instance.getDefinition().getContracts().stream().anyMatch(contract -> contract.isAssignableFrom(type)))
                 .collect(Collectors.toList());
     }
 

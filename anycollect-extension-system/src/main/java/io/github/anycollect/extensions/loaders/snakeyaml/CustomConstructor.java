@@ -120,8 +120,10 @@ final class CustomConstructor extends Constructor {
             context.addInstance(instance);
             Object resolved = instance.resolve();
             // TODO
-            if (context.getInstance(instance.getDefinition().getExtensionPointClass(), scope) == instance) {
-                CustomConstructor.this.values.addValue(instance.getDefinition().getExtensionPointClass(), resolved);
+            for (final Class<?> contract : instance.getDefinition().getContracts()) {
+                if (context.getInstance(contract, scope) == instance) {
+                    CustomConstructor.this.values.addValue(contract, resolved);
+                }
             }
             LOG.trace("instance has been successfully loaded: {}", instance);
             if (resolved instanceof InstanceLoader) {

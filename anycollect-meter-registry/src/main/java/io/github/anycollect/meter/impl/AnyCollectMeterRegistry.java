@@ -18,8 +18,8 @@ import java.util.function.ToLongFunction;
 
 import static java.util.stream.Collectors.toList;
 
-@Extension(name = AnyCollectMeterRegistry.NAME, point = MeterRegistry.class)
-public class AnyCollectMeterRegistry implements MeterRegistry {
+@Extension(name = AnyCollectMeterRegistry.NAME, contracts = {MeterRegistry.class, Reader.class})
+public final class AnyCollectMeterRegistry extends MeterRegistry implements Reader, Lifecycle {
     public static final String NAME = "MeterRegistry";
     private static final double[] QUANTILES = new double[]{0.5, 0.75, 0.9, 0.95, 0.99, 0.999};
     private final ConcurrentMap<MeterId, Meter> meters = new ConcurrentHashMap<>();

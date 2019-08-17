@@ -10,7 +10,10 @@ import java.lang.annotation.Target;
 public @interface Extension {
     String name();
 
-    Class<?> point();
+    @Deprecated
+    Class<?> point() default Void.class;
+
+    Class<?>[] contracts() default {};
 
     AutoLoad autoload() default @Extension.AutoLoad(instanceName = "", enabled = false);
 

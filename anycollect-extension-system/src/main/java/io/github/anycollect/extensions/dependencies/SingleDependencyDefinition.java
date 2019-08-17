@@ -23,10 +23,16 @@ public final class SingleDependencyDefinition extends AbstractDependencyDefiniti
             }
         }
         Definition definition = instance.getDefinition();
-        Class<?> extPointClass = definition.getExtensionPointClass();
-        if (!getParameterType().equals(extPointClass)) {
-            throw new WrongDependencyClassException(getName(), getParameterType(), extPointClass);
+        boolean found = false;
+        for (final Class<?> contract : definition.getContracts()) {
+            if (getParameterType().equals(contract)) {
+                found = true;
+            }
         }
+        if (!found) {
+            throw new WrongDependencyClassException(getName(), getParameterType(), definition.getContracts());
+        }
+
         return new SingleDependency(instance);
     }
 

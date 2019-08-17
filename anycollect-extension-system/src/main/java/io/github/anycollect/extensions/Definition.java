@@ -1,5 +1,6 @@
 package io.github.anycollect.extensions;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.github.anycollect.core.exceptions.ConfigurationException;
 import io.github.anycollect.extensions.annotations.InjectMode;
 import io.github.anycollect.extensions.context.Context;
@@ -23,7 +24,7 @@ public final class Definition {
     @Getter
     private final String name;
     @Getter
-    private final Class<?> extensionPointClass;
+    private final Set<Class<?>> contracts;
     @Getter
     private final Class<?> extensionClass;
     private final ConfigDefinition configDefinition;
@@ -38,7 +39,7 @@ public final class Definition {
 
     private Definition(final Builder builder) {
         this.name = builder.name;
-        this.extensionPointClass = builder.extensionPointClass;
+        this.contracts = builder.extensionPointClasses;
         this.extensionClass = builder.extensionClass;
         this.singleDeps = new HashMap<>();
         this.multiDeps = new HashMap<>();
@@ -176,7 +177,7 @@ public final class Definition {
 
     public static final class Builder {
         private String name;
-        private Class<?> extensionPointClass;
+        private Set<Class<?>> extensionPointClasses;
         private Class<?> extensionClass;
         private ConfigDefinition configDefinition;
         private List<SingleDependencyDefinition> singleDependencyDefinitions = new ArrayList<>();
@@ -190,20 +191,27 @@ public final class Definition {
             return this;
         }
 
+        @VisibleForTesting
         public <T> Builder withExtension(final Class<T> spec, final Constructor<? extends T> construct) {
-            Objects.requireNonNull(spec, "extension point class must not be null");
+            return withExtension(Collections.singleton(spec), construct);
+        }
+
+        public <T> Builder withExtension(final Set<Class<?>> specs, final Constructor<? extends T> construct) {
+            Objects.requireNonNull(specs, "extension point classes must not be null");
             Objects.requireNonNull(construct, "constructor must not be null");
             if (!Modifier.isPublic(construct.getModifiers())) {
                 throw new IllegalArgumentException("constructor " + construct + " must be public");
             }
             this.constructor = construct;
             Class<? extends T> impl = construct.getDeclaringClass();
-            if (!spec.isAssignableFrom(impl)) {
-                throw new IllegalArgumentException(
-                        String.format("implementation class (%s) doesn't implement specification class (%s)",
-                                impl, spec));
+            for (final Class<?> spec : specs) {
+                if (!spec.isAssignableFrom(impl)) {
+                    throw new IllegalArgumentException(
+                            String.format("implementation class (%s) doesn't implement specification class (%s)",
+                                    impl, spec));
+                }
             }
-            this.extensionPointClass = spec;
+            this.extensionPointClasses = new HashSet<>(specs);
             this.extensionClass = impl;
             return this;
         }
@@ -246,7 +254,7 @@ public final class Definition {
             if (name == null) {
                 throw new IllegalStateException("name must be specified");
             }
-            if (extensionPointClass == null || extensionClass == null || constructor == null) {
+            if (extensionPointClasses == null || extensionClass == null || constructor == null) {
                 throw new IllegalStateException("extension classes must be specified");
             }
             return new Definition(this);

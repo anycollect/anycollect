@@ -26,7 +26,7 @@ class DefinitionTest {
     void nullsIsForbidden() {
         Assertions.assertThrows(NullPointerException.class, () -> Definition.builder().withName(null));
         Assertions.assertThrows(NullPointerException.class,
-                () -> Definition.builder().withExtension(null, ConstrictorUtils.createFor(Extension.class)));
+                () -> Definition.builder().withExtension((Class) null, ConstrictorUtils.createFor(Extension.class)));
         Assertions.assertThrows(NullPointerException.class,
                 () -> Definition.builder().withExtension(ExtensionPoint.class, null));
     }

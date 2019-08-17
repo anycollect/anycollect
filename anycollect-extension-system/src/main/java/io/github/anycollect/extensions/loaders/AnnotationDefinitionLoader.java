@@ -43,13 +43,15 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
     @SuppressWarnings("unchecked")
     private Definition parse(final Class<?> extensionClass) {
         validateExtensionClass(extensionClass);
-        Class extensionPointClass = loadExtensionPointClass(extensionClass);
+        Set<Class<?>> extensionPointClasses = loadExtensionPointClasses(extensionClass);
         String extensionName = loadExtensionName(extensionClass);
 
-        if (!extensionPointClass.isAssignableFrom(extensionClass)) {
-            LOG.error("extension {} must implement extension point {}",
-                    extensionClass, extensionPointClass);
-            throw new WrongExtensionMappingException(extensionPointClass, extensionClass);
+        for (final Class extensionPointClass : extensionPointClasses) {
+            if (!extensionPointClass.isAssignableFrom(extensionClass)) {
+                LOG.error("extension {} must implement extension point {}",
+                        extensionClass, extensionPointClass);
+                throw new WrongExtensionMappingException(extensionPointClass, extensionClass);
+            }
         }
         Constructor<?> constructor = resolveExtensionConstructor(extensionClass);
         List<AnnotatedParameter<ExtConfig>> configs = findParameterWithAnnotation(constructor, ExtConfig.class);
@@ -120,7 +122,7 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
         validateConstrictor(extensionClass, constructor, dependencies);
         return Definition.builder()
                 .withName(extensionName)
-                .withExtension(extensionPointClass, constructor)
+                .withExtension(extensionPointClasses, constructor)
                 .withSingleDependencies(singleDependencyDefinitions)
                 .withMultiDependencies(multiDependencyDefinitions)
                 .withConfig(config)
@@ -246,9 +248,13 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
         return extension.name();
     }
 
-    private Class loadExtensionPointClass(final Class extClass) {
+    private Set<Class<?>> loadExtensionPointClasses(final Class extClass) {
         Extension extension = (Extension) extClass.getAnnotation(Extension.class);
-        return extension.point();
+        if (!extension.point().equals(Void.class)) {
+            return Collections.singleton(extension.point());
+        } else {
+            return new HashSet<>(Arrays.asList(extension.contracts()));
+        }
     }
 
     private static class AnnotatedParameter<T extends Annotation> {

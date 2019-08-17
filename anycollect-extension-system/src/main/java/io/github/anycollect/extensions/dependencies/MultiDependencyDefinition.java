@@ -23,9 +23,14 @@ public final class MultiDependencyDefinition extends AbstractDependencyDefinitio
         Objects.requireNonNull(instances, "instances must not be null");
         for (Instance instance : instances) {
             Definition definition = instance.getDefinition();
-            Class<?> extPointClass = definition.getExtensionPointClass();
-            if (!getParameterType().equals(extPointClass)) {
-                throw new WrongDependencyClassException(getName(), getParameterType(), extPointClass);
+            boolean found = false;
+            for (final Class<?> contract : definition.getContracts()) {
+                if (getParameterType().equals(contract)) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                throw new WrongDependencyClassException(getName(), getParameterType(), definition.getContracts());
             }
         }
         return new MultiDependency(instances);
