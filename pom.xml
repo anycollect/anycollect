@@ -28,7 +28,7 @@
         <module>anycollect-core</module>
         <module>anycollect-jackson</module>
         <module>anycollect-test-utils</module>
-        <module>anycollect-meter-registry</module>
+        <module>anycollect-meter</module>
         <module>extensions/kv/anycollect-consul-kv</module>
         <module>extensions/readers/anycollect-async-socket-reader</module>
         <module>extensions/readers/anycollect-system-reader</module>
@@ -38,6 +38,8 @@
         <module>anycollect-anycollect</module>
         <module>anycollect-agent</module>
         <module>anycollect-assembly</module>
+        <module>extensions/anycollect-collectd</module>
+        <module>anycollect-meter-api</module>
     </modules>
 
     <build>

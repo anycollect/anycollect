@@ -4,7 +4,7 @@ import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.MeterRegistry;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.query.JmxQuery;
 import io.github.anycollect.readers.jmx.query.operations.QueryOperation;

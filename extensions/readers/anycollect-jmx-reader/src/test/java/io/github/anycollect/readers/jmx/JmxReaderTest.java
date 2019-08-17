@@ -60,7 +60,7 @@ class JmxReaderTest {
                     "k1", "k1val2",
                     "k2", "k2val1");
             Tags meta = Tags.of("key2", "value2");
-            Metric.MetricBuilder builder = Metric.builder()
+            Metric.Factory builder = Metric.builder()
                     .key("histogram")
                     .tags(tags)
                     .meta(meta);

@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import javax.annotation.Nonnull;
 
 @EqualsAndHashCode
-public final class DoubleSample implements Sample {
+final class DoubleSample implements Sample {
     private final Metric id;
     private final double value;
     private final long timestamp;

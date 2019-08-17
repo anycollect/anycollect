@@ -2,11 +2,13 @@ package io.github.anycollect.metric;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apiguardian.api.API;
 
 import java.util.Objects;
 
 @Getter
 @EqualsAndHashCode
+@API(since = "0.1.0", status = API.Status.EXPERIMENTAL)
 public final class Tag {
     private final Key key;
     private final String value;

@@ -1,6 +1,6 @@
 extensions:
 - !load
-  extension: MeterRegistry
+  extension: NoopMeterRegistry
   instance: registry
   injectMode: auto
 - !load

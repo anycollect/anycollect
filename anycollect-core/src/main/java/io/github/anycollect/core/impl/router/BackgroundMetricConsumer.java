@@ -1,8 +1,8 @@
 package io.github.anycollect.core.impl.router;
 
-import io.github.anycollect.metric.Counter;
-import io.github.anycollect.metric.Gauge;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.Counter;
+import io.github.anycollect.meter.api.Gauge;
+import io.github.anycollect.meter.api.MeterRegistry;
 import io.github.anycollect.metric.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

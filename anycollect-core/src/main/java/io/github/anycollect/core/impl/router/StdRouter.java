@@ -15,7 +15,7 @@ import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

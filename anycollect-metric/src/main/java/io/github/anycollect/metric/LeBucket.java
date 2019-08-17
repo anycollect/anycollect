@@ -1,8 +1,11 @@
 package io.github.anycollect.metric;
 
+import org.apiguardian.api.API;
+
 /**
  * Less than or Equal to [max] bucket of events
  */
+@API(since = "0.1.0", status = API.Status.EXPERIMENTAL)
 public final class LeBucket implements Stat, Comparable<LeBucket> {
     private static final LeBucket INF = new LeBucket(Double.POSITIVE_INFINITY);
     private final double max;

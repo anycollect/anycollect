@@ -5,7 +5,7 @@ import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.scheduler.MonitoredScheduledThreadPoolExecutor;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
 import io.github.anycollect.core.impl.scheduler.SchedulerImpl;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.MeterRegistry;
 import io.github.anycollect.metric.Tags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

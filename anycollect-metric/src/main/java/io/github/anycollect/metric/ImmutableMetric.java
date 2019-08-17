@@ -1,19 +1,35 @@
 package io.github.anycollect.metric;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
-@Builder
-@EqualsAndHashCode(exclude = "meta")
-public final class ImmutableMetric implements Metric {
+final class ImmutableMetric implements Metric {
     private final Key key;
     private final Tags tags;
     private final Tags meta;
     private final Stat stat;
     private final Type type;
     private final String unit;
+
+    ImmutableMetric(@Nonnull final Key key,
+                    @Nonnull final Tags tags,
+                    @Nonnull final Tags meta,
+                    @Nonnull final Stat stat,
+                    @Nonnull final Type type,
+                    @Nonnull final String unit) {
+        Objects.requireNonNull(key, "key must not be null");
+        Objects.requireNonNull(tags, "tags must not be null");
+        Objects.requireNonNull(meta, "meta must not be null");
+        Objects.requireNonNull(stat, "stat must not be null");
+        Objects.requireNonNull(type, "type must not be null");
+        Objects.requireNonNull(unit, "unit must not be null");
+        this.key = key;
+        this.tags = tags;
+        this.meta = meta;
+        this.stat = stat;
+        this.type = type;
+        this.unit = unit;
+    }
 
     @Nonnull
     @Override
@@ -52,10 +68,20 @@ public final class ImmutableMetric implements Metric {
     }
 
     @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof Metric)) {
+            return false;
+        }
+        return Metric.equals(this, (Metric) o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Metric.hash(this);
+    }
+
+    @Override
     public String toString() {
-        return getKey() + ";"
-                + (!getTags().isEmpty() ? getTags() + ";" : "")
-                + getStat() + "[" + getType() + "]"
-                + (getUnit().isEmpty() ? "" : "(" + getUnit() + ")");
+        return Metric.toString(this);
     }
 }

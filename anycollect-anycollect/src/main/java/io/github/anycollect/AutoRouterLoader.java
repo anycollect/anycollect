@@ -19,7 +19,7 @@ import io.github.anycollect.extensions.loaders.InstanceLoader;
 import io.github.anycollect.extensions.scope.Scope;
 import io.github.anycollect.extensions.scope.SimpleScope;
 import io.github.anycollect.extensions.substitution.VarSubstitutor;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.MeterRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

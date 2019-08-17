@@ -8,7 +8,7 @@ extensions:
     targetId: "anycollect-self"
 - !load
   extension: MeterRegistry
-  instance: registry
+  instance: "internal.registry"
   injectMode: auto
   config:
     globalPrefix: !var anycollect.selfstats.prefix
@@ -21,11 +21,6 @@ extensions:
   config:
     updatePeriod: !var discovery.period
     pullPeriod: !var pull.period
-
-# Logic
-- !load
-  extension: MeterRegistryReader
-  instance: "internal.registry"
 
 # Jmx
 - !load

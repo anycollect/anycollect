@@ -10,10 +10,9 @@ import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
 import io.github.anycollect.core.impl.pull.availability.Check;
 import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
-import io.github.anycollect.metric.Counter;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.Counter;
+import io.github.anycollect.meter.api.MeterRegistry;
 import io.github.anycollect.metric.Sample;
-import io.github.anycollect.metric.NoopMeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -35,9 +34,9 @@ public final class PullJob<T extends Target, Q extends Query<T>> implements Runn
 
     @VisibleForTesting
     PullJob(@Nonnull final CheckingTarget<T> target,
-                   @Nonnull final Q query,
-                   @Nonnull final Dispatcher dispatcher) {
-        this(target, query, "test", dispatcher, new NoopMeterRegistry(), Clock.getDefault());
+            @Nonnull final Q query,
+            @Nonnull final Dispatcher dispatcher) {
+        this(target, query, "test", dispatcher, MeterRegistry.noop(), Clock.getDefault());
     }
 
     public PullJob(@Nonnull final CheckingTarget<T> target,

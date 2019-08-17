@@ -1,12 +1,17 @@
 package io.github.anycollect.metric;
 
-import javax.annotation.Nonnull;
-import java.util.Iterator;
-import java.util.Set;
+import org.apiguardian.api.API;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.util.*;
+
+@Immutable
+@API(since = "0.1.0", status = API.Status.EXPERIMENTAL)
 public interface Tags extends Iterable<Tag> {
-    static ImmutableTags.Builder builder() {
-        return new ImmutableTags.Builder();
+    static Builder builder() {
+        return new Builder();
     }
 
     static ImmutableTags empty() {
@@ -14,10 +19,18 @@ public interface Tags extends Iterable<Tag> {
     }
 
     static Tags of(@Nonnull String key, int value) {
-        return builder().tag(key, Integer.toString(value)).build();
+        return ImmutableTags.singleton(key, Integer.toString(value));
+    }
+
+    static Tags of(@Nonnull Key key, int value) {
+        return ImmutableTags.singleton(key, Integer.toString(value));
     }
 
     static Tags of(@Nonnull String key, @Nonnull String value) {
+        return ImmutableTags.singleton(key, value);
+    }
+
+    static Tags of(@Nonnull Key key, @Nonnull String value) {
         return ImmutableTags.singleton(key, value);
     }
 
@@ -83,7 +96,11 @@ public interface Tags extends Iterable<Tag> {
         return left.contains(right) && right.contains(left);
     }
 
-    static String toString(@Nonnull final Tags tags) {
+    @Nonnull
+    static String toString(@Nullable final Tags tags) {
+        if (tags == null) {
+            return "null";
+        }
         if (tags.isEmpty()) {
             return "{}";
         }
@@ -97,5 +114,32 @@ public interface Tags extends Iterable<Tag> {
             first = false;
         }
         return output.toString();
+    }
+
+    final class Builder {
+        private final Map<Key, String> tags = new LinkedHashMap<>();
+
+        public Builder tag(@Nonnull final String key, final int value) {
+            return tag(key, Integer.toString(value));
+        }
+
+        public Builder tag(@Nonnull final String key, @Nonnull final String value) {
+            Objects.requireNonNull(key, "tag key must not be null");
+            Objects.requireNonNull(value, "tag value must not be null");
+            tags.put(Key.of(key), value);
+            return this;
+        }
+
+        public Builder concat(@Nonnull final Tags addition) {
+            Objects.requireNonNull(addition, "tags must not be null");
+            for (Tag tag : addition) {
+                tags.put(tag.getKey(), tag.getValue());
+            }
+            return this;
+        }
+
+        public ImmutableTags build() {
+            return new ImmutableTags(this.tags);
+        }
     }
 }

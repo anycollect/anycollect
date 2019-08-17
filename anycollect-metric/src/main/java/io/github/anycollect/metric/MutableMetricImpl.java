@@ -20,6 +20,7 @@ final class MutableMetricImpl implements MutableMetric {
         this.unit = metric.getUnit();
     }
 
+    @Nonnull
     @Override
     public MutableMetric withPrefix(@Nullable final String prefix) {
         if (prefix != null && !prefix.isEmpty()) {
@@ -28,42 +29,62 @@ final class MutableMetricImpl implements MutableMetric {
         return this;
     }
 
+    @Nonnull
     @Override
-    public MutableMetric frontTags(final Tags prefix) {
-        this.tags = prefix.concat(this.tags);
+    public MutableMetric frontTags(@Nullable final Tags prefix) {
+        if (prefix != null) {
+            this.tags = prefix.concat(this.tags);
+        }
         return this;
     }
 
+
+    @Nonnull
     @Override
-    public MutableMetric backTags(final Tags suffix) {
-        this.tags = this.tags.concat(suffix);
+    public MutableMetric backTags(@Nullable final Tags suffix) {
+        if (suffix != null) {
+            this.tags = this.tags.concat(suffix);
+        }
         return this;
     }
 
+    @Nonnull
     @Override
-    public MutableMetric frontMeta(final Tags prefix) {
-        this.meta = prefix.concat(this.meta);
+    public MutableMetric frontMeta(@Nullable final Tags prefix) {
+        if (prefix != null) {
+            this.meta = prefix.concat(this.meta);
+        }
         return this;
     }
 
+    @Nonnull
     @Override
-    public MutableMetric backMeta(final Tags suffix) {
-        this.meta = this.meta.concat(suffix);
+    public MutableMetric backMeta(@Nullable final Tags suffix) {
+        if (suffix != null) {
+            this.meta = this.meta.concat(suffix);
+        }
         return this;
     }
 
+    @Nonnull
     @Override
-    public MutableMetric removeTag(final String key) {
-        this.tags = this.tags.remove(key);
+    public MutableMetric removeTag(@Nullable final Key key) {
+        if (key != null) {
+            this.tags = this.tags.remove(key);
+        }
         return this;
     }
 
+    @Nonnull
     @Override
-    public MutableMetric removeMeta(final String key) {
-        this.meta = this.meta.remove(key);
+    public MutableMetric removeMeta(@Nullable final Key key) {
+        if (key != null) {
+            this.meta = this.meta.remove(key);
+        }
         return this;
     }
 
+    @Nonnull
     @Override
     public Metric commit() {
         return Metric.builder()

@@ -1,5 +1,8 @@
 package io.github.anycollect.metric;
 
+import org.apiguardian.api.API;
+
+@API(since = "0.1.0", status = API.Status.EXPERIMENTAL)
 public interface Stat {
     static Stat min() {
         return MIN;

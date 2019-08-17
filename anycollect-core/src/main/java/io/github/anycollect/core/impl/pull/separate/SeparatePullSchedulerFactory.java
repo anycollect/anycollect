@@ -2,7 +2,7 @@ package io.github.anycollect.core.impl.pull.separate;
 
 import io.github.anycollect.core.impl.pull.PullScheduler;
 import io.github.anycollect.core.impl.pull.PullSchedulerFactory;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.MeterRegistry;
 
 import javax.annotation.Nonnull;
 

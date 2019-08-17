@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public final class ConcatTags implements Tags {
+final class ConcatTags implements Tags {
     private final Tags base;
     private final Tags delta;
     private final int hash;
 
-    public static Tags of(final Tags base, final Tags delta) {
+    static Tags of(final Tags base, final Tags delta) {
         if (base.isEmpty()) {
             return delta;
         } else if (delta.isEmpty()) {

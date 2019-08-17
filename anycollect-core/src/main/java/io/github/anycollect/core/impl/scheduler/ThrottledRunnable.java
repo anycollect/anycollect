@@ -1,8 +1,8 @@
 package io.github.anycollect.core.impl.scheduler;
 
-import io.github.anycollect.metric.Counter;
+import io.github.anycollect.meter.api.Counter;
 import io.github.anycollect.metric.Key;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.MeterRegistry;
 import io.github.anycollect.metric.Tags;
 
 import java.util.concurrent.Delayed;

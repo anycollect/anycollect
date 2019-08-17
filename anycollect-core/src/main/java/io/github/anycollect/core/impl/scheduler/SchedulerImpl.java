@@ -2,9 +2,8 @@ package io.github.anycollect.core.impl.scheduler;
 
 
 import io.github.anycollect.core.api.internal.Cancellation;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.MeterRegistry;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.metric.NoopMeterRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.ScheduledFuture;
@@ -19,7 +18,7 @@ public final class SchedulerImpl implements Scheduler {
 
     public SchedulerImpl(@Nonnull final ScheduledThreadPoolExecutor service) {
         this.service = service;
-        this.registry = new NoopMeterRegistry();
+        this.registry = MeterRegistry.noop();
         this.prefix = "";
         this.tags = Tags.empty();
     }

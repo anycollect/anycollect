@@ -1,10 +1,12 @@
 package io.github.anycollect.metric;
 
 import lombok.EqualsAndHashCode;
+import org.apiguardian.api.API;
 
 import java.util.Objects;
 
 @EqualsAndHashCode
+@API(since = "0.1.0", status = API.Status.EXPERIMENTAL)
 public final class Percentile implements Stat, Comparable<Percentile> {
     private static final Percentile PERCENTILE_50 = new Percentile(Stat.MAX, 50);
     private static final Percentile PERCENTILE_75 = new Percentile(Stat.MAX, 75);

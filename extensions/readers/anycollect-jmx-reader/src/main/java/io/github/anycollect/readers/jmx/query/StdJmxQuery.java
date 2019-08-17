@@ -180,7 +180,7 @@ public final class StdJmxQuery extends JmxQuery {
         @Override
         @Nullable
         public Metric create(@Nonnull final Target target, @Nonnull final ObjectName objectName, @Nonnull final MeasurementPath attribute) {
-            ImmutableTags.Builder tags = Tags.builder();
+            Tags.Builder tags = Tags.builder();
             for (String tagKey : tagKeys) {
                 String tagValue = objectName.getKeyProperty(tagKey);
                 if (tagValue == null) {
@@ -190,7 +190,7 @@ public final class StdJmxQuery extends JmxQuery {
                 }
                 tags.tag(tagKey, tagValue);
             }
-            Metric.MetricBuilder builder = Metric.builder()
+            Metric.Factory builder = Metric.builder()
                     .key(key)
                     .tags(tags.build())
                     .empty();

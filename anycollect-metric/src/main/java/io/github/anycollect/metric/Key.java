@@ -1,8 +1,25 @@
 package io.github.anycollect.metric;
 
+import org.apiguardian.api.API;
+
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
+/**
+ * Represents a hierarchical key that is used as time series key or tag key.
+ * <p>
+ * The slash character ("/") is used to separate domains (namespaces)
+ * E.g. jvm/gc/pause/duration
+ * The dot character (".") is used to separate words in domain (namespace)
+ * E.g. jvm/gc/concurrent.phase/duration
+ * Word should match regexp [a-z]*
+ * <p>
+ * Key is intended to be simple converted to different case formats (camel case, snake case, etc)
+ * and storage schemas (hierarchical / multidimensional)
+ */
+@Immutable
+@API(since = "0.1.0", status = API.Status.EXPERIMENTAL)
 public interface Key extends CharSequence {
     static Key of(@Nonnull String normalized) {
         Objects.requireNonNull(normalized, "key must not be null");
@@ -80,10 +97,6 @@ public interface Key extends CharSequence {
 
         void startWord(@Nonnull StringBuilder output);
 
-        default void print(@Nonnull CharSequence sequence, @Nonnull StringBuilder output) {
-            print(sequence, 0, sequence.length(), output);
-        }
-
         void print(@Nonnull CharSequence sequence, int start, int end, @Nonnull StringBuilder output);
 
         void print(char elem, @Nonnull StringBuilder output);
@@ -101,14 +114,14 @@ public interface Key extends CharSequence {
         private boolean firstCharInWord = true;
 
         @Override
-        public void startDomain(@Nonnull final StringBuilder output) {
+        public final void startDomain(@Nonnull final StringBuilder output) {
             if (!firstDomain) {
                 separateDomains(output);
             }
         }
 
         @Override
-        public void startWord(@Nonnull final StringBuilder output) {
+        public final void startWord(@Nonnull final StringBuilder output) {
             if (!firstWordInDomain) {
                 separateWordsInDomain(output);
             }
@@ -116,30 +129,30 @@ public interface Key extends CharSequence {
         }
 
         @Override
-        public void print(@Nonnull final CharSequence sequence,
-                          final int start, final int end,
-                          @Nonnull final StringBuilder output) {
+        public final void print(@Nonnull final CharSequence sequence,
+                                final int start, final int end,
+                                @Nonnull final StringBuilder output) {
             for (int i = start; i < end; i++) {
-                print(sequence.charAt(i), firstDomain, firstWordInDomain, firstCharInWord, output);
+                print(sequence.charAt(i), output);
             }
         }
 
         @Override
-        public void print(final char elem, @Nonnull final StringBuilder output) {
+        public final void print(final char elem, @Nonnull final StringBuilder output) {
             print(elem, firstDomain, firstWordInDomain, firstCharInWord, output);
             firstCharInWord = false;
         }
 
 
         @Override
-        public void finishWord(@Nonnull final StringBuilder output) {
+        public final void finishWord(@Nonnull final StringBuilder output) {
             if (firstWordInDomain) {
                 firstWordInDomain = false;
             }
         }
 
         @Override
-        public void finishDomain(@Nonnull final StringBuilder output) {
+        public final void finishDomain(@Nonnull final StringBuilder output) {
             if (firstDomain) {
                 firstDomain = false;
             }
@@ -147,7 +160,7 @@ public interface Key extends CharSequence {
         }
 
         @Override
-        public void reset() {
+        public final void reset() {
             firstDomain = true;
             firstWordInDomain = true;
             firstCharInWord = true;
@@ -180,7 +193,11 @@ public interface Key extends CharSequence {
         }
 
         @Override
-        protected void print(final char elem, final boolean firstDomain, final boolean firstWordInDomain, final boolean firstCharInWord, @Nonnull final StringBuilder output) {
+        protected void print(final char elem,
+                             final boolean firstDomain,
+                             final boolean firstWordInDomain,
+                             final boolean firstCharInWord,
+                             @Nonnull final StringBuilder output) {
             output.append(elem);
         }
     }

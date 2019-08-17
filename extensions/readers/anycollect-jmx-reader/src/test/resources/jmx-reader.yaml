@@ -61,7 +61,6 @@ extensions:
   extension: JmxReader
   instance: jmx
   dependencies:
-    puller: !ref puller
     discovery: !refs
     - discovery
     queries: !refs

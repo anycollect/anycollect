@@ -1,3 +1,0 @@
-- manifest: meter-registry
-  extensions:
-    - class: io.github.anycollect.meter.registry.AnyCollectMeterRegistry

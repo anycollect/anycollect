@@ -2,16 +2,15 @@ package io.github.anycollect.core.impl.pull.separate;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.github.anycollect.core.api.dispatcher.Dispatcher;
+import io.github.anycollect.core.api.internal.Cancellation;
 import io.github.anycollect.core.api.internal.Clock;
 import io.github.anycollect.core.api.query.Query;
 import io.github.anycollect.core.api.target.Target;
 import io.github.anycollect.core.impl.pull.PullJob;
 import io.github.anycollect.core.impl.pull.PullScheduler;
 import io.github.anycollect.core.impl.pull.availability.CheckingTarget;
-import io.github.anycollect.core.api.internal.Cancellation;
 import io.github.anycollect.core.impl.scheduler.Scheduler;
-import io.github.anycollect.metric.MeterRegistry;
-import io.github.anycollect.metric.NoopMeterRegistry;
+import io.github.anycollect.meter.api.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +33,7 @@ public final class SeparatePullScheduler implements PullScheduler {
     SeparatePullScheduler(@Nonnull final SchedulerFactory factory,
                           @Nonnull final Clock clock) {
         this.factory = factory;
-        this.registry = new NoopMeterRegistry();
+        this.registry = MeterRegistry.noop();
         this.clock = clock;
         this.name = "scheduler";
     }

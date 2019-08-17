@@ -2,8 +2,8 @@ package io.github.anycollect.readers.jmx.discovery;
 
 import io.github.anycollect.core.exceptions.ConnectionException;
 import io.github.anycollect.core.exceptions.QueryException;
+import io.github.anycollect.meter.api.MeterRegistry;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.metric.NoopMeterRegistry;
 import io.github.anycollect.readers.jmx.query.operations.QueryOperation;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.server.JmxConnection;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 class CurrentAppTest {
     @Test
     void connectionMustBeOfTypeMBeanServer() throws ConnectionException, QueryException {
-        CurrentApp discovery = new CurrentApp(new NoopMeterRegistry(), new CurrentApp.Config("dummy", Tags.empty(), Tags.empty()));
+        CurrentApp discovery = new CurrentApp(MeterRegistry.noop(), new CurrentApp.Config("dummy", Tags.empty(), Tags.empty()));
 
         JavaApp server = discovery.discover().iterator().next();
         @SuppressWarnings("unchecked")

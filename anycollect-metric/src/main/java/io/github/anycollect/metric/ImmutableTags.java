@@ -4,17 +4,21 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public final class ImmutableTags implements Tags {
-    public static final ImmutableTags EMPTY = new ImmutableTags.Builder().build();
+final class ImmutableTags implements Tags {
+    static final ImmutableTags EMPTY = new Builder().build();
     private final List<Tag> tagList;
     private final int hash;
+
+    public static ImmutableTags singleton(final Key key, final String value) {
+        return new ImmutableTags(key, value);
+    }
 
     public static ImmutableTags singleton(final String key, final String value) {
         return new ImmutableTags(key, value);
     }
 
-    private ImmutableTags(final Builder builder) {
-        Map<Key, String> tmpTagMap = new LinkedHashMap<>(builder.tags);
+    ImmutableTags(final Map<Key, String> tags) {
+        Map<Key, String> tmpTagMap = new LinkedHashMap<>(tags);
         List<Tag> tmpTagList = new ArrayList<>();
         for (Map.Entry<Key, String> entry : tmpTagMap.entrySet()) {
             tmpTagList.add(Tag.of(entry.getKey(), entry.getValue()));
@@ -25,6 +29,11 @@ public final class ImmutableTags implements Tags {
 
     private ImmutableTags(final String key, final String value) {
         this.tagList = Collections.singletonList(Tag.of(Key.of(key), value));
+        this.hash = Objects.hash(this.tagList);
+    }
+
+    private ImmutableTags(final Key key, final String value) {
+        this.tagList = Collections.singletonList(Tag.of(key, value));
         this.hash = Objects.hash(this.tagList);
     }
 
@@ -85,32 +94,5 @@ public final class ImmutableTags implements Tags {
             return false;
         }
         return Tags.equals(this, (Tags) obj);
-    }
-
-    public static final class Builder {
-        private final Map<Key, String> tags = new LinkedHashMap<>();
-
-        public Builder tag(@Nonnull final String key, final int value) {
-            return tag(key, Integer.toString(value));
-        }
-
-        public Builder tag(@Nonnull final String key, @Nonnull final String value) {
-            Objects.requireNonNull(key, "tag key must not be null");
-            Objects.requireNonNull(value, "tag value must not be null");
-            tags.put(Key.of(key), value);
-            return this;
-        }
-
-        public Builder concat(@Nonnull final Tags addition) {
-            Objects.requireNonNull(addition, "tags must not be null");
-            for (Tag tag : addition) {
-                tags.put(tag.getKey(), tag.getValue());
-            }
-            return this;
-        }
-
-        public ImmutableTags build() {
-            return new ImmutableTags(this);
-        }
     }
 }

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>anycollect-parent</artifactId>
+        <groupId>io.github.anycollect</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../anycollect-parent/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>anycollect-collectd-plugin-dist</artifactId>
+
+    <repositories>
+        <repository>
+            <id>clojars.org</id>
+            <url>https://repo.clojars.org</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-anycollect</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-core-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-common-expression</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- YAML, CONFIGURATION -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- EXTENSIONS -->
+        <dependency>
+            <groupId>org.collectd</groupId>
+            <artifactId>plugin-api</artifactId>
+        </dependency>
+
+        <!-- TESTING -->
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-extension-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-meter</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

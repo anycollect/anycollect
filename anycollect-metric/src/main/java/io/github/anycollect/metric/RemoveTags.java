@@ -3,16 +3,16 @@ package io.github.anycollect.metric;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public final class RemoveTags implements Tags {
+final class RemoveTags implements Tags {
     private final Tags base;
     private final Set<Key> removed;
     private final int hash;
 
-    public static Tags of(final Tags base, final Key removed) {
+    static Tags of(final Tags base, final Key removed) {
         return of(base, Collections.singleton(removed));
     }
 
-    public static Tags of(final Tags base, final Set<Key> removed) {
+    static Tags of(final Tags base, final Set<Key> removed) {
         boolean empty = true;
         boolean anyShouldBeRemoved = false;
         for (Tag tag : base) {

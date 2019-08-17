@@ -1,0 +1,4 @@
+- manifest: meter-registry
+  extensions:
+  - class: io.github.anycollect.meter.impl.AnyCollectMeterRegistry
+  - class: io.github.anycollect.meter.impl.NoopMeterRegistry

@@ -1,7 +1,7 @@
 package io.github.anycollect.readers.jmx.discovery;
 
 import io.github.anycollect.core.api.target.TargetCreationException;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.MeterRegistry;
 import io.github.anycollect.metric.Tags;
 import io.github.anycollect.readers.jmx.config.JavaAppConfig;
 import io.github.anycollect.readers.jmx.server.JavaApp;

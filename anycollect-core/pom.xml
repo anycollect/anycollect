@@ -12,11 +12,15 @@
 
     <artifactId>anycollect-core</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>io.github.anycollect</groupId>
             <artifactId>anycollect-metric</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anycollect</groupId>
+            <artifactId>anycollect-meter-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 

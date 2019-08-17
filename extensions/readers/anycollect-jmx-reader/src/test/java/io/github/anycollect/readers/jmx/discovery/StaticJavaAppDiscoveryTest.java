@@ -8,7 +8,7 @@ import io.github.anycollect.extensions.loaders.AnnotationDefinitionLoader;
 import io.github.anycollect.extensions.loaders.DefinitionLoader;
 import io.github.anycollect.extensions.loaders.InstanceLoader;
 import io.github.anycollect.extensions.loaders.snakeyaml.YamlInstanceLoader;
-import io.github.anycollect.meter.registry.AnyCollectMeterRegistry;
+import io.github.anycollect.meter.impl.NoopMeterRegistry;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 import io.github.anycollect.readers.jmx.server.PooledJavaApp;
 import org.apache.commons.io.FileUtils;
@@ -31,7 +31,7 @@ class StaticJavaAppDiscoveryTest {
     @BeforeEach
     void createPullManager() throws Exception {
         DefinitionLoader definitionLoader = new AnnotationDefinitionLoader(Arrays.asList(
-                AnyCollectMeterRegistry.class,
+                NoopMeterRegistry.class,
                 StaticJavaAppDiscovery.class));
         Collection<Definition> definitions = definitionLoader.load();
         File config = FileUtils.getFile("src", "test", "resources", "static-java-app-discovery.yaml");

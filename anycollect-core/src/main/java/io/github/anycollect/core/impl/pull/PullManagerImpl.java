@@ -24,9 +24,8 @@ import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
-import io.github.anycollect.metric.MeterRegistry;
+import io.github.anycollect.meter.api.MeterRegistry;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.metric.NoopMeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +59,7 @@ public final class PullManagerImpl implements PullManager, Lifecycle {
         ThreadFactory updaterThreads = new ThreadFactoryBuilder()
                 .setNameFormat("anycollect-state-updater-[%d]")
                 .build();
-        this.registry = optRegistry != null ? optRegistry : new NoopMeterRegistry();
+        this.registry = optRegistry != null ? optRegistry : MeterRegistry.noop();
         this.updateDesiredStateScheduler = new SchedulerImpl(new MonitoredScheduledThreadPoolExecutor(1, updaterThreads, registry, "state.updater", Tags.empty()));
         SchedulerFactory schedulerFactory = new SchedulerFactoryImpl(
                 config.getConcurrencyRule(), config.getDefaultPoolSize(), registry);
@@ -87,7 +86,7 @@ public final class PullManagerImpl implements PullManager, Lifecycle {
         this.defaultPullPeriodInSeconds = defaultPullPeriodInSeconds;
         this.healthCheckPeriodInSeconds = healthCheckPeriodInSeconds;
         this.healthCheckScheduler = healthCheckScheduler;
-        this.registry = new NoopMeterRegistry();
+        this.registry = MeterRegistry.noop();
     }
 
     @Override
