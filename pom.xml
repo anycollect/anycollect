@@ -35,7 +35,6 @@
         <module>anycollect-benchmarks</module>
         <module>anycollect-extension-system-api</module>
         <module>extensions/jackson/anycollect-jackson-guava</module>
-        <module>anycollect-anycollect</module>
         <module>anycollect-agent</module>
         <module>anycollect-assembly</module>
         <module>extensions/anycollect-collectd</module>

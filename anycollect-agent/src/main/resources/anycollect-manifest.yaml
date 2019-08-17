@@ -1,0 +1,3 @@
+- manifest: anycollect
+  extensions:
+  - class: io.github.anycollect.AutoRouterLoader
