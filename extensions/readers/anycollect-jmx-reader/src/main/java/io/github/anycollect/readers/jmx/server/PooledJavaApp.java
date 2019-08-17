@@ -33,21 +33,18 @@ public final class PooledJavaApp extends AbstractTarget implements JavaApp {
         super(id, tags, meta);
         Objects.requireNonNull(pool, "jmx connection pool must not be null");
         this.pool = pool;
-        Gauge.make("jmx.pool.connections.live", pool, JmxConnectionPool::getNumActive)
+        Gauge.make("jmx/connection.pool/live.connections", pool, JmxConnectionPool::getNumActive)
                 .concatTags(tags)
                 .tag("state", "active")
-                .unit("connections")
                 .meta(this.getClass())
                 .register(registry);
-        Gauge.make("jmx.pool.connections.live", pool, JmxConnectionPool::getNumIdle)
+        Gauge.make("jmx/connection.pool/live.connections", pool, JmxConnectionPool::getNumIdle)
                 .concatTags(tags)
                 .tag("state", "idle")
-                .unit("connections")
                 .meta(this.getClass())
                 .register(registry);
-        FunctionCounter.make("jmx.pool.connections.invalidated", pool, JmxConnectionPool::getTotalInvalidated)
+        FunctionCounter.make("jmx/connection.pool/invalidated.connections", pool, JmxConnectionPool::getTotalInvalidated)
                 .concatTags(tags)
-                .unit("connections")
                 .meta(this.getClass())
                 .register(registry);
     }

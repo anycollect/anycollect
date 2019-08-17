@@ -17,8 +17,7 @@ public final class MonitoredMetricConsumer implements MetricConsumer {
     public MonitoredMetricConsumer(@Nonnull final MetricConsumer delegate,
                                    @Nonnull final MeterRegistry registry) {
         this.delegate = delegate;
-        this.consumedMetrics = Counter.key("router/route/delivery")
-                .unit("metrics")
+        this.consumedMetrics = Counter.key("router/route/delivered.metrics")
                 .tag("route", getAddress())
                 .meta(this.getClass())
                 .register(registry);

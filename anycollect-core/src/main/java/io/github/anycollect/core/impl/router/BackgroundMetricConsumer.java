@@ -12,7 +12,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicLong;
 
 @ThreadSafe
@@ -21,7 +20,7 @@ public final class BackgroundMetricConsumer implements MetricConsumer {
     private final ExecutorService executor;
     private final MetricConsumer delegate;
     private volatile boolean stopped = false;
-    private final AtomicLong inputSize = new AtomicLong(0L);
+    private final AtomicLong awaitingMetrics = new AtomicLong(0L);
     private final Counter rejected;
 
     public BackgroundMetricConsumer(@Nonnull final ExecutorService executor,
@@ -29,32 +28,23 @@ public final class BackgroundMetricConsumer implements MetricConsumer {
                                     @Nonnull final MeterRegistry registry) {
         this.executor = executor;
         this.delegate = delegate;
-        Gauge.make("router.route.input.size", inputSize, AtomicLong::get)
-                .unit("metrics")
+        Gauge.make("router/route/awaiting.metrics", awaitingMetrics, AtomicLong::get)
                 .tag("route", getAddress())
                 .meta(this.getClass())
                 .register(registry);
-        this.rejected = Counter.key("router.route.rejected")
-                .unit("metrics")
+        this.rejected = Counter.key("router/route/rejected.metrics")
                 .tag("route", getAddress())
                 .meta(this.getClass())
                 .register(registry);
-        if (executor instanceof ThreadPoolExecutor) {
-            ThreadPoolExecutor threadPool = (ThreadPoolExecutor) executor;
-            Gauge.make("router.route.queue.size", threadPool, pool -> pool.getQueue().size())
-                    .tag("route", getAddress())
-                    .meta(this.getClass())
-                    .register(registry);
-        }
     }
 
     @Override
     public void consume(@Nonnull final List<? extends Sample> samples) {
         if (!stopped) {
             try {
-                inputSize.addAndGet(samples.size());
+                awaitingMetrics.addAndGet(samples.size());
                 executor.submit(() -> {
-                    inputSize.getAndAdd(-samples.size());
+                    awaitingMetrics.getAndAdd(-samples.size());
                     delegate.consume(samples);
                 });
             } catch (RejectedExecutionException e) {
@@ -68,7 +58,7 @@ public final class BackgroundMetricConsumer implements MetricConsumer {
         stopped = true;
         delegate.stop();
         LOG.info("Stopping async input queue workers for {}, there are currently {} unprocessed metrics",
-                getAddress(), inputSize.get());
+                getAddress(), awaitingMetrics.get());
         this.executor.shutdown();
         LOG.info("Input queue worker for {} has been successfully stopped", getAddress());
     }

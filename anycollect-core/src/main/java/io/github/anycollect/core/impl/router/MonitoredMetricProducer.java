@@ -42,8 +42,7 @@ public final class MonitoredMetricProducer implements MetricProducer {
                             @Nonnull final MeterRegistry registry,
                             @Nonnull final MetricProducer producer) {
             this.delegate = delegate;
-            this.producedMetrics = Counter.key("router/route/dispatch")
-                    .unit("metrics")
+            this.producedMetrics = Counter.key("router/route/dispatched.metrics")
                     .tag("route", producer.getAddress())
                     .meta(this.getClass())
                     .register(registry);
