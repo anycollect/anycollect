@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Extension(name = StaticJmxQueryProvider.NAME, point = QueryProvider.class)
+@Extension(name = StaticJmxQueryProvider.NAME, contracts = QueryProvider.class)
 public final class StaticJmxQueryProvider implements QueryProvider<JmxQuery> {
     public static final String NAME = "StaticJmxQueryProvider";
     private final Set<JmxQuery> queries;

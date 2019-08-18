@@ -16,7 +16,7 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.util.concurrent.TimeUnit;
 
-@Extension(name = GraphiteSerializer.NAME, point = Serializer.class)
+@Extension(name = GraphiteSerializer.NAME, contracts = Serializer.class)
 public final class GraphiteSerializer implements Serializer {
     public static final String NAME = "GraphiteSerializer";
     private final GraphiteSerializerConfig config;

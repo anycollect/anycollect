@@ -9,7 +9,7 @@ import io.github.anycollect.extensions.annotations.Extension;
 
 import javax.annotation.Nonnull;
 
-@Extension(name = TestRouter.NAME, point = Router.class)
+@Extension(name = TestRouter.NAME, contracts = Router.class)
 public final class TestRouter implements Router {
     public static final String NAME = "TestRouter";
     private final Reader reader;

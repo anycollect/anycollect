@@ -15,7 +15,7 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.util.Iterator;
 
-@Extension(name = AnyCollectSerializer.NAME, point = Serializer.class)
+@Extension(name = AnyCollectSerializer.NAME, contracts = Serializer.class)
 public final class AnyCollectSerializer implements Serializer {
     public static final String NAME = "AnyCollectSerializer";
     private final StringBuilder builder = new StringBuilder(1024);

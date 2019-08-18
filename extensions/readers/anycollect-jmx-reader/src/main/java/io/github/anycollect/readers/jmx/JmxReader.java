@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-@Extension(name = JmxReader.NAME, point = Reader.class)
+@Extension(name = JmxReader.NAME, contracts = Reader.class)
 public class JmxReader implements Reader, Lifecycle {
     public static final String NAME = "JmxReader";
     private static final Logger LOG = LoggerFactory.getLogger(JmxReader.class);

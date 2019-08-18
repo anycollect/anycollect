@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-@Extension(name = PullManagerImpl.NAME, point = PullManager.class)
+@Extension(name = PullManagerImpl.NAME, contracts = PullManager.class)
 public final class PullManagerImpl implements PullManager, Lifecycle {
     public static final String NAME = "PullEngine";
     private static final Logger LOG = LoggerFactory.getLogger(PullManagerImpl.class);

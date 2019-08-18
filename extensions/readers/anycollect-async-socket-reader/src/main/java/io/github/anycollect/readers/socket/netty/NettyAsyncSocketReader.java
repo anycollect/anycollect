@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 
-@Extension(name = NettyAsyncSocketReader.NAME, point = Reader.class)
+@Extension(name = NettyAsyncSocketReader.NAME, contracts = Reader.class)
 public final class NettyAsyncSocketReader implements Reader, Lifecycle {
     public static final String NAME = "NettyAsyncSocketReader";
     private static final Logger LOG = LoggerFactory.getLogger(NettyAsyncSocketReader.class);

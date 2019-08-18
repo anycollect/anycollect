@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Set;
 
-@Extension(name = CurrentProcessDiscovery.NAME, point = ServiceDiscovery.class)
+@Extension(name = CurrentProcessDiscovery.NAME, contracts = ServiceDiscovery.class)
 public final class CurrentProcessDiscovery implements ServiceDiscovery<Process> {
     public static final String NAME = "CurrentProcessDiscovery";
     private final Process process;

@@ -16,7 +16,7 @@ import io.github.anycollect.metric.Sample;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-@Extension(name = Transformer.NAME, point = Processor.class)
+@Extension(name = Transformer.NAME, contracts = Processor.class)
 public final class Transformer implements Processor {
     public static final String NAME = "Transformer";
     private final Filter filter;

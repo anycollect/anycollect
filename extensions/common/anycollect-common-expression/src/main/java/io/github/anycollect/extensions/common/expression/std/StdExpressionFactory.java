@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-@Extension(name = "StdExpressions", point = ExpressionFactory.class)
+@Extension(name = "StdExpressions", contracts = ExpressionFactory.class)
 public final class StdExpressionFactory implements ExpressionFactory {
     private final Parser parser;
 

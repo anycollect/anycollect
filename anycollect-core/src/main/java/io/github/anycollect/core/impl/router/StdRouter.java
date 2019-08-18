@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-@Extension(name = StdRouter.NAME, point = Router.class)
+@Extension(name = StdRouter.NAME, contracts = Router.class)
 public final class StdRouter implements Router, Lifecycle {
     public static final String NAME = "Router";
     private static final Logger LOG = LoggerFactory.getLogger(StdRouter.class);

@@ -9,7 +9,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 
-@Extension(name = JoinFilter.NAME, point = Filter.class)
+@Extension(name = JoinFilter.NAME, contracts = Filter.class)
 public final class JoinFilter extends BaseFilter {
     public static final String NAME = "JoinFilter";
 

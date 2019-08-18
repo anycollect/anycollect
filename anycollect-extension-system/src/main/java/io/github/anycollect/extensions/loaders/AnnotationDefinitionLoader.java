@@ -250,11 +250,7 @@ public final class AnnotationDefinitionLoader implements DefinitionLoader {
 
     private Set<Class<?>> loadExtensionPointClasses(final Class extClass) {
         Extension extension = (Extension) extClass.getAnnotation(Extension.class);
-        if (!extension.point().equals(Void.class)) {
-            return Collections.singleton(extension.point());
-        } else {
-            return new HashSet<>(Arrays.asList(extension.contracts()));
-        }
+        return new HashSet<>(Arrays.asList(extension.contracts()));
     }
 
     private static class AnnotatedParameter<T extends Annotation> {

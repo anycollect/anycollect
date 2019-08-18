@@ -8,7 +8,7 @@ import io.github.anycollect.extensions.annotations.Extension;
 
 import javax.annotation.Nullable;
 
-@Extension(name = StdSelfDiscovery.NAME, point = SelfDiscovery.class)
+@Extension(name = StdSelfDiscovery.NAME, contracts = SelfDiscovery.class)
 public class StdSelfDiscovery implements SelfDiscovery {
     public static final String NAME = "SelfDiscovery";
     private final SelfTarget self;

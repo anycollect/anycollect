@@ -12,7 +12,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
 @Immutable
-@Extension(name = StaticQueryMatcherResolver.NAME, point = QueryMatcherResolver.class)
+@Extension(name = StaticQueryMatcherResolver.NAME, contracts = QueryMatcherResolver.class)
 public class StaticQueryMatcherResolver implements QueryMatcherResolver {
     public static final String NAME = "StaticQueryMatcherResolver";
     private final RuleListQueryMatcher matcher;

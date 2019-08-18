@@ -17,7 +17,7 @@ import oshi.hardware.GlobalMemory;
 
 import javax.annotation.Nonnull;
 
-@Extension(name = ProcessReader.NAME, point = Reader.class)
+@Extension(name = ProcessReader.NAME, contracts = Reader.class)
 public final class ProcessReader implements Reader, Lifecycle {
     public static final String NAME = "ProcessReader";
     private static final Logger LOG = LoggerFactory.getLogger(ProcessReader.class);

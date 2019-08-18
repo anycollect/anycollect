@@ -9,7 +9,7 @@ import io.github.anycollect.metric.*;
 
 @Extension(
         name = AnyCollectModule.NAME,
-        point = Module.class,
+        contracts = Module.class,
         autoload = @Extension.AutoLoad(instanceName = AnyCollectModule.INSTANCE_NAME)
 )
 public final class AnyCollectModule extends Module {

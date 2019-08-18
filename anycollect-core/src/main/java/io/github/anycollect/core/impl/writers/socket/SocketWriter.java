@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 @NotThreadSafe
-@Extension(name = SocketWriter.NAME, point = Writer.class)
+@Extension(name = SocketWriter.NAME, contracts = Writer.class)
 public final class SocketWriter implements Writer, Lifecycle {
     public static final String NAME = "SocketWriter";
     private static final Logger LOG = LoggerFactory.getLogger(SocketWriter.class);

@@ -7,7 +7,7 @@ import io.github.anycollect.extensions.annotations.Extension;
 
 @Extension(
         name = CoreFiltersJacksonModule.NAME,
-        point = Module.class,
+        contracts = Module.class,
         autoload = @Extension.AutoLoad(instanceName = CoreFiltersJacksonModule.INSTANCE_NAME)
 )
 public final class CoreFiltersJacksonModule extends Module {

@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@Extension(name = Slf4jWriter.NAME, point = Writer.class)
+@Extension(name = Slf4jWriter.NAME, contracts = Writer.class)
 public class Slf4jWriter implements Writer, Lifecycle {
     public static final String NAME = "Slf4jWriter";
     private static final Logger LOG = LoggerFactory.getLogger(Slf4jWriter.class);

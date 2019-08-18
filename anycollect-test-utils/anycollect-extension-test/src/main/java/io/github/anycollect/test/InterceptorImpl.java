@@ -16,7 +16,7 @@ import java.util.concurrent.*;
 
 import static org.awaitility.Awaitility.await;
 
-@Extension(name = InterceptorImpl.NAME, point = Interceptor.class)
+@Extension(name = InterceptorImpl.NAME, contracts = Interceptor.class)
 public final class InterceptorImpl implements Interceptor {
     public static final String NAME = "Interceptor";
     private final String id;

@@ -15,7 +15,7 @@ import org.yaml.snakeyaml.Yaml;
 import javax.annotation.Nonnull;
 import java.io.Reader;
 
-@Extension(name = YamlInstanceLoader.NAME, point = InstanceLoader.class)
+@Extension(name = YamlInstanceLoader.NAME, contracts = InstanceLoader.class)
 public final class YamlInstanceLoader implements InstanceLoader {
     public static final String NAME = "YamlLoader";
     private final Scope scope;

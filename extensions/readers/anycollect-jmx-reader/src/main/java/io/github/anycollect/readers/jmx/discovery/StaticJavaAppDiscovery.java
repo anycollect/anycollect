@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * Static Java App discovery
  */
-@Extension(name = StaticJavaAppDiscovery.NAME, point = ServiceDiscovery.class)
+@Extension(name = StaticJavaAppDiscovery.NAME, contracts = ServiceDiscovery.class)
 public final class StaticJavaAppDiscovery implements ServiceDiscovery<JavaApp> {
     public static final String NAME = "StaticJavaAppDiscovery";
     private static final Logger LOG = LoggerFactory.getLogger(StaticJavaAppDiscovery.class);

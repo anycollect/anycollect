@@ -16,7 +16,7 @@ import io.github.anycollect.readers.jmx.server.JavaApp;
 import javax.annotation.Nonnull;
 import java.util.Set;
 
-@Extension(name = KvJavaAppDiscovery.NAME, point = ServiceDiscovery.class)
+@Extension(name = KvJavaAppDiscovery.NAME, contracts = ServiceDiscovery.class)
 public final class KvJavaAppDiscovery implements ServiceDiscovery<JavaApp> {
     public static final String NAME = "KvJavaAppDiscovery";
     private final ServiceDiscovery<JavaApp> delegate;

@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@Extension(name = PidFileProcessDiscovery.NAME, point = ServiceDiscovery.class)
+@Extension(name = PidFileProcessDiscovery.NAME, contracts = ServiceDiscovery.class)
 public final class PidFileProcessDiscovery implements ServiceDiscovery<Process> {
     public static final String NAME = "PidFileProcessDiscovery";
     private static final Logger LOG = LoggerFactory.getLogger(PidFileProcessDiscovery.class);

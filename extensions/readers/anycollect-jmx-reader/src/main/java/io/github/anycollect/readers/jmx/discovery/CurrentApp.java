@@ -22,7 +22,7 @@ import java.lang.management.ManagementFactory;
 import java.util.Collections;
 import java.util.Set;
 
-@Extension(name = "CurrentApp", point = ServiceDiscovery.class)
+@Extension(name = "CurrentApp", contracts = ServiceDiscovery.class)
 public final class CurrentApp implements ServiceDiscovery<JavaApp> {
     private static final JmxConnectionFactory JMX_CONNECTION_FACTORY = new JmxConnectionFactory() {
         @Nonnull

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultipleDependency {
-    @Extension(point = SampleExtensionPoint.class, name = "OneMultipleDependency")
+    @Extension(contracts = SampleExtensionPoint.class, name = "OneMultipleDependency")
     public static class OneMultipleDependency implements SampleExtensionPoint {
         @ExtCreator
         public OneMultipleDependency(
@@ -16,7 +16,7 @@ public class MultipleDependency {
         }
     }
 
-    @Extension(point = SampleExtensionPoint.class, name = "ArrayListDependency")
+    @Extension(contracts = SampleExtensionPoint.class, name = "ArrayListDependency")
     public static class ArrayListDependency implements SampleExtensionPoint {
         @ExtCreator
         public ArrayListDependency(

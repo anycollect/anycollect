@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@Extension(name = JvmMetrics.NAME, point = QueryProvider.class)
+@Extension(name = JvmMetrics.NAME, contracts = QueryProvider.class)
 public final class JvmMetrics implements QueryProvider<JmxQuery> {
     public static final String NAME = "JvmMetrics";
     private final Set<JmxQuery> queries;

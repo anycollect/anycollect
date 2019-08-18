@@ -15,7 +15,7 @@ import oshi.software.os.FileSystem;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@Extension(name = SystemReader.NAME, point = Reader.class)
+@Extension(name = SystemReader.NAME, contracts = Reader.class)
 public final class SystemReader implements Reader, Lifecycle {
     public static final String NAME = "SystemReader";
     private static final Logger LOG = LoggerFactory.getLogger(SystemReader.class);

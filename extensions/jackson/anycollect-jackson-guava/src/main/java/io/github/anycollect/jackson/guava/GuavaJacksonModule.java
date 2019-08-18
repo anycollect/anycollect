@@ -7,7 +7,7 @@ import io.github.anycollect.extensions.api.JacksonModule;
 
 @Extension(
         name = GuavaJacksonModule.NAME,
-        point = JacksonModule.class,
+        contracts = JacksonModule.class,
         autoload = @Extension.AutoLoad(instanceName = GuavaJacksonModule.INSTANCE_NAME)
 )
 public final class GuavaJacksonModule implements JacksonModule {

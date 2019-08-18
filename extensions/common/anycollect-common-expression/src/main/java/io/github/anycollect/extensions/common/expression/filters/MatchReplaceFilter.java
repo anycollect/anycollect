@@ -9,7 +9,7 @@ import io.github.anycollect.extensions.common.expression.ArgValidationException;
 import java.util.Collections;
 import java.util.List;
 
-@Extension(name = MatchReplaceFilter.NAME, point = Filter.class)
+@Extension(name = MatchReplaceFilter.NAME, contracts = Filter.class)
 public final class MatchReplaceFilter extends BaseFilter {
     public static final String NAME = "MatchReplaceFilter";
 

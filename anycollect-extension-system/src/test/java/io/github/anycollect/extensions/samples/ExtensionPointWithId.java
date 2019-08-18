@@ -4,7 +4,7 @@ import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 import io.github.anycollect.extensions.annotations.InstanceId;
 
-@Extension(name = "WithId", point = SampleExtensionPoint.class)
+@Extension(name = "WithId", contracts = SampleExtensionPoint.class)
 public class ExtensionPointWithId implements SampleExtensionPoint {
     private final String id;
 

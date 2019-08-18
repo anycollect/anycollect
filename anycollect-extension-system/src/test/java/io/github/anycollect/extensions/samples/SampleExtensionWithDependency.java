@@ -5,7 +5,7 @@ import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.ExtDependency;
 import io.github.anycollect.extensions.annotations.Extension;
 
-@Extension(point = SampleExtensionPoint.class, name = "SampleWithDependency")
+@Extension(contracts = SampleExtensionPoint.class, name = "SampleWithDependency")
 public class SampleExtensionWithDependency implements SampleExtensionPoint {
     @ExtCreator
     public SampleExtensionWithDependency(

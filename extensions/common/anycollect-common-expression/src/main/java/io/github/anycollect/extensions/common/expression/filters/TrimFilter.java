@@ -10,7 +10,7 @@ import java.util.List;
 
 import static io.github.anycollect.extensions.common.expression.filters.TrimFilter.NAME;
 
-@Extension(name = NAME, point = Filter.class)
+@Extension(name = NAME, contracts = Filter.class)
 public final class TrimFilter extends BaseFilter {
     public static final String NAME = "TrimFilter";
 

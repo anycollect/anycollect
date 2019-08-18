@@ -4,7 +4,7 @@ import io.github.anycollect.extensions.annotations.ExtConfig;
 import io.github.anycollect.extensions.annotations.ExtCreator;
 import io.github.anycollect.extensions.annotations.Extension;
 
-@Extension(point = SampleExtensionPoint.class, name = "TwoConstructors")
+@Extension(contracts = SampleExtensionPoint.class, name = "TwoConstructors")
 public class ExtensionPointWithTwoConstructors implements SampleExtensionPoint {
     @ExtCreator
     public ExtensionPointWithTwoConstructors() {

@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Extension(name = AutoRouterLoader.NAME, point = InstanceLoader.class)
+@Extension(name = AutoRouterLoader.NAME, contracts = InstanceLoader.class)
 public final class AutoRouterLoader implements InstanceLoader {
     public static final String NAME = "AutoRouterLoader";
     private final InstanceLoader parent;

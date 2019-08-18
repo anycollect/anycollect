@@ -23,7 +23,7 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Extension(name = ConsulKeyValue.NAME, point = KeyValue.class)
+@Extension(name = ConsulKeyValue.NAME, contracts = KeyValue.class)
 public final class ConsulKeyValue implements KeyValue, Lifecycle {
     public static final String NAME = "ConsulKv";
     private static final Logger LOG = LoggerFactory.getLogger(ConsulKeyValue.class);

@@ -7,7 +7,7 @@ import io.github.anycollect.extensions.annotations.Extension;
 import java.util.List;
 
 public class Configs {
-    @Extension(name = "ListOfStrings", point = SampleExtensionPoint.class)
+    @Extension(name = "ListOfStrings", contracts = SampleExtensionPoint.class)
     public static class ListOfStrings implements SampleExtensionPoint {
         private final List<String> config;
 
@@ -21,7 +21,7 @@ public class Configs {
         }
     }
 
-    @Extension(name = "ListOfStringsWithKey", point = SampleExtensionPoint.class)
+    @Extension(name = "ListOfStringsWithKey", contracts = SampleExtensionPoint.class)
     public static class ListOfStringsWithKey implements SampleExtensionPoint {
         private final List<String> aliases;
 

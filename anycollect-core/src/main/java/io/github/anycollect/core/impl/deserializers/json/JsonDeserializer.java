@@ -12,7 +12,7 @@ import io.github.anycollect.metric.Sample;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-@Extension(name = JsonDeserializer.NAME, point = Deserializer.class)
+@Extension(name = JsonDeserializer.NAME, contracts = Deserializer.class)
 public final class JsonDeserializer implements Deserializer {
     public static final String NAME = "JsonDeserializer";
     private final ObjectMapper objectMapper;
