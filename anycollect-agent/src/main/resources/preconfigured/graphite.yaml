@@ -11,7 +11,7 @@ extensions:
   extension: SocketWriter
   instance: graphite
   dependencies:
-    format: !ref graphite.serializer
+    serializer: !ref graphite.serializer
   config:
     host: !var graphite.host
     port: !var graphite.port

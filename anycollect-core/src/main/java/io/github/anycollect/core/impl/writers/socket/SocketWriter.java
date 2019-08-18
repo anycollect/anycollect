@@ -25,7 +25,7 @@ public final class SocketWriter implements Writer, Lifecycle {
     private final String id;
 
     @ExtCreator
-    public SocketWriter(@ExtDependency(qualifier = "format") @Nonnull final Serializer serializer,
+    public SocketWriter(@ExtDependency(qualifier = "serializer") @Nonnull final Serializer serializer,
                         @InstanceId @Nonnull final String id,
                         @ExtConfig @Nonnull final SocketConfig config) {
         AdaptiveSerializer adaptiveSerializer = AdaptiveSerializer.wrap(serializer);
