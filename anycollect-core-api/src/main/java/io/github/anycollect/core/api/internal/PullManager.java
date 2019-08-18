@@ -26,9 +26,7 @@ public interface PullManager {
                                              @Nonnull Dispatcher dispatcher,
                                              int periodInSeconds);
 
-    default <T extends Target, Q extends Query<T>> Cancellation start(@Nonnull String token,
-                                                                      @Nonnull DesiredStateProvider<T, Q> stateProvider,
-                                                                      @Nonnull Dispatcher dispatcher) {
-        return start(token, stateProvider, dispatcher);
-    }
+    <T extends Target, Q extends Query<T>> Cancellation start(@Nonnull String token,
+                                                              @Nonnull DesiredStateProvider<T, Q> stateProvider,
+                                                              @Nonnull Dispatcher dispatcher);
 }
