@@ -31,9 +31,9 @@ final class RemoveTags implements Tags {
         return new RemoveTags(base, removed);
     }
 
-    private static boolean isRemoved(final CharSequence key, final Set<Key> removed) {
+    private static boolean isRemoved(final Key key, final Set<Key> removed) {
         for (final Key test : removed) {
-            if (test.contentEquals(key)) {
+            if (test.equals(key)) {
                 return true;
             }
         }
@@ -47,13 +47,13 @@ final class RemoveTags implements Tags {
     }
 
     @Override
-    public boolean hasTagKey(final CharSequence key) {
+    public boolean hasTagKey(final Key key) {
         return base.hasTagKey(key) && !isRemoved(key, removed);
     }
 
     @Nonnull
     @Override
-    public Tag getTag(final CharSequence key) {
+    public Tag getTag(final Key key) {
         if (isRemoved(key, removed)) {
             throw new IllegalArgumentException("there is no tag value associated with " + key + " key");
         }
@@ -62,7 +62,7 @@ final class RemoveTags implements Tags {
 
     @Nonnull
     @Override
-    public String getTagValue(final CharSequence key) {
+    public String getTagValue(final Key key) {
         return getTag(key).getValue();
     }
 

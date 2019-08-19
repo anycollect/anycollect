@@ -45,14 +45,31 @@ public interface Tags extends Iterable<Tag> {
         return builder.build();
     }
 
-    boolean hasTagKey(CharSequence key);
+    boolean hasTagKey(Key key);
+
+    default boolean hasTagKey(String key) {
+        // TODO tune
+        return hasTagKey(Key.of(key));
+    }
 
     @Nonnull
-    Tag getTag(CharSequence key);
+    Tag getTag(Key key);
 
     @Nonnull
-    default String getTagValue(CharSequence key) {
+    default Tag getTag(String key) {
+        // TODO tune
+        return getTag(Key.of(key));
+    }
+
+    @Nonnull
+    default String getTagValue(Key key) {
         return getTag(key).getValue();
+    }
+
+    @Nonnull
+    default String getTagValue(String key) {
+        // TODO tune
+        return getTagValue(Key.of(key));
     }
 
     @Nonnull

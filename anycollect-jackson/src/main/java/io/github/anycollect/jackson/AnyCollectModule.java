@@ -33,7 +33,6 @@ public final class AnyCollectModule extends Module {
         serializers.addSerializer(Key.class, new KeySerializer());
         serializers.addSerializer(Sample.class, new SampleSerializer());
         serializers.addSerializer(Stat.class, new StatSerializer());
-        serializers.addSerializer(Type.class, new TypeSerializer());
         context.addSerializers(serializers);
 
         SimpleDeserializers deserializers = new SimpleDeserializers();
@@ -41,7 +40,6 @@ public final class AnyCollectModule extends Module {
         deserializers.addDeserializer(Key.class, new KeyDeserializer());
         deserializers.addDeserializer(Sample.class, new SampleDeserializer());
         deserializers.addDeserializer(Stat.class, new StatDeserializer());
-        deserializers.addDeserializer(Type.class, new TypeDeserializer());
         context.addDeserializers(deserializers);
     }
 }

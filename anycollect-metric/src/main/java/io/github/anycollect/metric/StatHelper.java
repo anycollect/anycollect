@@ -11,7 +11,8 @@ final class StatHelper {
     private static final Pattern MEAN_VALUE_PATTERN = Pattern.compile("mean");
     private static final Pattern PERCENTILE_VALUE_PATTERN = Pattern.compile("(max|upper|mean)_([0-9]+)");
     private static final Pattern LE_BUCKET_VALUE_PATTERN = Pattern.compile("le_(\\d+(\\.\\d+)*|Infinity)");
-    private static final Pattern VALUE_PATTERN = Pattern.compile("value");
+    private static final Pattern GAUGE_PATTERN = Pattern.compile("gauge");
+    private static final Pattern COUNTER_PATTERN = Pattern.compile("counter");
 
     private StatHelper() {
     }
@@ -30,8 +31,11 @@ final class StatHelper {
         if (STD_VALUE_PATTERN.matcher(stat).matches()) {
             return Stat.std();
         }
-        if (VALUE_PATTERN.matcher(stat).matches()) {
-            return Stat.value();
+        if (GAUGE_PATTERN.matcher(stat).matches()) {
+            return Stat.gauge();
+        }
+        if (COUNTER_PATTERN.matcher(stat).matches()) {
+            return Stat.counter();
         }
         Matcher matcher = PERCENTILE_VALUE_PATTERN.matcher(stat);
         if (matcher.matches()) {

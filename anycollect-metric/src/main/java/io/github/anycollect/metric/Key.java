@@ -20,7 +20,11 @@ import java.util.Objects;
  */
 @Immutable
 @API(since = "0.1.0", status = API.Status.EXPERIMENTAL)
-public interface Key extends CharSequence {
+public interface Key {
+    static Key empty() {
+        return new StringKey("");
+    }
+
     static Key of(@Nonnull String normalized) {
         Objects.requireNonNull(normalized, "key must not be null");
         return new StringKey(normalized);
@@ -28,15 +32,12 @@ public interface Key extends CharSequence {
 
     @Nonnull
     default Key withPrefix(@Nonnull Key prefix) {
-        return new StringKey(prefix, this);
+        return join(prefix, this);
     }
 
     @Nonnull
     default Key withPrefix(@Nonnull String word) {
-        if (word.isEmpty()) {
-            return this;
-        }
-        return withPrefix(new StringKey(word));
+        return join(new StringKey(word), this);
     }
 
     @Nonnull
@@ -44,41 +45,45 @@ public interface Key extends CharSequence {
         if (phrase.length == 0) {
             return this;
         }
-        return withPrefix(new StringKey(phrase));
+        return join(new StringKey(phrase), this);
+    }
+
+    @Nonnull
+    default Key withSuffix(@Nonnull Key suffix) {
+        return join(this, suffix);
     }
 
     @Nonnull
     default Key withSuffix(@Nonnull String word) {
-        return new StringKey(this, new StringKey(word));
+        return join(this, new StringKey(word));
     }
 
     @Nonnull
     default Key withSuffix(@Nonnull String... phrase) {
-        return new StringKey(this, new StringKey(phrase));
+        return join(this, new StringKey(phrase));
     }
 
-    default boolean contentEquals(@Nonnull final CharSequence that) {
-        if (this == that) {
-            return true;
-        }
-        if (hashCode() == that.hashCode()) {
-            if (this.equals(that)) {
-                return true;
+    static Key join(@Nonnull Key prefix, @Nonnull Key suffix) {
+        if (prefix.isEmpty()) {
+            if (suffix.isEmpty()) {
+                return empty();
+            } else {
+                return suffix;
+            }
+        } else {
+            if (suffix.isEmpty()) {
+                return prefix;
+            } else {
+                return new JoinKey(prefix, suffix);
             }
         }
-        if (this.length() != that.length()) {
-            return false;
-        }
-        int length = this.length();
-        for (int i = 0; i < length; i++) {
-            if (this.charAt(i) != that.charAt(i)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     String normalize();
+
+    default boolean isEmpty() {
+        return normalize().isEmpty();
+    }
 
     void print(@Nonnull CaseFormat format, @Nonnull StringBuilder output);
 

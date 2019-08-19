@@ -14,6 +14,8 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Extension(name = GraphiteSerializer.NAME, contracts = Serializer.class)
@@ -24,6 +26,7 @@ public final class GraphiteSerializer implements Serializer {
     private final Key.CaseFormat tagFormat;
     private final StringBuilder builder = new StringBuilder(1024);
     private final CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
+    private final Map<String, Key> escapedWords = new HashMap<>();
 
     @ExtCreator
     public GraphiteSerializer(@ExtConfig(optional = true) @Nullable final GraphiteSerializerConfig optConfig) {
@@ -46,33 +49,39 @@ public final class GraphiteSerializer implements Serializer {
         }
         Tags tags = config.tags().concat(sample.getTags());
         Key key = sample.getKey();
-        long timestamp = TimeUnit.MILLISECONDS.toSeconds(sample.getTimestamp());
         builder.setLength(0);
-        key.withPrefix(config.prefix())
-                .print(keyFormat, builder);
-        if (!sample.getUnit().isEmpty()) {
-            builder.append(".").append(sample.getUnit());
-        }
-        if (sample.getStat().equals(Stat.value())) {
-            if (sample.getType() == Type.GAUGE) {
-                builder.append(".").append("gauge");
-            } else if (sample.getType() == Type.COUNTER) {
-                builder.append(".").append("counter");
+        Key prefix = config.prefix();
+        for (final Key asPrefix : config.tagsAsPrefix()) {
+            if (tags.hasTagKey(asPrefix)) {
+                prefix = prefix.withSuffix(asPrefix);
+                String rawValue = tags.getTagValue(asPrefix);
+                prefix = prefix.withSuffix(escapedWords.computeIfAbsent(rawValue, GraphiteSerializer::escapeWord));
             }
-        } else {
-            builder.append(".").append(sample.getStat());
         }
+        key = key.withPrefix(prefix)
+                .withSuffix(escapedWords.computeIfAbsent(sample.getUnit(), GraphiteSerializer::escapeWord))
+                .withSuffix(escapedWords.computeIfAbsent(sample.getStat().getTagValue(), GraphiteSerializer::escapeWord));
+        keyFormat.reset();
+        key.print(keyFormat, builder);
         if (!tags.isEmpty()) {
             if (!config.tagSupport()) {
                 for (Tag tag : tags) {
+                    if (config.tagsAsPrefix().contains(tag.getKey())) {
+                        continue;
+                    }
                     builder.append(".");
+                    tagFormat.reset();
                     tag.getKey().print(tagFormat, builder);
                     builder.append(".");
                     normalize(tag.getValue(), builder);
                 }
             } else {
                 for (Tag tag : tags) {
+                    if (config.tagsAsPrefix().contains(tag.getKey())) {
+                        continue;
+                    }
                     builder.append(";");
+                    tagFormat.reset();
                     tag.getKey().print(tagFormat, builder);
                     builder.append("=");
                     normalize(tag.getValue(), builder);
@@ -82,8 +91,15 @@ public final class GraphiteSerializer implements Serializer {
         builder.append(" ");
         builder.append(sample.getValue());
         builder.append(" ");
+        long timestamp = TimeUnit.MILLISECONDS.toSeconds(sample.getTimestamp());
         builder.append(timestamp);
         builder.append("\n");
+    }
+
+    private static Key escapeWord(final String raw) {
+        StringBuilder tmp = new StringBuilder();
+        normalize(raw, tmp);
+        return Key.of(tmp.toString());
     }
 
     private static void normalize(final String source, final StringBuilder builder) {

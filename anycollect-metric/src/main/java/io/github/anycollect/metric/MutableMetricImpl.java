@@ -8,7 +8,6 @@ final class MutableMetricImpl implements MutableMetric {
     private Tags tags;
     private Tags meta;
     private Stat stat;
-    private Type type;
     private String unit;
 
     MutableMetricImpl(@Nonnull final Metric metric) {
@@ -16,7 +15,6 @@ final class MutableMetricImpl implements MutableMetric {
         this.tags = metric.getTags();
         this.meta = metric.getMeta();
         this.stat = metric.getStat();
-        this.type = metric.getType();
         this.unit = metric.getUnit();
     }
 
@@ -91,6 +89,6 @@ final class MutableMetricImpl implements MutableMetric {
                 .key(key)
                 .tags(tags)
                 .meta(meta)
-                .metric(stat, type, unit);
+                .metric(stat, unit);
     }
 }

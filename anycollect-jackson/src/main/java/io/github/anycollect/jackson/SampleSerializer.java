@@ -22,7 +22,6 @@ public final class SampleSerializer extends StdSerializer<Sample> {
         gen.writeObjectField("tags", id.getTags());
         gen.writeObjectField("meta", id.getMeta());
         gen.writeObjectField("stat", id.getStat());
-        gen.writeObjectField("mtype", id.getType());
         gen.writeObjectField("unit", id.getUnit());
         gen.writeNumberField("value", value.getValue());
         gen.writeNumberField("timestamp", value.getTimestamp());

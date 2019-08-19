@@ -8,26 +8,22 @@ final class ImmutableMetric implements Metric {
     private final Tags tags;
     private final Tags meta;
     private final Stat stat;
-    private final Type type;
     private final String unit;
 
     ImmutableMetric(@Nonnull final Key key,
                     @Nonnull final Tags tags,
                     @Nonnull final Tags meta,
                     @Nonnull final Stat stat,
-                    @Nonnull final Type type,
                     @Nonnull final String unit) {
         Objects.requireNonNull(key, "key must not be null");
         Objects.requireNonNull(tags, "tags must not be null");
         Objects.requireNonNull(meta, "meta must not be null");
         Objects.requireNonNull(stat, "stat must not be null");
-        Objects.requireNonNull(type, "type must not be null");
         Objects.requireNonNull(unit, "unit must not be null");
         this.key = key;
         this.tags = tags;
         this.meta = meta;
         this.stat = stat;
-        this.type = type;
         this.unit = unit;
     }
 
@@ -53,12 +49,6 @@ final class ImmutableMetric implements Metric {
     @Override
     public Stat getStat() {
         return stat;
-    }
-
-    @Nonnull
-    @Override
-    public Type getType() {
-        return type;
     }
 
     @Nonnull

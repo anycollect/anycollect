@@ -27,17 +27,6 @@ class StatTest {
     }
 
     @Test
-    void typeTest() {
-        assertThat(Stat.min().getType()).isSameAs(StatType.MIN);
-        assertThat(Stat.max().getType()).isSameAs(StatType.MAX);
-        assertThat(Stat.mean().getType()).isSameAs(StatType.MEAN);
-        assertThat(Stat.std().getType()).isSameAs(StatType.STD);
-        assertThat(Stat.percentile(95).getType()).isSameAs(StatType.PERCENTILE);
-        assertThat(Stat.leInf().getType()).isSameAs(StatType.LE_BUCKET);
-        assertThat(Stat.value().getType()).isSameAs(StatType.UNKNOWN);
-    }
-
-    @Test
     void tagValueTest() {
         assertThat(Stat.min().getTagValue()).isEqualTo("min").isEqualTo(Stat.min().toString());
         assertThat(Stat.max().getTagValue()).isEqualTo("max").isEqualTo(Stat.max().toString());
@@ -48,7 +37,8 @@ class StatTest {
         assertThat(Stat.le(0.4).getTagValue()).isEqualTo("le_0.4").isEqualTo(Stat.le(0.4).toString());
         assertThat(Stat.le(120).getTagValue()).isEqualTo("le_120").isEqualTo(Stat.le(120).toString());
         assertThat(Stat.leInf().getTagValue()).isEqualTo("le_Infinity").isEqualTo(Stat.leInf().toString());
-        assertThat(Stat.value().getTagValue()).isEqualTo("value").isEqualTo(Stat.value().toString());
+        assertThat(Stat.gauge().getTagValue()).isEqualTo("gauge").isEqualTo(Stat.gauge().toString());
+        assertThat(Stat.counter().getTagValue()).isEqualTo("counter").isEqualTo(Stat.counter().toString());
     }
 
     @Test

@@ -54,9 +54,6 @@ public interface Metric {
     Stat getStat();
 
     @Nonnull
-    Type getType();
-
-    @Nonnull
     String getUnit();
 
     @Nonnull
@@ -76,7 +73,7 @@ public interface Metric {
      * @return hash code
      */
     static int hash(@Nonnull Metric metric) {
-        return Objects.hash(metric.getKey(), metric.getTags(), metric.getStat(), metric.getType(), metric.getUnit());
+        return Objects.hash(metric.getKey(), metric.getTags(), metric.getStat(), metric.getUnit());
     }
 
     /**
@@ -92,9 +89,6 @@ public interface Metric {
             return false;
         }
         if (!first.getStat().equals(second.getStat())) {
-            return false;
-        }
-        if (!first.getType().equals(second.getType())) {
             return false;
         }
         if (!first.getUnit().equals(second.getUnit())) {
@@ -114,10 +108,10 @@ public interface Metric {
         if (metric == null) {
             return "null";
         }
-        return metric.getKey() + ";"
-                + (!metric.getTags().isEmpty() ? metric.getTags() + ";" : "")
-                + metric.getStat() + "[" + metric.getType() + "]"
-                + (metric.getUnit().isEmpty() ? "" : "(" + metric.getUnit() + ")");
+        return metric.getKey()
+                + "[" + metric.getStat() + "]"
+                + (metric.getUnit().isEmpty() ? "" : "(" + metric.getUnit() + ")")
+                + (!metric.getTags().isEmpty() ? ";" + metric.getTags() : "");
     }
 
     interface KeyStageBuilder {
@@ -162,7 +156,7 @@ public interface Metric {
 
         @Nonnull
         default Metric counter(@Nonnull final String unit) {
-            return metric(Stat.VALUE, Type.COUNTER, unit);
+            return metric(Stat.COUNTER, unit);
         }
 
         @Nonnull
@@ -172,7 +166,7 @@ public interface Metric {
 
         @Nonnull
         default Metric min(@Nonnull final String unit) {
-            return metric(Stat.MIN, Type.AGGREGATE, unit);
+            return metric(Stat.MIN, unit);
         }
 
         @Nonnull
@@ -182,7 +176,7 @@ public interface Metric {
 
         @Nonnull
         default Metric max(@Nonnull final String unit) {
-            return metric(Stat.MAX, Type.AGGREGATE, unit);
+            return metric(Stat.MAX, unit);
         }
 
         @Nonnull
@@ -192,7 +186,7 @@ public interface Metric {
 
         @Nonnull
         default Metric mean(@Nonnull final String unit) {
-            return metric(Stat.MEAN, Type.AGGREGATE, unit);
+            return metric(Stat.MEAN, unit);
         }
 
         @Nonnull
@@ -202,7 +196,7 @@ public interface Metric {
 
         @Nonnull
         default Metric std(@Nonnull final String unit) {
-            return metric(Stat.STD, Type.AGGREGATE, unit);
+            return metric(Stat.STD, unit);
         }
 
         @Nonnull
@@ -212,7 +206,7 @@ public interface Metric {
 
         @Nonnull
         default Metric percentile(final double quantile, @Nonnull final String unit) {
-            return metric(Percentile.of(quantile), Type.AGGREGATE, unit);
+            return metric(Percentile.of(quantile), unit);
         }
 
         @Nonnull
@@ -222,7 +216,7 @@ public interface Metric {
 
         @Nonnull
         default Metric percentile(final int percentile, @Nonnull final String unit) {
-            return metric(Percentile.of(percentile), Type.AGGREGATE, unit);
+            return metric(Percentile.of(percentile), unit);
         }
 
         @Nonnull
@@ -232,10 +226,10 @@ public interface Metric {
 
         @Nonnull
         default Metric gauge(@Nonnull final String unit) {
-            return metric(Stat.VALUE, Type.GAUGE, unit);
+            return metric(Stat.GAUGE, unit);
         }
 
         @Nonnull
-        Metric metric(@Nonnull Stat stat, @Nonnull Type type, @Nonnull String unit);
+        Metric metric(@Nonnull Stat stat, @Nonnull String unit);
     }
 }

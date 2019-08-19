@@ -3,7 +3,6 @@ package io.github.anycollect.assertj;
 import io.github.anycollect.metric.Key;
 import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Stat;
-import io.github.anycollect.metric.Type;
 import org.assertj.core.api.AbstractAssert;
 
 public final class SampleAssert extends AbstractAssert<SampleAssert, Sample> {
@@ -39,17 +38,22 @@ public final class SampleAssert extends AbstractAssert<SampleAssert, Sample> {
         return this;
     }
 
-    public SampleAssert hasValue(final double value) {
-        return hasMetric(Stat.VALUE, Type.GAUGE, "", value);
+
+
+    public SampleAssert hasGauge(final double value) {
+        return hasGauge("", value);
     }
 
-    public SampleAssert hasMetric(final Stat stat, final Type type, final String unit, final double value) {
+    public SampleAssert hasGauge(final String unit, final double value) {
+        return hasMetric(Stat.GAUGE, unit, value);
+    }
+
+    public SampleAssert hasMetric(final Stat stat, final String unit, final double value) {
         if (!stat.equals(actual.getStat())
-                || !type.equals(actual.getType())
                 || !unit.equals(actual.getUnit())
                 || value != actual.getValue()) {
-            failWithMessage("Expected <%s> to have measurement of stat <%s>, type <%s>, unit <%s> and value <%s>",
-                    actual, stat, type, unit, value);
+            failWithMessage("Expected <%s> to have measurement of stat <%s>, unit <%s> and value <%s>",
+                    actual, stat, unit, value);
         }
         return this;
     }

@@ -61,7 +61,7 @@ final class MetricBuilder implements
 
     @Nonnull
     @Override
-    public Metric metric(@Nonnull final Stat stat, @Nonnull final Type type, @Nonnull final String unit) {
-        return new ImmutableMetric(key, tags, meta, stat, type, unit);
+    public Metric metric(@Nonnull final Stat stat, @Nonnull final String unit) {
+        return new ImmutableMetric(key, tags, meta, stat, unit);
     }
 }

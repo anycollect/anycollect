@@ -53,11 +53,6 @@ public interface Sample {
     }
 
     @Nonnull
-    default Type getType() {
-        return getMetric().getType();
-    }
-
-    @Nonnull
     default String getUnit() {
         return getMetric().getUnit();
     }

@@ -20,7 +20,6 @@ public final class SampleDeserializer extends StdDeserializer<Sample> {
         JsonNode node = codec.readTree(parser);
         Key key = node.get("key").traverse(codec).readValueAs(Key.class);
         Stat stat = node.get("stat").traverse(codec).readValueAs(Stat.class);
-        Type type = node.get("mtype").traverse(codec).readValueAs(Type.class);
         Tags tags = node.has("tags") ? node.get("tags").traverse(codec).readValueAs(Tags.class) : Tags.empty();
         Tags meta = node.has("meta") ? node.get("meta").traverse(codec).readValueAs(Tags.class) : Tags.empty();
         String unit = node.has("unit") ? node.get("unit").asText() : "";
@@ -30,7 +29,7 @@ public final class SampleDeserializer extends StdDeserializer<Sample> {
                 .key(key)
                 .tags(tags)
                 .meta(meta)
-                .metric(stat, type, unit)
+                .metric(stat, unit)
                 .sample(value, timestamp);
     }
 }

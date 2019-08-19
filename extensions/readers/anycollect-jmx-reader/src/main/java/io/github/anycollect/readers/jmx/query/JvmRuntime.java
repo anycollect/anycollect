@@ -4,7 +4,6 @@ import io.github.anycollect.core.api.job.Job;
 import io.github.anycollect.metric.Key;
 import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.metric.Type;
 import io.github.anycollect.readers.jmx.server.JavaApp;
 
 import javax.annotation.Nonnull;
@@ -24,7 +23,7 @@ public final class JvmRuntime extends JmxQuery {
                 Collections.emptyList(),
                 "java.lang:type=Runtime",
                 null,
-                Collections.singletonList(new MeasurementPath("Uptime", Stat.value(), Type.TIMESTAMP, "ms")));
+                Collections.singletonList(new MeasurementPath("Uptime", Stat.time(), "ms")));
     }
 
 

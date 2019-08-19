@@ -38,14 +38,14 @@ final class ImmutableTags implements Tags {
     }
 
     @Override
-    public boolean hasTagKey(final CharSequence key) {
+    public boolean hasTagKey(final Key key) {
         Objects.requireNonNull(key, "tag key must not be null");
         return findTagOrNull(key) != null;
     }
 
     @Nonnull
     @Override
-    public Tag getTag(final CharSequence key) {
+    public Tag getTag(final Key key) {
         Objects.requireNonNull(key, "tag key must not be null");
         Tag tag = findTagOrNull(key);
         if (tag == null) {
@@ -55,9 +55,9 @@ final class ImmutableTags implements Tags {
     }
 
     @Nullable
-    private Tag findTagOrNull(final CharSequence key) {
+    private Tag findTagOrNull(final Key key) {
         for (final Tag tag : tagList) {
-            if (tag.getKey().contentEquals(key)) {
+            if (tag.getKey().equals(key)) {
                 return tag;
             }
         }

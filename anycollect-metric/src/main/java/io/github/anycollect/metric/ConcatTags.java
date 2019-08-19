@@ -26,13 +26,13 @@ final class ConcatTags implements Tags {
     }
 
     @Override
-    public boolean hasTagKey(final CharSequence key) {
+    public boolean hasTagKey(final Key key) {
         return base.hasTagKey(key) || delta.hasTagKey(key);
     }
 
     @Nonnull
     @Override
-    public Tag getTag(final CharSequence key) {
+    public Tag getTag(final Key key) {
         return delta.hasTagKey(key) ? delta.getTag(key) : base.getTag(key);
     }
 

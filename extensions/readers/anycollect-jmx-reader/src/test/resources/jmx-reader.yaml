@@ -40,15 +40,15 @@ extensions:
         values:
         - [k1val2, k2val1]
       measurements:
-        - { path: Min, type: aggregate, stat: min, unit: events }
-        - { path: Max, type: aggregate, stat: max, unit: events }
-        - { path: Mean, type: aggregate, stat: mean, unit: events }
-        - { path: StdDev, type: aggregate, stat: std, unit: events }
-        - { path: 50thPercentile, type: aggregate, stat: max_50, unit: events }
-        - { path: 75thPercentile, type: aggregate, stat: max_75, unit: events }
-        - { path: 90thPercentile, type: aggregate, stat: max_90, unit: events }
-        - { path: 95thPercentile, type: aggregate, stat: max_95, unit: events }
-        - { path: 99thPercentile, type: aggregate, stat: max_99, unit: events }
+        - { path: Min, stat: min, unit: events }
+        - { path: Max, stat: max, unit: events }
+        - { path: Mean, stat: mean, unit: events }
+        - { path: StdDev, stat: std, unit: events }
+        - { path: 50thPercentile, stat: max_50, unit: events }
+        - { path: 75thPercentile, stat: max_75, unit: events }
+        - { path: 90thPercentile, stat: max_90, unit: events }
+        - { path: 95thPercentile, stat: max_95, unit: events }
+        - { path: 99thPercentile, stat: max_99, unit: events }
 - !load
   extension: StaticQueryMatcherResolver
   instance: matcher

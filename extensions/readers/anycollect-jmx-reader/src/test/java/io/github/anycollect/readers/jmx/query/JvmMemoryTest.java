@@ -1,9 +1,7 @@
 package io.github.anycollect.readers.jmx.query;
 
 import io.github.anycollect.metric.Sample;
-import io.github.anycollect.metric.Stat;
 import io.github.anycollect.metric.Tags;
-import io.github.anycollect.metric.Type;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +39,7 @@ class JvmMemoryTest {
         assertThat(samples).hasSize(1);
         assertThat(samples.get(0))
                 .hasKey("jvm/memory/used")
-                .hasMetric(Stat.value(), Type.GAUGE, "bytes", 2.0)
+                .hasGauge("bytes", 2.0)
                 .hasTags("instance", "test",
                         "pool", "Test",
                         "type", "heap");

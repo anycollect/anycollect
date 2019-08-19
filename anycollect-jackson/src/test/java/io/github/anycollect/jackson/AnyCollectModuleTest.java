@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.anycollect.assertj.AnyCollectAssertions;
 import io.github.anycollect.metric.Sample;
 import io.github.anycollect.metric.Stat;
-import io.github.anycollect.metric.Type;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +42,6 @@ class AnyCollectModuleTest {
                 .hasKey("anycollect/pull.manager/processing.time")
                 .hasTags("host", "localhost")
                 .hasMeta("test", "true")
-                .hasMetric(Stat.MEAN, Type.AGGREGATE, "ms", 1.3);
+                .hasMetric(Stat.MEAN, "ms", 1.3);
     }
 }

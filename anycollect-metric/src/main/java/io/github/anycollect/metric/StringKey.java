@@ -1,10 +1,8 @@
 package io.github.anycollect.metric;
 
-import lombok.EqualsAndHashCode;
-
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
-@EqualsAndHashCode(of = "normalized")
 final class StringKey implements Key {
     private final String normalized;
 
@@ -36,7 +34,6 @@ final class StringKey implements Key {
 
     @Override
     public void print(@Nonnull final CaseFormat format, @Nonnull final StringBuilder output) {
-        format.reset();
         format.startDomain(output);
         format.startWord(output);
         for (int i = 0; i < normalized.length(); i++) {
@@ -56,24 +53,26 @@ final class StringKey implements Key {
         format.finishDomain(output);
     }
 
-    @Override
-    public int length() {
-        return normalized.length();
-    }
-
-    @Override
-    public char charAt(final int index) {
-        return normalized.charAt(index);
-    }
-
-    @Override
-    public CharSequence subSequence(final int start, final int end) {
-        return normalized.subSequence(start, end);
-    }
-
     @Nonnull
     @Override
     public String toString() {
         return normalized;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Key)) {
+            return false;
+        }
+        final Key that = (Key) o;
+        return Objects.equals(normalized, that.normalize());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(normalized);
     }
 }

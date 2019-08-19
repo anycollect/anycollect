@@ -13,7 +13,7 @@ class MetricTest {
                 .meta("key2", "value2")
                 .min("ms");
         Sample sample = metric.sample(2.0, 1);
-        assertThat(sample.toString()).isEqualTo("key;key1=value1;min[a](ms) 2.0 1");
+        assertThat(sample.toString()).isEqualTo("key[min](ms);key1=value1 2.0 1");
     }
 
     @Test
@@ -24,6 +24,6 @@ class MetricTest {
                 .empty()
                 .min("ms");
         Sample sample = metric.sample(2.0, 1);
-        assertThat(sample.toString()).isEqualTo("key;min[a](ms) 2.0 1");
+        assertThat(sample.toString()).isEqualTo("key[min](ms) 2.0 1");
     }
 }

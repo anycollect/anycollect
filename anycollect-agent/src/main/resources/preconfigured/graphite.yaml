@@ -3,10 +3,28 @@ extensions:
   extension: GraphiteSerializer
   instance: graphite.serializer
   config:
-    tagSupport: !var graphite.tag.support
+    tagSupport: true
     prefix: !var graphite.prefix
     tags:
       host: !var anycollect.host
+  activation:
+    type: property
+    name: graphite.tag.support
+    value: true
+- !load
+  extension: GraphiteSerializer
+  instance: graphite.serializer
+  config:
+    tagSupport: false
+    prefix: !var graphite.prefix
+    tags:
+      host: !var anycollect.host
+    tagsAsPrefix:
+    - host
+  activation:
+    type: property
+    name: graphite.tag.support
+    value: false
 - !load
   extension: SocketWriter
   instance: graphite

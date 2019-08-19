@@ -12,7 +12,6 @@ abstract class BaseBuilder<T extends BaseBuilder<T>> {
     private Key key;
     private String unit = "";
     private Stat stat;
-    private Type type;
     private final Tags.Builder tagsBuilder = new Tags.Builder();
     private final Tags.Builder metaBuilder = new Tags.Builder();
 
@@ -30,10 +29,6 @@ abstract class BaseBuilder<T extends BaseBuilder<T>> {
         return stat;
     }
 
-    protected Type getType() {
-        return type;
-    }
-
     protected Tags.Builder getTagsBuilder() {
         return tagsBuilder;
     }
@@ -49,12 +44,6 @@ abstract class BaseBuilder<T extends BaseBuilder<T>> {
     protected T key(@Nonnull final Key key) {
         Objects.requireNonNull(key, "key must not be null");
         this.key = key;
-        return self();
-    }
-
-    protected T type(@Nonnull final Type type) {
-        Objects.requireNonNull(type, "type must not be null");
-        this.type = type;
         return self();
     }
 

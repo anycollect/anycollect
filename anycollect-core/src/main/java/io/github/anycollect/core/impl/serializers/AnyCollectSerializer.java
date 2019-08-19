@@ -33,9 +33,8 @@ public final class AnyCollectSerializer implements Serializer {
         builder.append(";");
         serialize(sample.getMeta(), builder);
         builder.append(";");
-        builder.append(sample.getStat())
-                .append("[")
-                .append(sample.getType())
+        builder.append("[")
+                .append(sample.getStat())
                 .append("]")
                 .append("=")
                 .append(sample.getValue())

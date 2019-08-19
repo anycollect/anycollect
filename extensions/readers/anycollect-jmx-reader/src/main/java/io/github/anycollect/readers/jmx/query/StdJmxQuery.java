@@ -194,7 +194,7 @@ public final class StdJmxQuery extends JmxQuery {
                     .key(key)
                     .tags(tags.build())
                     .empty();
-            return builder.metric(attribute.getStat(), attribute.getType(), attribute.getUnit());
+            return builder.metric(attribute.getStat(), attribute.getUnit());
         }
     }
 }

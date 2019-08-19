@@ -20,8 +20,16 @@ public interface Stat {
         return STD;
     }
 
-    static Stat value() {
-        return VALUE;
+    static Stat gauge() {
+        return GAUGE;
+    }
+
+    static Stat counter() {
+        return COUNTER;
+    }
+
+    static Stat time() {
+        return TIME;
     }
 
     static Percentile percentile(double percentile) {
@@ -53,7 +61,8 @@ public interface Stat {
                 || stat == max()
                 || stat == mean()
                 || stat == std()
-                || stat == value()
+                || stat == gauge()
+                || stat == counter()
                 || stat.getClass().equals(Percentile.class)
                 || stat.getClass().equals(LeBucket.class);
     }
@@ -126,15 +135,49 @@ public interface Stat {
         }
     };
 
-    Stat VALUE = new Stat() {
+    Stat GAUGE = new Stat() {
         @Override
         public StatType getType() {
-            return StatType.UNKNOWN;
+            return StatType.GAUGE;
         }
 
         @Override
         public String getTagValue() {
-            return "value";
+            return "gauge";
+        }
+
+        @Override
+        public String toString() {
+            return getTagValue();
+        }
+    };
+
+    Stat COUNTER = new Stat() {
+        @Override
+        public StatType getType() {
+            return StatType.COUNTER;
+        }
+
+        @Override
+        public String getTagValue() {
+            return "counter";
+        }
+
+        @Override
+        public String toString() {
+            return getTagValue();
+        }
+    };
+
+    Stat TIME = new Stat() {
+        @Override
+        public StatType getType() {
+            return StatType.TIME;
+        }
+
+        @Override
+        public String getTagValue() {
+            return "time";
         }
 
         @Override

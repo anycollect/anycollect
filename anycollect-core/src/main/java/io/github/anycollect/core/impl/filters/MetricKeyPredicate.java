@@ -47,7 +47,7 @@ public final class MetricKeyPredicate implements Predicate<Metric> {
             return false;
         }
         if (pattern != null) {
-            return pattern.matcher(frame.getKey()).matches();
+            return pattern.matcher(frame.getKey().normalize()).matches();
         }
         return true;
     }

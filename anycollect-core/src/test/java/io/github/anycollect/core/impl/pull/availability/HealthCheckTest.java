@@ -67,6 +67,6 @@ class HealthCheckTest {
     }
 
     private void assertMetric(List<Sample> samples, String key, double value) {
-        SamplesAssert.assertThat(samples).contains(key, expectedTags, expectedMeta).hasValue(value);
+        SamplesAssert.assertThat(samples).contains(key, expectedTags, expectedMeta).hasGauge(value);
     }
 }
