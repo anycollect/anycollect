@@ -25,7 +25,7 @@
         <codahale-metrics.version>4.0.5</codahale-metrics.version>
 
         <!-- YAML, CONFIGURATION -->
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.10.1</jackson.version>
         <snakeyaml.version>1.23</snakeyaml.version>
 
         <!-- DISCOVERY -->
