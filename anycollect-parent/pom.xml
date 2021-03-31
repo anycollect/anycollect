@@ -48,7 +48,7 @@
 
         <!-- UTILS -->
         <commons-pool2.version>2.6.0</commons-pool2.version>
-        <guava.version>27.0-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <commons-lang.version>3.8.1</commons-lang.version>
 
         <!-- CLI -->
