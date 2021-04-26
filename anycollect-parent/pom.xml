@@ -64,7 +64,7 @@
         <assertj.version>3.11.1</assertj.version>
         <mockito.version>2.23.4</mockito.version>
         <awaitility.version>3.1.5</awaitility.version>
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <jmh.version>1.21</jmh.version>
         <testcontainers.version>1.11.3</testcontainers.version>
 
